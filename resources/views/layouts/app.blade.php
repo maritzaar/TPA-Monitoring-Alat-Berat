@@ -118,7 +118,7 @@
 
     <!-- Footer -->
     <footer class="bg-stone-100 text-center p-4 text-stone-600 mt-8 border-t border-stone-200 no-print">
-        &copy; {{ date('Y') }} Sistem Monitoring Alat Berat UT | {{ __('Dibuat dengan Laravel') }}
+        &copy; {{ date('Y') }} PT. Teladan Prima Agro, Tbk | {{ __('Testing') }}
     </footer>
 
     <!-- Dropdown JS -->
