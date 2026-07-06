@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
-# render-build.sh — Build script untuk Render.com
-set -e  # stop jika ada error
+# render-build.sh — Script build otomatis untuk Render.com
+# Dijalankan setiap kali ada deploy baru
 
-echo "=== Installing PHP dependencies ==="
+set -e  # Berhenti jika ada error
+
+echo ">>> [1/5] Install PHP dependencies..."
 composer install --no-dev --optimize-autoloader --no-interaction
 
-echo "=== Installing Node dependencies ==="
+echo ">>> [2/5] Install & build frontend assets..."
 npm ci --ignore-scripts
-
-echo "=== Building frontend assets ==="
 npm run build
 
-echo "=== Caching Laravel config ==="
+echo ">>> [3/5] Cache Laravel (config, route, view)..."
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-echo "=== Running migrations ==="
+echo ">>> [4/5] Jalankan database migrations..."
 php artisan migrate --force
 
-echo "=== Build complete! ==="
+echo ">>> [5/5] Selesai! Aplikasi siap dijalankan."
