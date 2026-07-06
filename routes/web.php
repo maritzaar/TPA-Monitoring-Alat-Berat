@@ -5,6 +5,7 @@ use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ProfileController;
+use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -43,8 +44,14 @@ Route::middleware('auth')->group(function () {
     Route::get('monitoring/export', [MonitoringController::class, 'export'])->name('monitoring.export');
     Route::resource('monitoring', MonitoringController::class);
 
-    Route::get('import', [ImportController::class, 'index'])->name('import.index');
-    Route::post('import', [ImportController::class, 'import'])->name('import.upload');
-    Route::get('import/clear', [ImportController::class, 'clearData'])->name('import.clear');
-    Route::delete('import/delete/{id}', [ImportController::class, 'deleteLog'])->name('import.delete-log');
+    // Admin/Operator Restricted Routes
+    Route::middleware('role:admin')->group(function () {
+        Route::get('pengguna', [UserController::class, 'index'])->name('users.index');
+        Route::post('pengguna/toggle/{user}', [UserController::class, 'toggleRole'])->name('users.toggle');
+
+        Route::get('import', [ImportController::class, 'index'])->name('import.index');
+        Route::post('import', [ImportController::class, 'import'])->name('import.upload');
+        Route::get('import/clear', [ImportController::class, 'clearData'])->name('import.clear');
+        Route::delete('import/delete/{id}', [ImportController::class, 'deleteLog'])->name('import.delete-log');
+    });
 });

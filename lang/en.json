@@ -118,5 +118,17 @@
     "Bagaimana cara membatalkan import jika terjadi kesalahan data?": "How to cancel an import if a data error occurs?",
     "Buka halaman Import Data, lihat bagian \"Riwayat Unggah File\", lalu klik tombol \"Hapus Data\" di baris nama file yang salah. Sistem akan otomatis menghapus data terkait tanpa mengganggu data file lainnya.": "Open the Import Data page, look at the \"File Upload History\" section, then click the \"Delete Data\" button on the row of the incorrect file name. The system will automatically delete the related data without affecting other files.",
     "Bantuan": "Help",
-    "Bantuan & Panduan Penggunaan": "Help & Usage Guide"
+    "Bantuan & Panduan Penggunaan": "Help & Usage Guide",
+    "Kelola Pengguna": "Manage Users",
+    "Nama": "Name",
+    "Tanggal Daftar": "Registration Date",
+    "Peran": "Role",
+    "Yakin ingin mengubah peran pengguna ini?": "Are you sure you want to change this user's role?",
+    "Jadikan Viewer": "Make Viewer",
+    "Jadikan Admin": "Make Admin",
+    "Belum ada pengguna lain terdaftar.": "No other users registered.",
+    "Peran pengguna :name berhasil diubah menjadi :role.": "User :name's role has been successfully changed to :role.",
+    "Anda tidak dapat mengubah peran Anda sendiri.": "You cannot change your own role.",
+    "Admin/Operator": "Admin/Operator",
+    "Viewer": "Viewer"
 }

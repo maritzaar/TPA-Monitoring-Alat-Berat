@@ -52,10 +52,16 @@
                                 
                                 <div class="p-3">
                                     <p class="text-xs text-stone-400 font-semibold uppercase tracking-wider mb-1 px-2">{{ __('Fitur & Fitur Lain') }}</p>
-                                    <a href="{{ route('import.index') }}" class="flex items-center space-x-2 px-3 py-2 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#8E6E4F] rounded-lg transition">
-                                        <i class="fas fa-upload text-[#8E6E4F]"></i>
-                                        <span>{{ __('Import Data') }}</span>
-                                    </a>
+                                    @if(Auth::user()->role === 'admin')
+                                        <a href="{{ route('import.index') }}" class="flex items-center space-x-2 px-3 py-2 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#8E6E4F] rounded-lg transition">
+                                            <i class="fas fa-upload text-[#8E6E4F]"></i>
+                                            <span>{{ __('Import Data') }}</span>
+                                        </a>
+                                        <a href="{{ route('users.index') }}" class="flex items-center space-x-2 px-3 py-2 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#8E6E4F] rounded-lg transition">
+                                            <i class="fas fa-users text-[#8E6E4F]"></i>
+                                            <span>{{ __('Kelola Pengguna') }}</span>
+                                        </a>
+                                    @endif
                                     <a href="{{ route('bantuan.index') }}" class="flex items-center space-x-2 px-3 py-2 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#8E6E4F] rounded-lg transition">
                                         <i class="fas fa-question-circle text-[#8E6E4F]"></i>
                                         <span>{{ __('Bantuan') }}</span>

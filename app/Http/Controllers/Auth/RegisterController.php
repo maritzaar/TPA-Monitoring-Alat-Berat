@@ -24,15 +24,25 @@ class RegisterController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+        // Role selection: first user in system or company email domain gets 'admin' role, others default to 'viewer'
+        $isFirstUser = User::count() === 0;
+        $isCompanyDomain = str_ends_with(strtolower($request->email), '@unitedtractors.com');
+        $role = ($isFirstUser || $isCompanyDomain) ? 'admin' : 'viewer';
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => $role,
         ]);
 
         Auth::login($user);
 
+        $welcomeMessage = $user->role === 'admin' 
+            ? 'Akun Admin berhasil dibuat. Selamat datang di sistem, ' . $user->name . '!'
+            : 'Akun Viewer berhasil dibuat. Selamat datang di sistem, ' . $user->name . '!';
+
         return redirect()->route('monitoring.index')
-            ->with('success', 'Akun berhasil dibuat. Selamat datang di sistem, ' . $user->name . '!');
+            ->with('success', $welcomeMessage);
     }
 }
