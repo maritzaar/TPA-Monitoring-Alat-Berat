@@ -1,0 +1,296 @@
+@extends('layouts.app')
+
+@section('title', 'Laporan Utama Monitoring')
+
+@section('content')
+<div class="space-y-6">
+
+    {{-- ====== FILTER BAR ====== --}}
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
+        <form action="{{ route('monitoring.laporan') }}" method="GET">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 items-end">
+                {{-- Bulan --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
+                    <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>-- {{ __('Semua Bulan') }} --</option>
+                        @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
+                            <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Tahun --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
+                    <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>-- {{ __('Semua Tahun') }} --</option>
+                        @for($i = 2023; $i <= date('Y') + 1; $i++)
+                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                {{-- Aset --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
+                    <select name="id_aset" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">-- {{ __('Semua Aset') }} --</option>
+                        @foreach($filterUnits as $unit)
+                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Grup --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
+                    <select name="group_aset" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">-- {{ __('Semua Grup') }} --</option>
+                        @foreach($filterGroups as $group)
+                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Area --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
+                    <select name="area" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">-- {{ __('Semua Area') }} --</option>
+                        @foreach($filterAreas as $a)
+                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- IO Group --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">IO Group</label>
+                    <select name="group_internal_order" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">-- {{ __('Semua IO Group') }} --</option>
+                        @foreach($filterIoGroups as $ig)
+                            <option value="{{ $ig }}" {{ $group_internal_order == $ig ? 'selected' : '' }}>{{ $ig }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
+                <a href="{{ route('monitoring.laporan') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
+                    {{ __('Reset Filter') }}
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
+                    <i class="fas fa-filter mr-2"></i> Apply Filter
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {{-- ====== HEADER ====== --}}
+    <div class="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-xl p-5 text-white shadow-md">
+        <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-file-invoice-dollar text-xl text-indigo-400"></i>
+            </div>
+            <div>
+                <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Operational & Fuel Reports</p>
+                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsolidasi Jam Kerja & Bahan Bakar</h2>
+            </div>
+            <div class="ml-auto text-right hidden sm:block">
+                <p class="text-xs text-indigo-300">Periode</p>
+                <p class="text-md font-bold">
+                    {{ $bulan == 'ALL' ? __('Semua Bulan') : __($bulan) }} 
+                    {{ $tahun == 'ALL' ? __('Semua Tahun') : $tahun }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    {{-- ====== STAT CARDS ====== --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {{-- Total Assets --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-blue-500 p-4 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Unit Aset</p>
+            <p class="text-2xl font-bold text-slate-800 mt-1">
+                {{ number_format($stats->total_aset, 0) }}
+                <span class="text-xs font-normal text-slate-400 ml-1">Unit</span>
+            </p>
+        </div>
+
+        {{-- Total Kerja --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 p-4 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Jam Kerja</p>
+            <p class="text-2xl font-bold text-slate-800 mt-1">
+                {{ number_format($stats->total_kerja, 1) }}
+                <span class="text-xs font-normal text-slate-400 ml-1">Jam</span>
+            </p>
+        </div>
+
+        {{-- Avg Idle --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-amber-500 p-4 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Rata-Rata Idle</p>
+            <p class="text-2xl font-bold text-slate-800 mt-1">
+                {{ number_format($stats->avg_idle, 1) }}
+                <span class="text-xs font-normal text-slate-400 ml-1">%</span>
+            </p>
+        </div>
+
+        {{-- Total Fuel --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 p-4 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Fuel (Aktual)</p>
+            <p class="text-2xl font-bold text-slate-800 mt-1">
+                {{ number_format($stats->actual_fuel, 0) }}
+                <span class="text-xs font-normal text-slate-400 ml-1">L</span>
+            </p>
+        </div>
+    </div>
+
+    {{-- ====== CHART SECTION ====== --}}
+    @if($reports->isNotEmpty())
+    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
+            <i class="fas fa-chart-line text-indigo-600 mr-2"></i> Perbandingan Jam Kerja (Kiri) & Pengisian Bahan Bakar Aktual (Kanan)
+        </h3>
+        <div class="relative h-72 sm:h-96">
+            <canvas id="consolidatedReportChart"></canvas>
+        </div>
+    </div>
+    @endif
+
+    {{-- ====== DATA TABLE ====== --}}
+    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+        <div class="border-b border-slate-100 pb-3 mb-4 flex flex-wrap justify-between items-center gap-2">
+            <div>
+                <h3 class="text-md font-bold text-slate-800 flex items-center">
+                    <i class="fas fa-list-check text-indigo-600 mr-2"></i> Rincian Kinerja Operasional & Konsumsi Solar Aset
+                </h3>
+                <p class="text-xs text-slate-450 mt-0.5">Gabungan data telemetri (Jam Kerja, Jam Operasi, Idle) & transaksi pengisian solar riil</p>
+            </div>
+            <div class="text-right">
+                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">
+                    {{ number_format($reports->count()) }} records found
+                </span>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[600px] table-scroll">
+            <table class="min-w-full divide-y divide-slate-200 border border-slate-100 text-sm">
+                <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
+                    <tr>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aset ID</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Model</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Area</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">IO Group</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Work (hrs)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Op (hrs)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Idle (hrs)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Idle</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Tel (L)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Akt (L)</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-slate-100">
+                    @forelse($reports as $row)
+                    <tr class="hover:bg-slate-50/50 transition">
+                        <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->model }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->area ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_internal_order ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_kerja, 1) }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_operasi, 1) }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_idle, 1) }}</td>
+                        <td class="px-3 py-2.5 text-right">
+                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold
+                                @if(($row->avg_idle ?? 0) < 30) bg-emerald-50 text-emerald-800
+                                @elseif(($row->avg_idle ?? 0) < 50) bg-amber-50 text-amber-800
+                                @else bg-rose-50 text-rose-800 @endif">
+                                {{ number_format($row->avg_idle ?? 0, 1) }}%
+                            </span>
+                        </td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-500">{{ number_format($row->telemetry_fuel, 0) }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs font-bold text-emerald-600">{{ number_format($row->actual_fuel, 0) }}</td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="11" class="px-4 py-12 text-center text-slate-400">
+                            <i class="fas fa-filter-circle-xmark text-3xl block mb-2 text-slate-300"></i>
+                            <span class="text-xs">Tidak ada data operasional/transaksi solar yang cocok dengan filter aktif.</span>
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+@if($reports->isNotEmpty())
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const labels = @json($reports->pluck('id_aset'));
+    const workHours = @json($reports->pluck('total_kerja'));
+    const idleHours = @json($reports->pluck('total_idle'));
+    const actualFuel = @json($reports->pluck('actual_fuel'));
+
+    new Chart(document.getElementById('consolidatedReportChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Jam Kerja (Hrs)',
+                    data: workHours,
+                    backgroundColor: 'rgba(79, 70, 229, 0.75)',
+                    borderColor: '#4f46e5',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 3
+                },
+                {
+                    label: 'Jam Idle (Hrs)',
+                    data: idleHours,
+                    backgroundColor: 'rgba(245, 158, 11, 0.75)',
+                    borderColor: '#d97706',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                    borderRadius: 3
+                },
+                {
+                    label: 'BBM Aktual (L)',
+                    data: actualFuel,
+                    type: 'line',
+                    borderColor: '#10b981',
+                    backgroundColor: '#10b981',
+                    borderWidth: 2,
+                    pointRadius: 3,
+                    yAxisID: 'y1',
+                    fill: false
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                    title: { display: true, text: 'Hours', font: { weight: 'bold' } }
+                },
+                y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    title: { display: true, text: 'Liters', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+});
+</script>
+@endif
+@endsection

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Monitoring Alat Berat</title>
+    <title>Sign In - Teladan Prima Agro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -13,94 +13,104 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-[#FAF7F2] via-[#E6DCCF] to-[#A7825E] min-h-screen flex items-center justify-center p-4 relative overflow-hidden">
-    <!-- Floating Language Switcher -->
-    <div class="absolute top-4 right-4 z-20 flex items-center space-x-1 text-xs bg-white/80 backdrop-blur-md rounded-xl p-1 border border-[#E6DCCF] shadow-md">
-        <a href="{{ route('lang.switch', 'id') }}" class="px-3 py-1.5 rounded-lg font-semibold transition {{ app()->getLocale() == 'id' ? 'bg-[#8E6E4F] text-white shadow-sm' : 'text-stone-500 hover:text-stone-850' }}">ID</a>
-        <a href="{{ route('lang.switch', 'en') }}" class="px-3 py-1.5 rounded-lg font-semibold transition {{ app()->getLocale() == 'en' ? 'bg-[#8E6E4F] text-white shadow-sm' : 'text-stone-500 hover:text-stone-850' }}">EN</a>
+<body class="bg-white min-h-screen flex flex-col md:flex-row overflow-x-hidden">
+    
+    <!-- LEFT SIDE: Login Form (Dark Blue Background - 55% Width) -->
+    <div class="w-full md:w-[55%] bg-[#0F172A] text-white flex flex-col justify-between p-6 sm:p-10 md:p-16 relative">
+        
+        <!-- Header Brand Info -->
+        <div class="flex items-center space-x-2 z-10">
+            <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto bg-stone-900 p-0.5 rounded">
+            <span class="font-bold text-xs tracking-widest text-slate-350">TELADAN PRIMA AGRO</span>
+        </div>
+
+        <!-- Form Container -->
+        <div class="my-auto py-10 max-w-md w-full mx-auto z-10 space-y-8">
+            <div>
+                <p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-2">Welcome back to</p>
+                <h2 class="text-3xl font-extrabold text-white tracking-wide leading-tight">
+                    Teladan Prima Agro
+                </h2>
+                <div class="h-1.5 w-16 bg-blue-600 rounded-full mt-4"></div>
+            </div>
+
+            <!-- Success/Error Banner -->
+            @if(session('success'))
+                <div class="bg-emerald-950/40 border border-emerald-800 text-emerald-300 p-4 rounded-xl text-sm flex items-center shadow-sm">
+                    <i class="fas fa-check-circle mr-2.5 text-emerald-400"></i> {{ session('success') }}
+                </div>
+            @endif
+
+            @if($errors->any())
+                <div class="bg-rose-950/40 border border-rose-800 text-rose-300 p-4 rounded-xl text-sm shadow-sm">
+                    <ul class="list-disc list-inside space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('login') }}" method="POST" class="space-y-6">
+                @csrf
+                
+                <!-- Username Input -->
+                <div class="space-y-2">
+                    <label for="email" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Username <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                            <i class="far fa-user text-sm"></i>
+                        </span>
+                        <input type="text" name="email" id="email" required value="{{ old('email') }}"
+                               class="block w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-750 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-650 focus:border-transparent transition text-sm"
+                               placeholder="Username">
+                    </div>
+                </div>
+
+                <!-- Password Input -->
+                <div class="space-y-2">
+                    <label for="password" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Password <span class="text-rose-500">*</span></label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
+                            <i class="fas fa-lock text-sm"></i>
+                        </span>
+                        <input type="password" name="password" id="password" required
+                               class="block w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-750 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-650 focus:border-transparent transition text-sm"
+                               placeholder="Password">
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" 
+                        class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition duration-200 transform active:scale-98 shadow-md hover:shadow-blue-500/10 flex items-center justify-center text-sm">
+                    Login <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Footer Copyright -->
+        <div class="text-xs text-slate-500 z-10 flex justify-between mt-auto pt-6 border-t border-slate-800/60 font-medium">
+            <span>&copy; {{ date('Y') }} PT. Teladan Prima Agro, Tbk.</span>
+            <span>Hak Cipta Dilindungi Undang-Undang.</span>
+        </div>
     </div>
 
-    <!-- Decorative background elements -->
-    <div class="absolute w-96 h-96 rounded-full bg-[#A7825E]/10 -top-12 -left-12 blur-3xl"></div>
-    <div class="absolute w-96 h-96 rounded-full bg-[#FAF7F2]/40 -bottom-12 -right-12 blur-3xl"></div>
- 
-    <div class="w-full max-w-md bg-white/90 backdrop-blur-md border border-[#E6DCCF] rounded-2xl shadow-xl p-8 relative z-10">
-        <!-- Logo/Header -->
-        <div class="text-center mb-8">
-            <div class="inline-flex p-3 bg-[#F5EBE0] rounded-2xl border border-[#E6DCCF] text-[#704F37] mb-3 shadow-md shadow-[#8E6E4F]/5">
-                <i class="fas fa-shield-halved text-3xl"></i>
+    <!-- RIGHT SIDE: Large Corporate Logo (White Background - 45% Width) -->
+    <div class="hidden md:flex md:w-[45%] bg-white items-center justify-center p-12 relative overflow-hidden select-none border-l border-slate-100">
+        
+        <!-- Large centered logo and info -->
+        <div class="text-center space-y-8 max-w-sm z-10">
+            <div class="inline-block p-6 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm transition hover:scale-105 duration-300">
+                <img src="{{ asset('images/logo.png') }}" alt="Teladan Prima Agro Logo" class="w-48 h-auto object-contain mx-auto">
             </div>
-            <h2 class="text-2xl font-bold text-stone-850 tracking-wide">{{ __('Selamat Datang Kembali') }}</h2>
-            <p class="text-stone-500 text-sm mt-1">{{ __('Masuk Untuk Mengakses Dashboard') }}</p>
+            <div class="space-y-3">
+                <h3 class="text-xl font-extrabold text-slate-800 tracking-wide uppercase">PT. Teladan Prima Agro</h3>
+            </div>
         </div>
- 
-        <!-- Success/Error Banner -->
-        @if(session('success'))
-            <div class="bg-emerald-50 border border-emerald-100 text-emerald-800 p-3.5 mb-6 rounded-xl text-sm flex items-center shadow-sm">
-                <i class="fas fa-check-circle mr-2.5 text-emerald-600"></i> {{ session('success') }}
-            </div>
-        @endif
- 
-        @if($errors->any())
-            <div class="bg-rose-50 border border-rose-100 text-rose-800 p-3.5 mb-6 rounded-xl text-sm shadow-sm">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
- 
-        <form action="{{ route('login') }}" method="POST" class="space-y-5">
-            @csrf
-            
-            <!-- Email Input -->
-            <div>
-                <label for="email" class="block text-xs font-semibold text-stone-600 uppercase tracking-wider mb-2">{{ __('Email') }}</label>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-stone-400">
-                        <i class="far fa-envelope"></i>
-                    </span>
-                    <input type="email" name="email" id="email" required value="{{ old('email') }}"
-                           class="block w-full pl-10 pr-4 py-3 bg-stone-50 border border-[#E6DCCF] rounded-xl text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#8E6E4F]/40 focus:border-[#8E6E4F] transition text-sm"
-                           placeholder="nama@email.com">
-                </div>
-            </div>
- 
-            <!-- Password Input -->
-            <div>
-                <div class="flex justify-between items-center mb-2">
-                    <label for="password" class="block text-xs font-semibold text-stone-600 uppercase tracking-wider">{{ __('Kata Sandi') }}</label>
-                </div>
-                <div class="relative">
-                    <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-stone-400">
-                        <i class="fas fa-lock"></i>
-                    </span>
-                    <input type="password" name="password" id="password" required
-                           class="block w-full pl-10 pr-4 py-3 bg-stone-50 border border-[#E6DCCF] rounded-xl text-stone-800 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-[#8E6E4F]/40 focus:border-[#8E6E4F] transition text-sm"
-                           placeholder="••••••••">
-                </div>
-            </div>
- 
-            <!-- Remember Me -->
-            <div class="flex items-center">
-                <input type="checkbox" name="remember" id="remember" 
-                       class="h-4 w-4 rounded border-stone-300 text-[#8E6E4F] focus:ring-[#8E6E4F]/50 focus:ring-offset-white">
-                <label for="remember" class="ml-2 block text-sm text-stone-600">{{ __('Ingat saya') }}</label>
-            </div>
- 
-            <!-- Submit Button -->
-            <button type="submit" 
-                    class="w-full py-3 bg-gradient-to-r from-[#FFC107] to-[#e0a800] hover:from-[#e0a800] hover:to-[#FFC107] text-stone-900 font-bold rounded-xl transition duration-300 transform active:scale-98 shadow-lg shadow-[#FFC107]/10 flex items-center justify-center">
-                {{ __('Masuk') }} <i class="fas fa-arrow-right ml-2 text-xs"></i>
-            </button>
-        </form>
- 
-        <!-- Redirect Link -->
-        <div class="mt-8 text-center text-sm">
-            <span class="text-stone-500">{{ __('Belum punya akun?') }}</span>
-            <a href="{{ route('register') }}" class="text-amber-700 hover:text-amber-850 font-bold ml-1 transition hover:underline">{{ __('Daftar sekarang') }}</a>
-        </div>
+        
+        <!-- Subtle background decorative blobs -->
+        <div class="absolute w-80 h-80 rounded-full bg-blue-50/30 -bottom-20 -right-20 blur-3xl"></div>
+        <div class="absolute w-60 h-60 rounded-full bg-slate-50 -top-10 -left-10 blur-2xl"></div>
     </div>
 </body>
 </html>

@@ -22,7 +22,7 @@ class ImportController extends Controller
     {
         $request->validate([
             'file' => 'required|mimes:xlsx,xls,csv',
-            'sumber' => 'required|in:CATERPILLAR,INTERNAL,SAP'
+            'sumber' => 'required|in:CATERPILLAR,INTERNAL,SAP,FUEL'
         ]);
 
         try {
@@ -36,12 +36,122 @@ class ImportController extends Controller
                 'rows_count' => 0
             ]);
             
-            $countBefore = DataAlat::count();
-            // Hubungkan import log ID ke importir
-            Excel::import(new DataAlatImport($request->sumber, $importLog->id), \Illuminate\Support\Facades\Storage::disk('local')->path($path));
-            
-            $countAfter = DataAlat::count();
-            $rowsImported = $countAfter - $countBefore;
+            if ($request->sumber === 'FUEL') {
+                $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($path);
+                $sheets = Excel::toCollection(new \App\Imports\FuelImportCollection, $filePath);
+                
+                $transactions = $sheets[0] ?? collect();
+                $units = $sheets[1] ?? collect();
+
+                // Build master unit lookup dictionary
+                $unitMap = [];
+                foreach ($units as $unitRow) {
+                    $unitCodeRaw = $unitRow['unitcode'] ?? null;
+                    if ($unitCodeRaw) {
+                        $unitCodeClean = trim(strtoupper($unitCodeRaw));
+                        
+                        $unitShortName = isset($unitRow['unitshortname']) ? trim(strtoupper($unitRow['unitshortname'])) : '';
+                        $codeUniCalculated = $unitShortName !== '' ? "{$unitCodeClean}-{$unitShortName}" : $unitCodeClean;
+
+                        $companyCode = isset($unitRow['companycode']) ? trim($unitRow['companycode']) : '';
+                        $companyShortName = isset($unitRow['companyshortname']) ? trim(strtoupper($unitRow['companyshortname'])) : '';
+                        $codeCompanyCalculated = $companyShortName !== '' ? "{$companyCode}-{$companyShortName}" : $companyCode;
+
+                        $unitMap[$unitCodeClean] = [
+                            'group' => $unitRow['group'] ?? null,
+                            'area' => $unitRow['area'] ?? null,
+                            'company_code' => $companyCode,
+                            'code_company' => $codeCompanyCalculated,
+                            'code_unit' => $codeUniCalculated,
+                        ];
+                    }
+                }
+
+                $rowsImported = 0;
+                $insertData = [];
+                $now = now();
+
+                foreach ($transactions as $row) {
+                    $unitCodeRaw = $row['unitcode'] ?? null;
+                    if (empty($unitCodeRaw) && !empty($row['internalorder'])) {
+                        $unitCodeRaw = substr($row['internalorder'], 0, 4);
+                    }
+
+                    if (empty($unitCodeRaw)) {
+                        continue;
+                    }
+
+                    $unitCodeClean = trim(strtoupper($unitCodeRaw));
+
+                    // Default values
+                    $groupAset = null;
+                    $area = null;
+                    $companyCode = $row['companycode'] ?? null;
+                    $codeUnit = $unitCodeClean;
+                    $codeCompany = $companyCode;
+
+                    // Match and resolve formulas using PHP lookup dictionary
+                    if (isset($unitMap[$unitCodeClean])) {
+                        $ref = $unitMap[$unitCodeClean];
+                        $groupAset = $ref['group'] ?? $groupAset;
+                        $area = $ref['area'] ?? $area;
+                        $companyCode = $ref['company_code'] ?? $companyCode;
+                        $codeUnit = $ref['code_unit'] ?? $codeUnit;
+                        $codeCompany = $ref['code_company'] ?? $codeCompany;
+                    }
+
+                    // Parse quantity
+                    $qtyRaw = $row['sumoftotalquantity'] ?? $row['totalquantity'] ?? $row['total_quantity'] ?? $row['quantity'] ?? $row['qty'] ?? $row['oftotalquantity'] ?? null;
+                    if ($qtyRaw === null || $qtyRaw === '' || $qtyRaw === ' ') {
+                        continue;
+                    }
+
+                    if (is_string($qtyRaw)) {
+                        $qtyRaw = str_replace(',', '.', $qtyRaw);
+                        $qtyRaw = str_replace(' ', '', $qtyRaw);
+                    }
+                    $quantity = is_numeric($qtyRaw) ? (float) $qtyRaw : 0;
+
+                    // Parse Year and Month
+                    $yearVal = intval($row['year'] ?? now()->year);
+                    $monthVal = trim($row['monthname'] ?? $row['month_name'] ?? $row['month'] ?? now()->format('F'));
+                    $monthVal = ucfirst(strtolower($monthVal));
+
+                    $insertData[] = [
+                        'import_log_id' => $importLog->id,
+                        'tahun' => $yearVal,
+                        'bulan' => $monthVal,
+                        'company_code' => $companyCode,
+                        'unit_code' => $codeUnit,
+                        'internal_order' => $row['internalorder'] ?? $row['internal_order'] ?? null,
+                        'material_number' => $row['materialnumber'] ?? $row['material_number'] ?? null,
+                        'material_description' => $row['materialdescription'] ?? $row['material_description'] ?? null,
+                        'total_quantity' => $quantity,
+                        'uom' => $row['uom'] ?? null,
+                        'group_aset' => $groupAset,
+                        'area' => $area,
+                        'code_company' => $codeCompany,
+                        'code_unit' => $codeUnit,
+                        'created_at' => $now,
+                        'updated_at' => $now
+                    ];
+                    $rowsImported++;
+                }
+
+                // Bulk insert in chunks of 500
+                if (!empty($insertData)) {
+                    foreach (array_chunk($insertData, 500) as $chunk) {
+                        \App\Models\FuelTransaction::insert($chunk);
+                    }
+                }
+            } else {
+                $countBefore = DataAlat::count();
+                // Hubungkan import log ID ke importir
+                Excel::import(new DataAlatImport($request->sumber, $importLog->id), \Illuminate\Support\Facades\Storage::disk('local')->path($path));
+                
+                $countAfter = DataAlat::count();
+                $rowsImported = $countAfter - $countBefore;
+            }
 
             // Update jumlah baris terimport
             $importLog->update([

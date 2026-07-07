@@ -3,7 +3,6 @@
 use App\Http\Controllers\ImportController;
 use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\Route;
@@ -24,8 +23,6 @@ Route::get('lang/{locale}', function ($locale) {
 Route::middleware('guest')->group(function () {
     Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
     Route::post('login', [LoginController::class, 'login']);
-    Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-    Route::post('register', [RegisterController::class, 'register']);
 });
 
 // Authenticated Routes
@@ -35,19 +32,25 @@ Route::middleware('auth')->group(function () {
     // Profile & Help
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::post('profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::get('bantuan', function () {
-        return view('help.index');
-    })->name('bantuan.index');
 
     Route::get('monitoring/chart', [MonitoringController::class, 'chart'])->name('monitoring.chart');
     Route::get('monitoring/detail/{idAset}', [MonitoringController::class, 'detail'])->name('monitoring.detail');
     Route::get('monitoring/export', [MonitoringController::class, 'export'])->name('monitoring.export');
+    Route::get('monitoring/laporan', [MonitoringController::class, 'laporan'])->name('monitoring.laporan');
+    Route::get('monitoring/aset', function() { return redirect()->route('monitoring.laporan'); });
+    Route::get('monitoring/area', function() { return redirect()->route('monitoring.laporan'); });
+    Route::get('monitoring/group', function() { return redirect()->route('monitoring.laporan'); });
+    Route::get('monitoring/io-group', function() { return redirect()->route('monitoring.laporan'); });
+    Route::get('monitoring/bahan-bakar', function() { return redirect()->route('monitoring.laporan'); });
     Route::resource('monitoring', MonitoringController::class);
 
     // Admin/Operator Restricted Routes
     Route::middleware('role:admin')->group(function () {
         Route::get('pengguna', [UserController::class, 'index'])->name('users.index');
+        Route::post('pengguna/create', [UserController::class, 'store'])->name('users.store');
         Route::post('pengguna/toggle/{user}', [UserController::class, 'toggleRole'])->name('users.toggle');
+        Route::post('pengguna/reset-password/{user}', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::delete('pengguna/delete/{user}', [UserController::class, 'destroy'])->name('users.destroy');
 
         Route::get('import', [ImportController::class, 'index'])->name('import.index');
         Route::post('import', [ImportController::class, 'import'])->name('import.upload');

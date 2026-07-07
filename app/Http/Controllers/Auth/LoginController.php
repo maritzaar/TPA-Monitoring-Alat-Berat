@@ -15,20 +15,21 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // Validate inputs as plain text string (not requiring @email format)
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email' => ['required', 'string'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
             return redirect()->intended(route('monitoring.index'))
-                ->with('success', 'Selamat datang kembali, ' . Auth::user()->name . '!');
+                ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
         }
 
         return back()->withErrors([
-            'email' => 'Email atau password yang Anda masukkan salah.',
+            'email' => 'The credentials you entered do not match our records.',
         ])->onlyInput('email');
     }
 
@@ -40,6 +41,6 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('login')
-            ->with('success', 'Anda berhasil keluar dari sistem.');
+            ->with('success', 'You have been logged out successfully.');
     }
 }

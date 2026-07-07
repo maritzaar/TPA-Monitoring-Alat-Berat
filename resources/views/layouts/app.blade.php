@@ -1,16 +1,27 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') - Monitoring Alat Berat</title>
+    <title>@yield('title', 'Dashboard') - Teladan Prima Agro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('js/chart.js') }}"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Outfit', sans-serif; }
+        body { font-family: 'Outfit', sans-serif; font-size: 1rem; }
         @media print { .no-print { display: none !important; } }
+
+        /* Scale up Tailwind text utility classes globally for readability & comfort */
+        .text-\[9px\] { font-size: 0.75rem !important; }   /* ~12px */
+        .text-\[10px\] { font-size: 0.8rem !important; }   /* ~12.8px */
+        .text-xs { font-size: 0.875rem !important; }        /* ~14px */
+        .text-sm { font-size: 0.975rem !important; }        /* ~15.6px */
+        .text-base { font-size: 1.1rem !important; }        /* ~17.6px */
+        .text-lg { font-size: 1.25rem !important; }        /* ~20px */
+        .text-xl { font-size: 1.45rem !important; }        /* ~23px */
+        .text-2xl { font-size: 1.75rem !important; }        /* ~28px */
+        .text-3xl { font-size: 2.15rem !important; }        /* ~34px */
 
         /* Smooth sidebar transition */
         #sidebarDrawer { transition: transform 0.28s cubic-bezier(.4,0,.2,1); }
@@ -23,88 +34,161 @@
         #mainWrapper { transition: padding-left 0.28s cubic-bezier(.4,0,.2,1); }
     </style>
 </head>
-<body class="min-h-screen bg-[#FAF7F2] text-stone-800 flex flex-col">
+<body class="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col">
 
     @auth
     <!-- Sidebar Backdrop (mobile only) -->
     <div id="sidebarBackdrop"
-         class="fixed inset-0 bg-stone-900/50 backdrop-blur-sm z-20 hidden opacity-0 no-print"></div>
+         class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-20 hidden opacity-0 no-print"></div>
 
     <!-- Sidebar Drawer -->
     <aside id="sidebarDrawer"
-           class="fixed top-16 left-0 bottom-0 w-64 bg-[#F9F9F9] border-r border-stone-200 z-30 -translate-x-full flex flex-col shadow-lg no-print">
+           class="fixed top-16 left-0 bottom-0 w-64 bg-white border-r border-slate-200 z-30 -translate-x-full flex flex-col shadow-sm no-print">
 
         <!-- Mobile-only header inside drawer -->
-        <div class="h-14 bg-[#111111] flex items-center justify-between px-4 text-white md:hidden flex-shrink-0">
+        <div class="h-14 bg-[#0F172A] flex items-center justify-between px-4 text-white md:hidden flex-shrink-0">
             <span class="font-bold tracking-wide flex items-center text-sm">
-                <i class="fas fa-desktop mr-2 text-[#FFC107]"></i>
-                {{ __('Menu Navigasi') }}
+                <i class="fas fa-desktop mr-2 text-blue-400"></i>
+                Navigation Menu
             </span>
-            <button id="sidebarClose" class="text-white hover:text-[#FFC107] transition focus:outline-none p-1">
+            <button id="sidebarClose" class="text-white hover:text-blue-400 transition focus:outline-none p-1">
                 <i class="fas fa-times text-lg"></i>
             </button>
         </div>
 
         <!-- Nav links -->
         <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+
+            {{-- Home --}}
             <a href="{{ route('monitoring.index') }}"
-               class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-sm font-semibold
-               {{ Route::currentRouteName() === 'monitoring.index' && !request()->route('idAset')
-                   ? 'bg-stone-200/70 text-stone-900 border-l-4 border-[#FFC107] pl-3'
-                   : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900' }}">
-                <i class="fas fa-chart-line w-5 text-center"></i>
-                <span>{{ __('Dashboard') }}</span>
+               class="flex items-center space-x-3 px-4 py-2.5 rounded-lg transition text-sm font-semibold
+               {{ Route::currentRouteName() === 'monitoring.index'
+                   ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600 pl-3'
+                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
+                <i class="fas fa-home w-5 text-center text-sm"></i>
+                <span>Home</span>
             </a>
 
+            {{-- ── MONITORING GROUP ── --}}
+            @php
+                $monitoringRoutes = ['monitoring.index', 'monitoring.laporan'];
+                $monitoringActive = in_array(Route::currentRouteName(), $monitoringRoutes);
+            @endphp
+            <div>
+                {{-- Group header button --}}
+                <button type="button" id="navMonitoringToggle"
+                        class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition text-sm font-bold
+                               {{ $monitoringActive ? 'text-blue-700 bg-blue-50/60' : 'text-slate-700 hover:bg-slate-50' }}">
+                    <span class="flex items-center space-x-3">
+                        <i class="fas fa-chart-bar w-5 text-center text-sm"></i>
+                        <span>Monitoring</span>
+                    </span>
+                    <i id="navMonitoringChevron"
+                       class="fas fa-chevron-down text-xs transition-transform duration-200
+                              {{ $monitoringActive ? 'rotate-180' : '' }}"></i>
+                </button>
+
+                {{-- Sub-items --}}
+                <div id="navMonitoringMenu"
+                     class="overflow-hidden transition-all duration-200 ease-in-out
+                            {{ $monitoringActive ? 'opacity-100' : 'max-h-0 opacity-0' }}"
+                     @if($monitoringActive) style="max-height: 200px;" @endif>
+                    <div class="mt-1 ml-4 pl-3 border-l-2 border-slate-200 space-y-2">
+
+                        {{-- Overview --}}
+                        <a href="{{ route('monitoring.index') }}"
+                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                  {{ Route::currentRouteName() === 'monitoring.index'
+                                      ? 'bg-blue-600 text-white shadow-sm'
+                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                            <i class="fas fa-th-large w-4 text-center"></i>
+                            <span>Overview</span>
+                        </a>
+
+                        {{-- Laporan --}}
+                        <a href="{{ route('monitoring.laporan') }}"
+                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                  {{ Route::currentRouteName() === 'monitoring.laporan'
+                                      ? 'bg-blue-600 text-white shadow-sm'
+                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                            <i class="fas fa-file-invoice w-4 text-center"></i>
+                            <span>Laporan</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
+
+            {{-- ── ADMIN GROUP ── --}}
             @if(Auth::user()->role === 'admin')
-            <a href="{{ route('import.index') }}"
-               class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-sm font-semibold
-               {{ Route::currentRouteName() === 'import.index'
-                   ? 'bg-stone-200/70 text-stone-900 border-l-4 border-[#FFC107] pl-3'
-                   : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900' }}">
-                <i class="fas fa-upload w-5 text-center"></i>
-                <span>{{ __('Import Data') }}</span>
-            </a>
-            <a href="{{ route('users.index') }}"
-               class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-sm font-semibold
-               {{ Route::currentRouteName() === 'users.index'
-                   ? 'bg-stone-200/70 text-stone-900 border-l-4 border-[#FFC107] pl-3'
-                   : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900' }}">
-                <i class="fas fa-users w-5 text-center"></i>
-                <span>{{ __('Kelola Pengguna') }}</span>
-            </a>
+            @php
+                $adminRoutes = ['import.index','import.upload','import.clear','users.index'];
+                $adminActive = in_array(Route::currentRouteName(), $adminRoutes);
+            @endphp
+            <div>
+                <button type="button" id="navAdminToggle"
+                        class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition text-sm font-bold
+                               {{ $adminActive ? 'text-blue-700 bg-blue-50/60' : 'text-slate-700 hover:bg-slate-50' }}">
+                    <span class="flex items-center space-x-3">
+                        <i class="fas fa-shield-alt w-5 text-center text-sm"></i>
+                        <span>Admin</span>
+                    </span>
+                    <i id="navAdminChevron"
+                       class="fas fa-chevron-down text-xs transition-transform duration-200
+                              {{ $adminActive ? 'rotate-180' : '' }}"></i>
+                </button>
+
+                <div id="navAdminMenu"
+                     class="overflow-hidden transition-all duration-200 ease-in-out
+                            {{ $adminActive ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0' }}">
+                    <div class="mt-1 ml-4 pl-3 border-l-2 border-slate-200 space-y-0.5">
+
+                        <a href="{{ route('import.index') }}"
+                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                  {{ Route::currentRouteName() === 'import.index'
+                                      ? 'bg-blue-600 text-white shadow-sm'
+                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                            <i class="fas fa-upload w-4 text-center"></i>
+                            <span>Import Data</span>
+                        </a>
+
+                        <a href="{{ route('users.index') }}"
+                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                  {{ Route::currentRouteName() === 'users.index'
+                                      ? 'bg-blue-600 text-white shadow-sm'
+                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                            <i class="fas fa-users w-4 text-center"></i>
+                            <span>Manage Users</span>
+                        </a>
+
+                    </div>
+                </div>
+            </div>
             @endif
 
-            <a href="{{ route('bantuan.index') }}"
-               class="flex items-center space-x-3 px-4 py-3 rounded-lg transition text-sm font-semibold
-               {{ Route::currentRouteName() === 'bantuan.index'
-                   ? 'bg-stone-200/70 text-stone-900 border-l-4 border-[#FFC107] pl-3'
-                   : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900' }}">
-                <i class="fas fa-question-circle w-5 text-center"></i>
-                <span>{{ __('Bantuan') }}</span>
-            </a>
         </nav>
 
         <!-- Sidebar footer -->
-        <div class="p-3 border-t border-stone-200 text-[10px] text-stone-400 text-center uppercase tracking-wider font-semibold flex-shrink-0">
-            VISIONMONITOR &copy; {{ date('Y') }}
+        <div class="p-3 border-t border-slate-100 text-[10px] text-slate-400 text-center uppercase tracking-wider font-semibold flex-shrink-0">
+            TELADAN PRIMA AGRO &copy; {{ date('Y') }}
         </div>
     </aside>
     @endauth
 
     <!-- ======== TOP NAVBAR ======== -->
-    <nav class="fixed top-0 left-0 right-0 h-16 bg-[#111111] text-white px-3 sm:px-4 shadow z-40 flex justify-between items-center no-print">
+    <nav class="fixed top-0 left-0 right-0 h-16 bg-[#0F172A] text-white px-3 sm:px-4 shadow-md z-40 flex justify-between items-center no-print">
         <!-- Left: hamburger + brand -->
         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
             @auth
             <button id="sidebarToggle"
-                    class="text-white hover:text-[#FFC107] transition focus:outline-none p-1 flex-shrink-0"
-                    title="{{ __('Toggle Menu') }}">
+                    class="text-white hover:text-blue-400 transition focus:outline-none p-1 flex-shrink-0"
+                    title="Toggle Menu">
                 <i class="fas fa-bars text-xl"></i>
             </button>
             @endauth
-            <h1 class="text-base sm:text-lg font-bold tracking-wider flex items-center select-none whitespace-nowrap">
-                <span class="text-[#FFC107] mr-0.5">VISION</span><span>MONITOR</span>
+            <h1 class="text-xs sm:text-sm md:text-base font-bold tracking-wider flex items-center select-none whitespace-nowrap text-white">
+                <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0 bg-stone-900 p-0.5 rounded">
+                <span>TELADAN PRIMA AGRO</span>
             </h1>
         </div>
 
@@ -113,13 +197,13 @@
             @auth
             <div class="relative inline-block text-left" id="profileDropdownContainer">
                 <div class="flex items-center space-x-2 sm:space-x-3">
-                    <!-- Company name — hidden on xs, visible sm+ -->
-                    <span class="hidden sm:inline text-xs text-stone-400 font-semibold uppercase tracking-wide max-w-[140px] lg:max-w-[200px] truncate select-none">
-                        {{ Auth::user()->company ?? __('Profil Perusahaan') }}
+                    <!-- User name -->
+                    <span class="hidden sm:inline text-xs text-slate-300 font-bold uppercase tracking-wide max-w-[140px] lg:max-w-[200px] truncate select-none">
+                        {{ Auth::user()->name }}
                     </span>
                     <!-- Avatar button -->
                     <button type="button" id="profileDropdownButton"
-                            class="w-9 h-9 rounded-full bg-[#FFC107] hover:bg-[#e0a800] text-stone-900 font-bold
+                            class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold
                                    flex items-center justify-center transition focus:outline-none select-none text-sm shadow flex-shrink-0">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </button>
@@ -127,33 +211,22 @@
 
                 <!-- Dropdown -->
                 <div id="profileDropdownMenu"
-                     class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-stone-100 divide-y divide-stone-100 z-50 text-sm no-print">
+                     class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 divide-y divide-slate-100 z-50 text-sm no-print">
                     <div class="p-3">
-                        <p class="text-xs text-stone-400 font-semibold uppercase tracking-wider mb-1 px-2">{{ __('Profil Saya') }}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5 px-2">My Profile</p>
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center space-x-2 px-3 py-2 text-stone-700 hover:bg-[#FAF7F2] hover:text-[#8E6E4F] rounded-lg transition">
-                            <i class="fas fa-user-cog text-[#8E6E4F]"></i>
-                            <span>{{ __('Edit Profil') }}</span>
+                           class="flex items-center space-x-2 px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition font-medium">
+                            <i class="fas fa-user-cog text-slate-400"></i>
+                            <span>Edit Profile</span>
                         </a>
-                    </div>
-                    <div class="p-3">
-                        <p class="text-xs text-stone-400 font-semibold uppercase tracking-wider mb-1.5 px-2">{{ __('Bahasa') }}</p>
-                        <div class="flex items-center justify-between bg-stone-50 rounded-lg p-1.5 border border-stone-200/50 mx-2">
-                            <a href="{{ route('lang.switch', 'id') }}"
-                               class="flex-1 text-center py-1 rounded text-xs font-semibold transition
-                               {{ app()->getLocale() == 'id' ? 'bg-[#8E6E4F] text-white shadow-sm' : 'text-stone-500 hover:text-stone-700' }}">ID</a>
-                            <a href="{{ route('lang.switch', 'en') }}"
-                               class="flex-1 text-center py-1 rounded text-xs font-semibold transition
-                               {{ app()->getLocale() == 'en' ? 'bg-[#8E6E4F] text-white shadow-sm' : 'text-stone-500 hover:text-stone-700' }}">EN</a>
-                        </div>
                     </div>
                     <div class="p-3">
                         <form action="{{ route('logout') }}" method="POST" class="w-full">
                             @csrf
                             <button type="submit"
-                                    class="w-full flex items-center space-x-2 px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg transition font-semibold text-left">
-                                <i class="fas fa-sign-out-alt"></i>
-                                <span>{{ __('Keluar') }}</span>
+                                    class="w-full flex items-center space-x-2 px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg transition font-semibold text-left">
+                                <i class="fas fa-sign-out-alt text-rose-500"></i>
+                                <span>Logout</span>
                             </button>
                         </form>
                     </div>
@@ -161,29 +234,15 @@
             </div>
             @else
             <!-- Guest controls -->
-            <div class="flex items-center space-x-1 text-xs bg-stone-800 rounded-lg p-0.5 border border-stone-700">
-                <a href="{{ route('lang.switch', 'id') }}"
-                   class="px-1.5 py-0.5 rounded transition
-                   {{ app()->getLocale() == 'id' ? 'bg-[#FFC107] text-stone-900 font-bold' : 'text-stone-300 hover:text-white' }}">ID</a>
-                <a href="{{ route('lang.switch', 'en') }}"
-                   class="px-1.5 py-0.5 rounded transition
-                   {{ app()->getLocale() == 'en' ? 'bg-[#FFC107] text-stone-900 font-bold' : 'text-stone-300 hover:text-white' }}">EN</a>
-            </div>
-            <a href="{{ route('login') }}" class="hover:text-stone-300 transition flex items-center text-sm font-semibold">
+            <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg transition flex items-center text-sm font-semibold shadow-sm">
                 <i class="fas fa-sign-in-alt mr-1"></i>
-                <span class="hidden sm:inline">{{ __('Masuk') }}</span>
-            </a>
-            <a href="{{ route('register') }}"
-               class="bg-[#FFC107] hover:bg-[#e0a800] text-stone-900 px-2.5 py-1.5 rounded-lg transition flex items-center text-sm font-semibold shadow-sm">
-                <i class="fas fa-user-plus mr-1 sm:mr-1.5"></i>
-                <span class="hidden sm:inline">{{ __('Daftar') }}</span>
+                <span>Login</span>
             </a>
             @endauth
         </div>
     </nav>
 
     <!-- ======== BODY WRAPPER ======== -->
-    <!-- On desktop: pad-left 256px for sidebar. On mobile: no left pad. -->
     <div id="mainWrapper" class="pt-16 flex-1 flex flex-col min-h-[calc(100vh-4rem)]">
         <main class="flex-1 p-3 sm:p-4 md:p-6 w-full max-w-screen-2xl mx-auto">
 
@@ -204,8 +263,8 @@
             @yield('content')
         </main>
 
-        <footer class="bg-stone-100 text-center p-3 text-stone-500 text-xs border-t border-stone-200 no-print">
-            &copy; {{ date('Y') }} PT. Teladan Prima Agro, Tbk &mdash; {{ __('Sistem Monitoring') }}
+        <footer class="bg-slate-100 text-center p-3 text-slate-500 text-xs border-t border-slate-200 no-print">
+            &copy; {{ date('Y') }} PT. Teladan Prima Agro &mdash; Hak Cipta Dilindungi Undang-Undang.
         </footer>
     </div>
 
@@ -236,11 +295,9 @@
             if (!drawer) return;
             drawer.classList.remove('-translate-x-full');
             if (!isDesktop()) {
-                // Mobile: show backdrop overlay
                 backdrop.classList.remove('hidden');
                 requestAnimationFrame(() => backdrop.classList.replace('opacity-0','opacity-100'));
             } else {
-                // Desktop: push main content to the right
                 if (wrapper) wrapper.style.paddingLeft = '16rem';
                 backdrop.classList.add('hidden');
             }
@@ -264,10 +321,9 @@
             else closeSidebar();
         }
 
-        // Restore saved state (desktop only; mobile always starts closed)
         if (drawer) {
             if (isDesktop() && localStorage.getItem(SIDEBAR_KEY) !== '0') {
-                openSidebar(false); // open by default on desktop
+                openSidebar(false);
             }
         }
 
@@ -275,7 +331,6 @@
         if (closeBtn) closeBtn.addEventListener('click', () => closeSidebar());
         if (backdrop) backdrop.addEventListener('click', () => closeSidebar());
 
-        // On mobile: close after nav link click
         if (drawer) {
             drawer.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
@@ -284,23 +339,41 @@
             });
         }
 
-        // When resizing between mobile/desktop, fix state
         window.addEventListener('resize', () => {
             if (!drawer) return;
             if (isDesktop()) {
                 backdrop.classList.add('hidden');
                 backdrop.classList.replace('opacity-100','opacity-0');
-                // Restore desktop offset if sidebar is open
                 if (!drawer.classList.contains('-translate-x-full')) {
                     if (wrapper) wrapper.style.paddingLeft = '16rem';
                 } else {
                     if (wrapper) wrapper.style.paddingLeft = '0';
                 }
             } else {
-                // Mobile: remove desktop push
                 if (wrapper) wrapper.style.paddingLeft = '0';
             }
         });
+        // --- Collapsible sidebar nav groups ---
+        function setupNavGroup(toggleId, menuId, chevronId) {
+            const toggle  = document.getElementById(toggleId);
+            const menu    = document.getElementById(menuId);
+            const chevron = document.getElementById(chevronId);
+            if (!toggle || !menu) return;
+            toggle.addEventListener('click', () => {
+                const isOpen = menu.style.maxHeight && menu.style.maxHeight !== '0px';
+                if (isOpen) {
+                    menu.style.maxHeight = '0px';
+                    menu.style.opacity   = '0';
+                    if (chevron) chevron.style.transform = 'rotate(0deg)';
+                } else {
+                    menu.style.maxHeight = menu.scrollHeight + 'px';
+                    menu.style.opacity   = '1';
+                    if (chevron) chevron.style.transform = 'rotate(180deg)';
+                }
+            });
+        }
+        setupNavGroup('navMonitoringToggle', 'navMonitoringMenu', 'navMonitoringChevron');
+        setupNavGroup('navAdminToggle',      'navAdminMenu',      'navAdminChevron');
     });
     </script>
 </body>
