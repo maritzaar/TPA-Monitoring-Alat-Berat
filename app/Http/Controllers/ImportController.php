@@ -37,6 +37,17 @@ class ImportController extends Controller
                 'rows_count' => 0
             ]);
             
+            $importSummary = [
+                'filename' => $filename,
+                'sumber' => $request->sumber,
+                'processed_rows' => 0,
+                'valid_rows' => 0,
+                'skipped_rows' => 0,
+                'skip_reasons' => [],
+                'periods' => [],
+                'unique_assets' => 0,
+            ];
+
             if ($request->sumber === 'FUEL') {
                 $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($path);
                 $sheets = Excel::toCollection(new \App\Imports\FuelImportCollection, $filePath);
@@ -69,16 +80,23 @@ class ImportController extends Controller
                 }
 
                 $rowsImported = 0;
+                $rowsSkipped = 0;
+                $skipReasons = [];
+                $periods = [];
+                $unitCodes = [];
                 $insertData = [];
                 $now = now();
 
                 foreach ($transactions as $row) {
+                    $importSummary['processed_rows']++;
                     $unitCodeRaw = $row['unitcode'] ?? null;
                     if (empty($unitCodeRaw) && !empty($row['internalorder'])) {
                         $unitCodeRaw = substr($row['internalorder'], 0, 4);
                     }
 
                     if (empty($unitCodeRaw)) {
+                        $rowsSkipped++;
+                        $skipReasons['Unit code kosong'] = ($skipReasons['Unit code kosong'] ?? 0) + 1;
                         continue;
                     }
 
@@ -104,6 +122,8 @@ class ImportController extends Controller
                     // Parse quantity
                     $qtyRaw = $row['sumoftotalquantity'] ?? $row['totalquantity'] ?? $row['total_quantity'] ?? $row['quantity'] ?? $row['qty'] ?? $row['oftotalquantity'] ?? null;
                     if ($qtyRaw === null || $qtyRaw === '' || $qtyRaw === ' ') {
+                        $rowsSkipped++;
+                        $skipReasons['Quantity kosong'] = ($skipReasons['Quantity kosong'] ?? 0) + 1;
                         continue;
                     }
 
@@ -144,7 +164,15 @@ class ImportController extends Controller
                         'updated_at' => $now
                     ];
                     $rowsImported++;
+                    $periods[$monthVal . ' ' . $yearVal] = true;
+                    $unitCodes[$codeUnit] = true;
                 }
+
+                $importSummary['valid_rows'] = $rowsImported;
+                $importSummary['skipped_rows'] = $rowsSkipped;
+                $importSummary['skip_reasons'] = $skipReasons;
+                $importSummary['periods'] = array_keys($periods);
+                $importSummary['unique_assets'] = count($unitCodes);
 
                 // Bulk insert in chunks of 500
                 if (!empty($insertData)) {
@@ -155,10 +183,14 @@ class ImportController extends Controller
             } else {
                 $countBefore = DataAlat::count();
                 // Hubungkan import log ID ke importir
-                Excel::import(new DataAlatImport($request->sumber, $importLog->id), \Illuminate\Support\Facades\Storage::disk('local')->path($path));
+                $importer = new DataAlatImport($request->sumber, $importLog->id);
+                Excel::import($importer, \Illuminate\Support\Facades\Storage::disk('local')->path($path));
                 
                 $countAfter = DataAlat::count();
                 $rowsImported = $countAfter - $countBefore;
+                $importSummary = array_merge($importSummary, $importer->summary());
+                $importSummary['filename'] = $filename;
+                $importSummary['sumber'] = $request->sumber;
             }
 
             // Update jumlah baris terimport
@@ -169,7 +201,13 @@ class ImportController extends Controller
             // Update summary setelah import
             $this->updateSummary($importLog->id);
 
-            return redirect()->back()->with('success', "Data berhasil diimport! ($rowsImported baris baru ditambahkan)");
+            // Sync master aset terbaru
+            \Illuminate\Support\Facades\Artisan::call('app:migrate-master-asets');
+
+            $message = "Data berhasil diimport! ($rowsImported baris baru ditambahkan)";
+            return redirect()->back()
+                ->with('success', $message)
+                ->with('import_summary', $importSummary);
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal import: ' . $e->getMessage());
         }

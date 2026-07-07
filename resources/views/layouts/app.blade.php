@@ -60,9 +60,9 @@
         <nav class="flex-1 overflow-y-auto p-3 space-y-1">
 
             {{-- Home --}}
-            <a href="{{ route('monitoring.index') }}"
+            <a href="{{ route('home') }}"
                class="flex items-center space-x-3 px-4 py-2.5 rounded-lg transition text-sm font-semibold
-               {{ Route::currentRouteName() === 'monitoring.index'
+               {{ Route::currentRouteName() === 'home'
                    ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600 pl-3'
                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
                 <i class="fas fa-home w-5 text-center text-sm"></i>
@@ -71,7 +71,7 @@
 
             {{-- ── MONITORING GROUP ── --}}
             @php
-                $monitoringRoutes = ['monitoring.index', 'monitoring.laporan'];
+                $monitoringRoutes = ['monitoring.working_hour', 'monitoring.fuel', 'monitoring.working_hour_detail', 'monitoring.fuel_detail'];
                 $monitoringActive = in_array(Route::currentRouteName(), $monitoringRoutes);
             @endphp
             <div>
@@ -95,24 +95,24 @@
                      @if($monitoringActive) style="max-height: 200px;" @endif>
                     <div class="mt-1 ml-4 pl-3 border-l-2 border-slate-200 space-y-2">
 
-                        {{-- Overview --}}
-                        <a href="{{ route('monitoring.index') }}"
+                        {{-- Laporan Working Hour --}}
+                        <a href="{{ route('monitoring.working_hour') }}"
                            class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
-                                  {{ Route::currentRouteName() === 'monitoring.index'
+                                  {{ in_array(Route::currentRouteName(), ['monitoring.working_hour', 'monitoring.working_hour_detail'])
                                       ? 'bg-blue-600 text-white shadow-sm'
                                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                            <i class="fas fa-th-large w-4 text-center"></i>
-                            <span>Overview</span>
+                            <i class="fas fa-clock w-4 text-center"></i>
+                            <span>Laporan Working Hour</span>
                         </a>
 
-                        {{-- Laporan --}}
-                        <a href="{{ route('monitoring.laporan') }}"
+                        {{-- Laporan Fuel --}}
+                        <a href="{{ route('monitoring.fuel') }}"
                            class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
-                                  {{ Route::currentRouteName() === 'monitoring.laporan'
+                                  {{ in_array(Route::currentRouteName(), ['monitoring.fuel', 'monitoring.fuel_detail'])
                                       ? 'bg-blue-600 text-white shadow-sm'
                                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                            <i class="fas fa-file-invoice w-4 text-center"></i>
-                            <span>Laporan</span>
+                            <i class="fas fa-gas-pump w-4 text-center"></i>
+                            <span>Laporan Fuel</span>
                         </a>
 
                     </div>

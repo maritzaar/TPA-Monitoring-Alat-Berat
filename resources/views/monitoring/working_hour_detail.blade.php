@@ -18,7 +18,7 @@
                 </p>
             @endif
         </div>
-        <a href="{{ route('monitoring.index') }}?bulan={{ $bulan }}&tahun={{ $tahun }}"
+        <a href="{{ route('monitoring.working_hour') }}?bulan={{ $bulan }}&tahun={{ $tahun }}"
            class="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-semibold shadow-sm inline-flex items-center justify-center">
             <i class="fas fa-arrow-left mr-2"></i> {{ __('Kembali') }}
         </a>
@@ -43,8 +43,6 @@
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Waktu Operasi') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Waktu Idle') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('% Idle') }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Bahan Bakar') }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Laju Bakar') }}</th>
                 </tr>
             </thead>
             <tbody class="bg-white divide-y divide-slate-100">
@@ -70,8 +68,6 @@
                             {{ number_format($item->persen_idle ?? 0, 1) }}%
                         </span>
                     </td>
-                    <td class="px-4 py-3 text-sm text-slate-700 font-semibold whitespace-nowrap">{{ number_format($item->total_bahan_bakar ?? 0, 0) }} <span class="text-slate-400 font-normal">L</span></td>
-                    <td class="px-4 py-3 text-sm text-slate-700 font-semibold whitespace-nowrap">{{ number_format($item->laju_bakar ?? 0, 2) }} <span class="text-slate-400 font-normal">L/h</span></td>
                 </tr>
                 @empty
                 <tr>
@@ -100,10 +96,6 @@
             <div>
                 <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Rata-rata % Idle') }}</p>
                 <p class="text-lg font-bold text-slate-800 mt-1">{{ number_format($data->avg('persen_idle') ?? 0, 1) }}%</p>
-            </div>
-            <div>
-                <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Total Bahan Bakar') }}</p>
-                <p class="text-lg font-bold text-slate-800 mt-1">{{ number_format($data->sum('total_bahan_bakar') ?? 0, 0) }} L</p>
             </div>
         </div>
     </div>

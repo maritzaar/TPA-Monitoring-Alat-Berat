@@ -41,6 +41,54 @@
         </form>
     </div>
 
+    @if(session('import_summary'))
+        @php($summary = session('import_summary'))
+        <div class="border border-emerald-100 bg-emerald-50/60 rounded-xl p-4 sm:p-5">
+            <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+                <div>
+                    <p class="text-xs font-bold text-emerald-700 uppercase tracking-wider">{{ __('Ringkasan Import Terakhir') }}</p>
+                    <h3 class="text-lg font-bold text-slate-800 mt-1">{{ $summary['filename'] ?? '-' }}</h3>
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        <span class="px-2.5 py-1 rounded-full bg-white border border-emerald-100 text-emerald-800 text-xs font-bold">{{ $summary['sumber'] ?? '-' }}</span>
+                        @foreach(($summary['periods'] ?? []) as $period)
+                            <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-semibold">{{ $period }}</span>
+                        @endforeach
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-full lg:min-w-[520px]">
+                    <div class="bg-white border border-slate-100 rounded-lg p-3">
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">{{ __('Baris Dibaca') }}</p>
+                        <p class="text-xl font-bold text-slate-800">{{ number_format($summary['processed_rows'] ?? 0) }}</p>
+                    </div>
+                    <div class="bg-white border border-slate-100 rounded-lg p-3">
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">{{ __('Valid') }}</p>
+                        <p class="text-xl font-bold text-emerald-700">{{ number_format($summary['valid_rows'] ?? 0) }}</p>
+                    </div>
+                    <div class="bg-white border border-slate-100 rounded-lg p-3">
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">{{ __('Dilewati') }}</p>
+                        <p class="text-xl font-bold text-amber-700">{{ number_format($summary['skipped_rows'] ?? 0) }}</p>
+                    </div>
+                    <div class="bg-white border border-slate-100 rounded-lg p-3">
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">{{ __('Aset Unik') }}</p>
+                        <p class="text-xl font-bold text-blue-700">{{ number_format($summary['unique_assets'] ?? 0) }}</p>
+                    </div>
+                </div>
+            </div>
+            @if(!empty($summary['skip_reasons']))
+                <div class="mt-4 bg-white border border-amber-100 rounded-lg p-3">
+                    <p class="text-xs font-bold text-amber-800 mb-2">{{ __('Alasan Baris Dilewati') }}</p>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($summary['skip_reasons'] as $reason => $count)
+                            <span class="px-2.5 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-100 text-xs font-semibold">
+                                {{ $reason }}: {{ number_format($count) }}
+                            </span>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+        </div>
+    @endif
+
     <!-- Riwayat Unggah File -->
     <div class="pt-2">
         <h3 class="text-md font-bold mb-4 text-slate-700 flex items-center">

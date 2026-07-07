@@ -13,6 +13,11 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
 {
     protected $sumber;
     protected $importLogId;
+    protected int $processedRows = 0;
+    protected int $validRows = 0;
+    protected array $skipReasons = [];
+    protected array $periods = [];
+    protected array $assetIds = [];
 
     public function __construct($sumber = 'CATERPILLAR', $importLogId = null)
     {
@@ -22,6 +27,8 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
 
     public function model(array $row)
     {
+        $this->processedRows++;
+
         // Debug logging for the first row to trace keys and values
         static $logged = false;
         if (!$logged) {
@@ -33,6 +40,7 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
         // Ambil ID Aset dengan fallback ke English dan custom/SAP headers
         $idAset = $row['id_aset'] ?? $row['id_asset'] ?? $row['idasset'] ?? $row['id_asset_id'] ?? $row['equipment_id'] ?? $row['asset_id'] ?? $row['code_unit'] ?? $row['internal_order'] ?? $row['serial_number'] ?? $row['nomor_seri'] ?? null;
         if (empty($idAset)) {
+            $this->recordSkip('ID aset kosong');
             return null;
         }
 
@@ -47,9 +55,11 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
                 $tanggal = $this->parseDate($tanggalRaw);
             }
             if (!$tanggal) {
+                $this->recordSkip('Tanggal tidak valid');
                 return null;
             }
         } catch (\Exception $e) {
+            $this->recordSkip('Tanggal tidak valid');
             return null;
         }
 
@@ -84,6 +94,10 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
         if ($idAset && strlen($idAset) > 50) {
             $idAset = substr($idAset, 0, 50);
         }
+
+        $this->validRows++;
+        $this->periods[$bulan . ' ' . $tahun] = true;
+        $this->assetIds[$idAset] = true;
 
         $nomorSeri = $row['nomor_seri_aset'] ?? $row['nomor_seri'] ?? $row['serial_number'] ?? $row['asset_serial_number'] ?? $idAset;
         if ($nomorSeri && strlen($nomorSeri) > 50) {
@@ -177,6 +191,23 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
             'sumber_data' => $this->sumber,
             'import_log_id' => $this->importLogId,
         ]);
+    }
+
+    private function recordSkip(string $reason): void
+    {
+        $this->skipReasons[$reason] = ($this->skipReasons[$reason] ?? 0) + 1;
+    }
+
+    public function summary(): array
+    {
+        return [
+            'processed_rows' => $this->processedRows,
+            'valid_rows' => $this->validRows,
+            'skipped_rows' => max(0, $this->processedRows - $this->validRows),
+            'skip_reasons' => $this->skipReasons,
+            'periods' => array_keys($this->periods),
+            'unique_assets' => count($this->assetIds),
+        ];
     }
 
     private function parseNumeric($value)

@@ -7,7 +7,7 @@
 
     {{-- ====== FILTER BAR ====== --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
-        <form action="{{ route('monitoring.laporan') }}" method="GET">
+        <form action="{{ route('monitoring.fuel') }}" method="GET">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
                 {{-- Bulan --}}
                 <div>
@@ -81,7 +81,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
-                <a href="{{ route('monitoring.laporan') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
+                <a href="{{ route('monitoring.fuel') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
                     {{ __('Reset Filter') }}
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
@@ -98,8 +98,8 @@
                 <i class="fas fa-file-invoice-dollar text-xl text-indigo-400"></i>
             </div>
             <div>
-                <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Operational & Fuel Reports</p>
-                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsolidasi Jam Kerja & Bahan Bakar</h2>
+                <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Fuel Reports</p>
+                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsumsi Bahan Bakar</h2>
             </div>
             <div class="ml-auto text-right hidden sm:block">
                 <p class="text-xs text-indigo-300">Periode</p>
@@ -122,23 +122,7 @@
             </p>
         </div>
 
-        {{-- Total Kerja --}}
-        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 p-4 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Jam Kerja</p>
-            <p class="text-2xl font-bold text-slate-800 mt-1">
-                {{ number_format($stats->total_kerja, 1) }}
-                <span class="text-xs font-normal text-slate-400 ml-1">Jam</span>
-            </p>
-        </div>
 
-        {{-- Avg Idle --}}
-        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-amber-500 p-4 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Rata-Rata Idle</p>
-            <p class="text-2xl font-bold text-slate-800 mt-1">
-                {{ number_format($stats->avg_idle, 1) }}
-                <span class="text-xs font-normal text-slate-400 ml-1">%</span>
-            </p>
-        </div>
 
         {{-- Total Fuel --}}
         <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 p-4 shadow-sm">
@@ -150,30 +134,27 @@
         </div>
     </div>
 
-    {{-- ====== CHART SECTION ====== --}}
-    @if($reports->isNotEmpty())
-    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
-            <i class="fas fa-chart-line text-indigo-600 mr-2"></i> Perbandingan Jam Kerja (Kiri) & Pengisian Bahan Bakar Aktual (Kanan)
-        </h3>
-        <div class="relative h-72 sm:h-96">
-            <canvas id="consolidatedReportChart"></canvas>
-        </div>
-    </div>
-    @endif
+
 
     {{-- ====== DATA TABLE ====== --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
         <div class="border-b border-slate-100 pb-3 mb-4 flex flex-wrap justify-between items-center gap-2">
             <div>
                 <h3 class="text-md font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-list-check text-indigo-600 mr-2"></i> Rincian Kinerja Operasional & Konsumsi Solar Aset
+                    <i class="fas fa-list-check text-indigo-600 mr-2"></i> Rincian Konsumsi Solar Aset
                 </h3>
-                <p class="text-xs text-slate-450 mt-0.5">Gabungan data telemetri (Jam Kerja, Jam Operasi, Idle) & transaksi pengisian solar riil</p>
+                <p class="text-xs text-slate-450 mt-0.5">Data transaksi pengisian solar riil</p>
             </div>
-            <div class="text-right">
-                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-2.5 py-1 rounded-full border border-slate-200 shadow-sm">
-                    {{ number_format($reports->count()) }} records found
+            <div class="text-right flex items-center justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="fas fa-search text-xs"></i>
+                    </div>
+                    <input type="text" id="assetSearchInput" placeholder="Cari data..."
+                           class="pl-8 pr-3 py-1.5 w-full sm:w-48 border border-slate-300 rounded-lg text-sm bg-slate-50 text-slate-800 placeholder-slate-400 focus:ring-blue-600 focus:border-blue-600 focus:outline-none transition-all">
+                </div>
+                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm whitespace-nowrap">
+                    {{ number_format($reports->count()) }} records
                 </span>
             </div>
         </div>
@@ -188,11 +169,7 @@
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Area</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">IO Group</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Work (hrs)</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Op (hrs)</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Idle (hrs)</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Idle</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Tel (L)</th>
+
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Akt (L)</th>
                     </tr>
                 </thead>
@@ -205,19 +182,10 @@
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->area ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_internal_order ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_kerja, 1) }}</td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_operasi, 1) }}</td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_idle, 1) }}</td>
-                        <td class="px-3 py-2.5 text-right">
-                            <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold
-                                @if(($row->avg_idle ?? 0) < 30) bg-emerald-50 text-emerald-800
-                                @elseif(($row->avg_idle ?? 0) < 50) bg-amber-50 text-amber-800
-                                @else bg-rose-50 text-rose-800 @endif">
-                                {{ number_format($row->avg_idle ?? 0, 1) }}%
-                            </span>
-                        </td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-500">{{ number_format($row->telemetry_fuel, 0) }}</td>
                         <td class="px-3 py-2.5 text-right font-mono text-xs font-bold text-emerald-600">{{ number_format($row->actual_fuel, 0) }}</td>
+                        <td class="px-3 py-2.5 text-right">
+                            <a href="{{ route('monitoring.fuel_detail', $row->id_aset) }}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> Detail</a>
+                        </td>
                     </tr>
                     @empty
                     <tr>
@@ -234,77 +202,7 @@
 
 </div>
 
-@if($reports->isNotEmpty())
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const labels = @json($reports->pluck('id_aset'));
-    const workHours = @json($reports->pluck('total_kerja'));
-    const idleHours = @json($reports->pluck('total_idle'));
-    const actualFuel = @json($reports->pluck('actual_fuel'));
 
-    new Chart(document.getElementById('consolidatedReportChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Jam Kerja (Hrs)',
-                    data: workHours,
-                    backgroundColor: 'rgba(79, 70, 229, 0.75)',
-                    borderColor: '#4f46e5',
-                    borderWidth: 1,
-                    yAxisID: 'y',
-                    borderRadius: 3
-                },
-                {
-                    label: 'Jam Idle (Hrs)',
-                    data: idleHours,
-                    backgroundColor: 'rgba(245, 158, 11, 0.75)',
-                    borderColor: '#d97706',
-                    borderWidth: 1,
-                    yAxisID: 'y',
-                    borderRadius: 3
-                },
-                {
-                    label: 'BBM Aktual (L)',
-                    data: actualFuel,
-                    type: 'line',
-                    borderColor: '#10b981',
-                    backgroundColor: '#10b981',
-                    borderWidth: 2,
-                    pointRadius: 3,
-                    yAxisID: 'y1',
-                    fill: false
-                }
-            ]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                mode: 'index',
-                intersect: false,
-            },
-            scales: {
-                y: {
-                    type: 'linear',
-                    display: true,
-                    position: 'left',
-                    title: { display: true, text: 'Hours', font: { weight: 'bold' } }
-                },
-                y1: {
-                    type: 'linear',
-                    display: true,
-                    position: 'right',
-                    grid: { drawOnChartArea: false },
-                    title: { display: true, text: 'Liters', font: { weight: 'bold' } }
-                }
-            }
-        }
-    });
-});
-</script>
-@endif
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -469,6 +367,22 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('assetSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const q = this.value.toLowerCase().trim();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                if (row.cells.length < 2) return;
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(q) ? '' : 'none';
+            });
+        });
+    }
 });
 </script>
 @endsection

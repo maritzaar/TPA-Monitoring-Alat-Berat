@@ -8,8 +8,8 @@ use App\Http\Controllers\Auth\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect()->route('monitoring.index');
-});
+    return view('home');
+})->middleware('auth')->name('home');
 
 // Language Switcher
 Route::get('lang/{locale}', function ($locale) {
@@ -34,11 +34,15 @@ Route::middleware('auth')->group(function () {
     Route::post('profile', [ProfileController::class, 'update'])->name('profile.update');
 
     // Monitoring
-    Route::get('monitoring', [MonitoringController::class, 'index'])->name('monitoring.index');
-    Route::get('monitoring/chart', [MonitoringController::class, 'chart'])->name('monitoring.chart');
-    Route::get('monitoring/detail/{idAset}', [MonitoringController::class, 'detail'])->name('monitoring.detail');
+    Route::get('monitoring/working-hour', [MonitoringController::class, 'workingHour'])->name('monitoring.working_hour');
+    Route::get('monitoring/working-hour/detail/{idAset}', [MonitoringController::class, 'workingHourDetail'])->name('monitoring.working_hour_detail');
+    Route::get('monitoring/fuel', [MonitoringController::class, 'fuel'])->name('monitoring.fuel');
+    Route::get('monitoring/fuel/detail/{idAset}', [MonitoringController::class, 'fuelDetail'])->name('monitoring.fuel_detail');
     Route::get('monitoring/export', [MonitoringController::class, 'export'])->name('monitoring.export');
-    Route::get('monitoring/laporan', [MonitoringController::class, 'laporan'])->name('monitoring.laporan');
+
+    // Fallback for old routes
+    Route::get('monitoring', function() { return redirect()->route('monitoring.working_hour'); })->name('monitoring.index');
+    Route::get('monitoring/laporan', function() { return redirect()->route('monitoring.working_hour'); })->name('monitoring.laporan');
 
     // Admin Routes
     Route::middleware('role:admin')->group(function () {
