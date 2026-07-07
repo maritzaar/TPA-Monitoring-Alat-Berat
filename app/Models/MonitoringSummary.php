@@ -28,3 +28,5 @@ class MonitoringSummary extends Model
         return $this->tanggal->year;
     }
 }
+
+// test
