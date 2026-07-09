@@ -26,11 +26,10 @@ class ImportController extends Controller
         ]);
 
         try {
-            set_time_limit(120); // Perpanjang batas waktu untuk file besar
+            set_time_limit(120); // max upload time 2 minutes
             $filename = $request->file('file')->getClientOriginalName();
             $path = $request->file('file')->storeAs('debug', 'debug_upload.xlsx');
             
-            // Buat log import terlebih dahulu untuk mendapatkan ID-nya
             $importLog = \App\Models\ImportLog::create([
                 'filename' => $filename,
                 'sumber' => $request->sumber,
@@ -109,7 +108,7 @@ class ImportController extends Controller
                     $codeUnit = $unitCodeClean;
                     $codeCompany = $companyCode;
 
-                    // Match and resolve formulas using PHP lookup dictionary
+                    // Match and resolve formulas
                     if (isset($unitMap[$unitCodeClean])) {
                         $ref = $unitMap[$unitCodeClean];
                         $groupAset = $ref['group'] ?? $groupAset;
@@ -134,11 +133,9 @@ class ImportController extends Controller
                     $quantity = is_numeric($qtyRaw) ? (float) $qtyRaw : 0;
 
                     // Parse Year and Month
-                    // Normalisasi nama bulan ke format penuh (January, February, dst.)
-                    // agar konsisten dengan data telemetri yang disimpan oleh Carbon->format('F')
                     $yearVal = intval($row['year'] ?? now()->year);
                     $monthRaw = trim($row['monthname'] ?? $row['month_name'] ?? $row['month'] ?? now()->format('F'));
-                    // Konversi ke format full month name jika berupa singkatan (Jan -> January)
+                    
                     try {
                         $monthVal = \Carbon\Carbon::parse('1 ' . $monthRaw . ' ' . $yearVal)->format('F');
                     } catch (\Exception $e) {
@@ -182,7 +179,6 @@ class ImportController extends Controller
                 }
             } else {
                 $countBefore = DataAlat::count();
-                // Hubungkan import log ID ke importir
                 $importer = new DataAlatImport($request->sumber, $importLog->id);
                 Excel::import($importer, \Illuminate\Support\Facades\Storage::disk('local')->path($path));
                 
@@ -192,16 +188,14 @@ class ImportController extends Controller
                 $importSummary['filename'] = $filename;
                 $importSummary['sumber'] = $request->sumber;
             }
-
-            // Update jumlah baris terimport
+            
             $importLog->update([
                 'rows_count' => $rowsImported
             ]);
 
-            // Update summary setelah import
             $this->updateSummary($importLog->id);
 
-            // Sync master aset terbaru
+            // Sync master aset 
             \Illuminate\Support\Facades\Artisan::call('app:migrate-master-asets');
 
             $message = "Data berhasil diimport! ($rowsImported baris baru ditambahkan)";
@@ -221,13 +215,13 @@ class ImportController extends Controller
             // Hapus data alat berat yang terkait dengan file ini
             DataAlat::where('import_log_id', $log->id)->delete();
             
-            // Hapus juga fuel transactions yang terkait (jika tipe FUEL)
+            // Hapus fuel transactions yang terkait 
             \App\Models\FuelTransaction::where('import_log_id', $log->id)->delete();
             
             $filename = $log->filename;
             $log->delete();
 
-            // Kosongkan dan hitung ulang summary stats
+            // Hitung ulang summary stats
             MonitoringSummary::truncate();
             $this->updateSummary();
 

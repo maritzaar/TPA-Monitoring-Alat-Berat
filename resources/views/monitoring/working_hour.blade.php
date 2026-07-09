@@ -184,6 +184,7 @@
                 <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
                     <tr>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aset ID</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tanggal</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Model</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
@@ -193,12 +194,14 @@
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Op (hrs)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Idle (hrs)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Idle</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-slate-100">
                     @forelse($reports as $row)
                     <tr class="hover:bg-slate-50/50 transition">
                         <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs font-mono">{{ $bulan }} {{ $tahun }}</td>
                         <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->model }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>

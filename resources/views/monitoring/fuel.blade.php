@@ -8,12 +8,12 @@
     {{-- ====== FILTER BAR ====== --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
         <form action="{{ route('monitoring.fuel') }}" method="GET">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-end">
                 {{-- Bulan --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
                     <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>-- {{ __('Semua Bulan') }} --</option>
+                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>{{ __('Semua Bulan') }}</option>
                         @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
                             <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
                         @endforeach
@@ -23,7 +23,8 @@
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
                     <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>-- {{ __('Semua Tahun') }} --</option>
+
+                    <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>{{ __('Semua Tahun') }}</option>
                         @for($i = 2023; $i <= date('Y') + 1; $i++)
                             <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
                         @endfor
@@ -59,26 +60,6 @@
                         @endforeach
                     </select>
                 </div>
-                {{-- IO Group --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">IO Group</label>
-                    <select name="group_internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua IO Group') }} --</option>
-                        @foreach($filterIoGroups as $ig)
-                            <option value="{{ $ig }}" {{ $group_internal_order == $ig ? 'selected' : '' }}>{{ $ig }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Internal Order --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Internal Order</label>
-                    <select name="internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua IO') }} --</option>
-                        @foreach($filterInternalOrders as $io)
-                            <option value="{{ $io }}" {{ $internal_order == $io ? 'selected' : '' }}>{{ $io }}</option>
-                        @endforeach
-                    </select>
-                </div>
             </div>
             <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
                 <a href="{{ route('monitoring.fuel') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
@@ -102,7 +83,7 @@
             </div>
             <div>
                 <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Fuel Reports</p>
-                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsumsi Bahan Bakar</h2>
+                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsumsi Solar</h2>
             </div>
             <div class="ml-auto text-right hidden sm:block">
                 <p class="text-xs text-indigo-300">Periode</p>
@@ -168,12 +149,10 @@
                     <tr>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aset ID</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
-                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Model</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Area</th>
-                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">IO Group</th>
-
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Akt (L)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-slate-100">
@@ -181,10 +160,8 @@
                     <tr class="hover:bg-slate-50/50 transition">
                         <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
                         <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->model }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->area ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_internal_order ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-right font-mono text-xs font-bold text-emerald-600">{{ number_format($row->actual_fuel, 0) }}</td>
                         <td class="px-3 py-2.5 text-right">
                             <a href="{{ route('monitoring.fuel_detail', $row->id_aset) }}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> Detail</a>

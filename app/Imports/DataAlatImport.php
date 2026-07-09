@@ -3,48 +3,94 @@
 namespace App\Imports;
 
 use App\Models\DataAlat;
+use App\Models\MasterAset;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
 use Carbon\Carbon;
 
-class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
+class DataAlatImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading
 {
-    protected $sumber;
-    protected $importLogId;
-    protected int $processedRows = 0;
-    protected int $validRows = 0;
-    protected array $skipReasons = [];
-    protected array $periods = [];
-    protected array $assetIds = [];
+    private string $sumber;
+    private ?int $importLogId;
+    private int $processedRows = 0;
+    private int $validRows = 0;
+    private array $skipReasons = [];
+    private array $periods = [];
+    private array $assetIds = [];
+    private array $assetsMap = [];
 
-    public function __construct($sumber = 'CATERPILLAR', $importLogId = null)
+    public function __construct(string $sumber = 'CATERPILLAR', ?int $importLogId = null)
     {
         $this->sumber = $sumber;
         $this->importLogId = $importLogId;
+
+        // Load master assets to map telemetry metadata
+        try {
+            $masters = MasterAset::all();
+            foreach ($masters as $m) {
+                // Map by full unit code (e.g., E004-BTE)
+                $unitCodeUpper = strtoupper($m->unit_code);
+                $this->assetsMap[$unitCodeUpper] = [
+                    'unit_code' => $m->unit_code,
+                    'group_aset' => $m->group_aset,
+                    'area' => $m->area,
+                    'internal_order' => $m->internal_order,
+                    'group_internal_order' => $m->group_internal_order,
+                    'pt' => $m->pt
+                ];
+
+                // Map by serial number (e.g., LKR00269)
+                if (!empty($m->nomor_seri)) {
+                    $serialUpper = strtoupper($m->nomor_seri);
+                    $this->assetsMap[$serialUpper] = [
+                        'unit_code' => $m->unit_code,
+                        'group_aset' => $m->group_aset,
+                        'area' => $m->area,
+                        'internal_order' => $m->internal_order,
+                        'group_internal_order' => $m->group_internal_order,
+                        'pt' => $m->pt
+                    ];
+                }
+
+                // Map by short name parsed from unit code (e.g. "E004-BTE" -> "BTE")
+                $parts = explode('-', $m->unit_code);
+                $short = strtoupper($parts[1] ?? $parts[0] ?? '');
+                if (!empty($short) && !isset($this->assetsMap[$short])) {
+                    $this->assetsMap[$short] = [
+                        'unit_code' => $m->unit_code,
+                        'group_aset' => $m->group_aset,
+                        'area' => $m->area,
+                        'internal_order' => $m->internal_order,
+                        'group_internal_order' => $m->group_internal_order,
+                        'pt' => $m->pt
+                    ];
+                }
+            }
+        } catch (\Exception $e) {
+            // Silence if table is not migrated or migrated on-the-fly
+        }
     }
 
     public function model(array $row)
     {
         $this->processedRows++;
 
-        // Debug logging for the first row to trace keys and values
-        static $logged = false;
-        if (!$logged) {
-            \Illuminate\Support\Facades\Log::info('Excel Row Keys: ' . json_encode(array_keys($row)));
-            \Illuminate\Support\Facades\Log::info('Excel Row Sample: ' . json_encode($row));
-            $logged = true;
-        }
-
-        // Ambil ID Aset dengan fallback ke English dan custom/SAP headers
-        $idAset = $row['id_aset'] ?? $row['id_asset'] ?? $row['idasset'] ?? $row['id_asset_id'] ?? $row['equipment_id'] ?? $row['asset_id'] ?? $row['code_unit'] ?? $row['internal_order'] ?? $row['serial_number'] ?? $row['nomor_seri'] ?? null;
-        if (empty($idAset)) {
-            $this->recordSkip('ID aset kosong');
+        // 1. Skip error rows (containing insufficient runtime, invalid value, etc.)
+        $keteranganLower = strtolower($row['keterangan'] ?? '');
+        if (empty($keteranganLower) ||
+            str_contains($keteranganLower, 'insufficient') ||
+            str_contains($keteranganLower, 'invalid') ||
+            str_contains($keteranganLower, 'missing') ||
+            str_contains($keteranganLower, 'value includes') ||
+            str_contains($keteranganLower, 'accumulated')
+        ) {
+            $this->recordSkip('Baris error/keterangan tidak valid');
             return null;
         }
 
-        // Parse tanggal dengan fallback ke year/month
+        // 2. Parse date with fallbacks
         try {
             $tanggalRaw = $row['tanggal'] ?? $row['date'] ?? $row['time'] ?? $row['timestamp'] ?? $row['tgl'] ?? null;
             if (empty($tanggalRaw) && (!empty($row['tahun']) || !empty($row['year'])) && (!empty($row['bulan']) || !empty($row['month']))) {
@@ -66,117 +112,88 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
         $bulan = $tanggal->format('F');
         $tahun = $tanggal->year;
 
-        $zonaWaktu = $row['offset_zona_waktu'] ?? $row['zona_waktu'] ?? $row['time_zone'] ?? null;
-        $namaZona = $row['nama_tampilan_zona_waktu'] ?? $row['nama_zona'] ?? null;
-
-        if ($zonaWaktu && !is_numeric($zonaWaktu) && str_contains($zonaWaktu, '/')) {
-            try {
-                $tz = new \DateTimeZone($zonaWaktu);
-                $namaZona = $zonaWaktu;
-                $dateTime = new \DateTime('now', $tz);
-                $zonaWaktu = $dateTime->format('P');
-            } catch (\Exception $e) {
-                // fallback if timezone parsing fails
-            }
+        // 3. Columns shift left by 1 column for healthy rows, map them correctly!
+        $keteranganVal = $row['keterangan'] ?? null; // Asset Name, e.g. "BTE 01"
+        $serialVal = $row['id_aset'] ?? null; // Serial Number, e.g. "LKR00269"
+        $buatanVal = $row['nomor_seri_aset'] ?? 'CAT'; // Manufacturer, e.g. "CAT"
+        $modelVal = $row['buatan'] ?? 'UNKNOWN'; // Model, e.g. "320-05GX"
+        $meteranJam = $this->parseNumeric($row['model'] ?? null); // Hour Meter, e.g. 3437.59
+        
+        $waktuTerakhir = $this->parseDateTime($row['meteran_jam_jam'] ?? null); // Last reported meter time
+        $laporanPemanfaatan = $this->parseDateTime($row['waktu_terakhir_dilaporkan_meteran_jam'] ?? null); // Utilization report time
+        
+        $zonaWaktu = $row['laporan_pemanfaatan_terakhir'] ?? null; // timezone offset
+        $namaZona = $row['offset_zona_waktu'] ?? null; // timezone name
+        $waktuOperasi = $this->parseNumeric($row['nama_tampilan_zona_waktu'] ?? null); // Operating Hours
+        $waktuIdle = $this->parseNumeric($row['waktu_operasi_jam'] ?? null); // Idle Hours
+        $waktuKerja = $this->parseNumeric($row['waktu_idle_jam'] ?? null); // Working Hours
+        
+        $persenIdle = $this->parseNumeric($row['waktu_kerja_jam'] ?? null); // Idle %
+        if (is_null($persenIdle) && $waktuOperasi > 0) {
+            $persenIdle = ($waktuIdle / $waktuOperasi) * 100;
+        }
+        
+        $totalBahanBakar = $this->parseNumeric($row['idle'] ?? null); // Total Fuel
+        $lajuBakar = $this->parseNumeric($row['total_bahan_bakar_yang_terbakar_l'] ?? null); // Average Fuel Rate
+        if (is_null($lajuBakar) && $totalBahanBakar && $waktuOperasi > 0) {
+            $lajuBakar = $totalBahanBakar / $waktuOperasi;
         }
 
-        if ($zonaWaktu && strlen($zonaWaktu) > 10) {
-            if (!$namaZona) {
-                $namaZona = $zonaWaktu;
-            }
-            $zonaWaktu = substr($zonaWaktu, 0, 10);
+        // 4. Resolve unit code (id_aset) and metadata (Group, Area, IO) using assetsMap
+        $short = '';
+        if ($keteranganVal) {
+            $parts = explode(' ', trim($keteranganVal));
+            $short = strtoupper($parts[0] ?? '');
         }
 
-        if ($namaZona && strlen($namaZona) > 50) {
-            $namaZona = substr($namaZona, 0, 50);
+        $mapped = null;
+        $serialUpper = $serialVal ? strtoupper($serialVal) : '';
+        
+        if (!empty($serialUpper) && isset($this->assetsMap[$serialUpper])) {
+            $mapped = $this->assetsMap[$serialUpper];
+        } elseif (!empty($short) && isset($this->assetsMap[$short])) {
+            $mapped = $this->assetsMap[$short];
         }
 
-        if ($idAset && strlen($idAset) > 50) {
-            $idAset = substr($idAset, 0, 50);
+        if ($mapped) {
+            $idAset = $mapped['unit_code'];
+            $groupAset = $mapped['group_aset'];
+            $area = $mapped['area'];
+            $internalOrder = $mapped['internal_order'];
+            $groupInternalOrder = $mapped['group_internal_order'];
+            $pt = $mapped['pt'];
+        } else {
+            // Fallback
+            $idAset = $serialVal ?? $keteranganVal ?? 'UNKNOWN';
+            $groupAset = null;
+            $area = null;
+            $internalOrder = null;
+            $groupInternalOrder = null;
+            $pt = $row['pt'] ?? null;
         }
 
         $this->validRows++;
         $this->periods[$bulan . ' ' . $tahun] = true;
         $this->assetIds[$idAset] = true;
 
-        $nomorSeri = $row['nomor_seri_aset'] ?? $row['nomor_seri'] ?? $row['serial_number'] ?? $row['asset_serial_number'] ?? $idAset;
-        if ($nomorSeri && strlen($nomorSeri) > 50) {
-            $nomorSeri = substr($nomorSeri, 0, 50);
-        }
-
-        $buatan = $row['buatan'] ?? $row['make'] ?? $row['manufacturer'] ?? 'CAT';
-        if ($buatan && strlen($buatan) > 50) {
-            $buatan = substr($buatan, 0, 50);
-        }
-
-        $model = $row['model'] ?? $row['equipment_model'] ?? $row['group_d'] ?? $row['group_desc'] ?? $row['nama_alat'] ?? $row['namaalat'] ?? 'UNKNOWN';
-        if ($model && strlen($model) > 50) {
-            $model = substr($model, 0, 50);
-        }
-
-        $groupAset = $row['group'] ?? $row['group_aset'] ?? null;
-        if ($groupAset && strlen($groupAset) > 50) {
-            $groupAset = substr($groupAset, 0, 50);
-        }
-
-        $area = $row['area'] ?? null;
-        if ($area && strlen($area) > 50) {
-            $area = substr($area, 0, 50);
-        }
-
-        $pt = $row['pt'] ?? $row['comp_name'] ?? $row['compname'] ?? $row['comp_cod'] ?? $row['compcod'] ?? $row['companycode'] ?? $row['company_code'] ?? null;
-        if ($pt && strlen($pt) > 50) {
-            $pt = substr($pt, 0, 50);
-        }
-
-        $internalOrder = $row['internal_order'] ?? $row['internal_ord'] ?? $row['internalord'] ?? null;
-        if ($internalOrder && strlen($internalOrder) > 50) {
-            $internalOrder = substr($internalOrder, 0, 50);
-        }
-
-        $groupInternalOrder = $row['group_internal_order'] ?? $row['io_group'] ?? $row['iogroup'] ?? null;
-        if ($groupInternalOrder && strlen($groupInternalOrder) > 50) {
-            $groupInternalOrder = substr($groupInternalOrder, 0, 50);
-        }
-
-        $groupDesc = $row['group_desc'] ?? $row['io_desc'] ?? $row['iodesc'] ?? null;
-        if ($groupDesc && strlen($groupDesc) > 100) {
-            $groupDesc = substr($groupDesc, 0, 100);
-        }
-
-        $waktuOperasi = $this->parseNumeric($row['waktu_operasi_jam'] ?? $row['waktu_operasi'] ?? $row['operating_hours'] ?? $row['operating_time'] ?? $row['operating_time_hours'] ?? $row['quantity_operasi'] ?? $row['opr'] ?? null);
-        $waktuIdle = $this->parseNumeric($row['waktu_idle_jam'] ?? $row['waktu_idle'] ?? $row['idle_hours'] ?? $row['idle_time'] ?? $row['idle_time_hours'] ?? $row['quantity_idle'] ?? $row['idle'] ?? null);
-        $waktuKerja = $this->parseNumeric($row['waktu_kerja_jam'] ?? $row['waktu_kerja'] ?? $row['working_hours'] ?? $row['working_time'] ?? $row['working_time_hours'] ?? $row['quantity_kerja'] ?? $row['work_hrs'] ?? $row['workhrs'] ?? null);
-
-        $persenIdle = $this->parseNumeric($row['_idle'] ?? $row['persen_idle'] ?? $row['idle_percent'] ?? $row['idle_percentage'] ?? $row['rasio'] ?? $row['ratio'] ?? null);
-        if (is_null($persenIdle) && $waktuOperasi > 0) {
-            $persenIdle = ($waktuIdle / $waktuOperasi) * 100;
-        }
-
-        $totalBahanBakar = $this->parseNumeric($row['total_bahan_bakar_yang_terbakar_l'] ?? $row['total_bahan_bakar'] ?? $row['total_fuel_burned'] ?? $row['total_fuel_burned_l'] ?? $row['fuel_burned'] ?? $row['actul'] ?? $row['actual'] ?? $row['total_fuel'] ?? $row['totalfuel'] ?? $row['fueling'] ?? null);
-        $lajuBakar = $this->parseNumeric($row['laju_total_pembakaran_bahan_bakar_l_jam'] ?? $row['laju_bakar'] ?? $row['average_fuel_rate'] ?? $row['average_fuel_rate_l_hr'] ?? $row['fuel_rate'] ?? null);
-        if (is_null($lajuBakar) && $totalBahanBakar && $waktuOperasi > 0) {
-            $lajuBakar = $totalBahanBakar / $waktuOperasi;
-        }
-
         return new DataAlat([
             'tahun' => $tahun,
             'bulan' => $bulan,
             'tanggal' => $tanggal,
-            'keterangan' => $row['keterangan'] ?? null,
+            'keterangan' => $keteranganVal,
             'id_aset' => $idAset,
-            'nomor_seri' => $nomorSeri,
-            'buatan' => $buatan,
-            'model' => $model,
+            'nomor_seri' => $serialVal,
+            'buatan' => $buatanVal,
+            'model' => $modelVal,
             'group_aset' => $groupAset,
             'area' => $area,
             'pt' => $pt,
             'internal_order' => $internalOrder,
             'group_internal_order' => $groupInternalOrder,
-            'group_desc' => $groupDesc,
-            'meteran_jam' => $this->parseNumeric($row['meteran_jam_jam'] ?? $row['meteran_jam'] ?? $row['hour_meter'] ?? $row['hour_meter_hours'] ?? $row['output'] ?? null),
-            'waktu_terakhir' => $this->parseDateTime($row['waktu_terakhir_dilaporkan_meteran_jam'] ?? $row['waktu_terakhir'] ?? $row['last_reported_time'] ?? $row['last_reported'] ?? null),
-            'laporan_pemanfaatan' => $this->parseDateTime($row['laporan_pemanfaatan_terakhir'] ?? $row['laporan_pemanfaatan'] ?? null),
+            'group_desc' => $row['group_desc'] ?? null,
+            'meteran_jam' => $meteranJam,
+            'waktu_terakhir' => $waktuTerakhir,
+            'laporan_pemanfaatan' => $laporanPemanfaatan,
             'zona_waktu' => $zonaWaktu,
             'nama_zona' => $namaZona,
             'waktu_operasi' => $waktuOperasi,
@@ -185,9 +202,9 @@ class DataAlatImport implements ToModel, WithHeadingRow, WithChunkReading, WithB
             'persen_idle' => $persenIdle,
             'total_bahan_bakar' => $totalBahanBakar,
             'laju_bakar' => $lajuBakar,
-            'daya_dihasilkan' => $this->parseNumeric($row['daya_dihasilkan_kwh'] ?? $row['daya_dihasilkan'] ?? null),
-            'beban_harian' => $this->parseNumeric($row['beban_harian_rata_rata'] ?? $row['beban_harian'] ?? null),
-            'daya_per_unit' => $this->parseNumeric($row['daya_per_unit_bahan_bakar_kwh_l'] ?? $row['daya_per_unit'] ?? null),
+            'daya_dihasilkan' => $this->parseNumeric($row['laju_total_pembakaran_bahan_bakar_l_jam'] ?? null),
+            'beban_harian' => $this->parseNumeric($row['daya_dihasilkan_kwh'] ?? null),
+            'daya_per_unit' => $this->parseNumeric($row['beban_harian_rata-rata'] ?? null),
             'sumber_data' => $this->sumber,
             'import_log_id' => $this->importLogId,
         ]);

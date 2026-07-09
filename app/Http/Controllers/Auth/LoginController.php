@@ -15,7 +15,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        // Validate inputs as plain text string (not requiring @email format)
+        //(not requiring @email format)
         $credentials = $request->validate([
             'email' => ['required', 'string'],
             'password' => ['required'],

@@ -25,11 +25,22 @@
     </div>
 
     <!-- Informasi Periode -->
-    <div class="bg-emerald-50/55 border border-emerald-100 p-4 rounded-lg mb-6 flex items-center space-x-2">
-        <i class="fas fa-calendar-alt text-emerald-650"></i>
-        <p class="text-sm text-slate-700">
-            {{ __('Data untuk periode:') }} <span class="font-bold text-slate-800">{{ __($bulan) }} {{ $tahun }}</span>
-        </p>
+    <div class="bg-emerald-50/55 border border-emerald-100 p-4 rounded-lg mb-6 flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center space-x-2">
+            <i class="fas fa-calendar-alt text-emerald-650"></i>
+            <p class="text-sm text-slate-700">
+                {{ __('Data untuk periode:') }} <span class="font-bold text-slate-800">{{ __($bulan) }} {{ $tahun }}</span>
+            </p>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-450">
+                <i class="fas fa-search text-xs"></i>
+            </div>
+            <input type="text" id="internalOrderSearchInput" placeholder="Cari Internal Order..."
+                   class="pl-8 pr-3 py-1.5 w-full border border-slate-300 rounded-lg text-sm bg-slate-50 text-slate-800 placeholder-slate-400 focus:ring-emerald-600 focus:border-emerald-600 focus:outline-none transition-all">
+        </div>
     </div>
 
     <!-- Tabel Data -->
@@ -83,4 +94,21 @@
     </div>
     @endif
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('internalOrderSearchInput');
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            const q = this.value.toLowerCase().trim();
+            document.querySelectorAll('table tbody tr').forEach(row => {
+                // If there's no data, skip
+                if (row.cells.length < 2) return;
+                const ioText = row.cells[1].textContent.toLowerCase(); // Column 2 is Internal Order (index 1)
+                row.style.display = ioText.includes(q) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
 @endsection

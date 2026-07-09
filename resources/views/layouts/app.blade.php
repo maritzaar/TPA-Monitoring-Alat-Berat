@@ -32,6 +32,15 @@
 
         /* Desktop sidebar offset transition */
         #mainWrapper { transition: padding-left 0.28s cubic-bezier(.4,0,.2,1); }
+
+        /* Page load animation */
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .page-transition {
+            animation: pageFadeIn 0.35s ease-out forwards;
+        }
     </style>
 </head>
 <body class="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col">
@@ -102,7 +111,7 @@
                                       ? 'bg-blue-600 text-white shadow-sm'
                                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <i class="fas fa-clock w-4 text-center"></i>
-                            <span>Laporan Working Hour</span>
+                            <span>Working Hour</span>
                         </a>
 
                         {{-- Laporan Fuel --}}
@@ -112,7 +121,7 @@
                                       ? 'bg-blue-600 text-white shadow-sm'
                                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <i class="fas fa-gas-pump w-4 text-center"></i>
-                            <span>Laporan Fuel</span>
+                            <span>Fuel</span>
                         </a>
 
                     </div>
@@ -131,7 +140,7 @@
                                {{ $adminActive ? 'text-blue-700 bg-blue-50/60' : 'text-slate-700 hover:bg-slate-50' }}">
                     <span class="flex items-center space-x-3">
                         <i class="fas fa-shield-alt w-5 text-center text-sm"></i>
-                        <span>Admin</span>
+                        <span>Kelola Data</span>
                     </span>
                     <i id="navAdminChevron"
                        class="fas fa-chevron-down text-xs transition-transform duration-200
@@ -187,7 +196,7 @@
             </button>
             @endauth
             <h1 class="text-xs sm:text-sm md:text-base font-bold tracking-wider flex items-center select-none whitespace-nowrap text-white">
-                <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0 bg-stone-900 p-0.5 rounded">
+                <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0">
                 <span>TELADAN PRIMA AGRO</span>
             </h1>
         </div>
@@ -244,7 +253,7 @@
 
     <!-- ======== BODY WRAPPER ======== -->
     <div id="mainWrapper" class="pt-16 flex-1 flex flex-col min-h-[calc(100vh-4rem)]">
-        <main class="flex-1 p-3 sm:p-4 md:p-6 w-full max-w-screen-2xl mx-auto">
+        <main class="flex-1 p-3 sm:p-4 md:p-6 w-full max-w-screen-2xl mx-auto page-transition">
 
             @if(session('success'))
             <div class="bg-emerald-50 border-l-4 border-emerald-500 text-emerald-800 p-3 sm:p-4 mb-4 rounded shadow-sm no-print flex items-start space-x-2">
@@ -264,7 +273,7 @@
         </main>
 
         <footer class="bg-slate-100 text-center p-3 text-slate-500 text-xs border-t border-slate-200 no-print">
-            &copy; {{ date('Y') }} PT. Teladan Prima Agro &mdash; Hak Cipta Dilindungi Undang-Undang.
+            &copy; {{ date('Y') }} PT. Teladan Prima Agro &mdash; @testing
         </footer>
     </div>
 

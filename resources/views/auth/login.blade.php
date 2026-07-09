@@ -20,7 +20,7 @@
         
         <!-- Header Brand Info -->
         <div class="flex items-center space-x-2 z-10">
-            <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto bg-stone-900 p-0.5 rounded">
+            <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0">
             <span class="font-bold text-xs tracking-widest text-slate-350">TELADAN PRIMA AGRO</span>
         </div>
 
@@ -91,7 +91,6 @@
         <!-- Footer Copyright -->
         <div class="text-xs text-slate-500 z-10 flex justify-between mt-auto pt-6 border-t border-slate-800/60 font-medium">
             <span>&copy; {{ date('Y') }} PT. Teladan Prima Agro, Tbk.</span>
-            <span>Hak Cipta Dilindungi Undang-Undang.</span>
         </div>
     </div>
 
@@ -100,7 +99,7 @@
         
         <!-- Large centered logo and info -->
         <div class="text-center space-y-8 max-w-sm z-10">
-            <div class="inline-block p-6 bg-slate-50 rounded-3xl border border-slate-100 shadow-sm transition hover:scale-105 duration-300">
+            <div class="inline-block transition hover:scale-105 duration-300">
                 <img src="{{ asset('images/logo.png') }}" alt="Teladan Prima Agro Logo" class="w-48 h-auto object-contain mx-auto">
             </div>
             <div class="space-y-3">

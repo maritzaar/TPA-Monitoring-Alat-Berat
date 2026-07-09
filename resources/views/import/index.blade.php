@@ -16,10 +16,10 @@
                 <div>
                     <label class="block text-sm font-semibold text-slate-655 mb-1.5">{{ __('Sumber Data') }}</label>
                     <select name="sumber" class="w-full rounded-lg border border-slate-300 bg-white text-slate-700 text-sm p-2.5 focus:border-blue-600 focus:ring-blue-600 focus:outline-none">
+                        <option value="SAP">SAP</option>    
+                        <option value="INTERNAL">INTERNAL (WORK HOURS)</option>
+                        <option value="FUEL">INTERNAL (FUEL)</option>
                         <option value="CATERPILLAR">CATERPILLAR</option>
-                        <option value="INTERNAL">INTERNAL</option>
-                        <option value="SAP">SAP</option>
-                        <option value="FUEL">FUEL (Transaksi Bulanan BBM)</option>
                     </select>
                 </div>
                 <div>
@@ -69,7 +69,7 @@
                         <p class="text-xl font-bold text-amber-700">{{ number_format($summary['skipped_rows'] ?? 0) }}</p>
                     </div>
                     <div class="bg-white border border-slate-100 rounded-lg p-3">
-                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">{{ __('Aset Unik') }}</p>
+                        <p class="text-[10px] uppercase tracking-wider font-bold text-slate-400">{{ __('Variabel Unik') }}</p>
                         <p class="text-xl font-bold text-blue-700">{{ number_format($summary['unique_assets'] ?? 0) }}</p>
                     </div>
                 </div>
@@ -183,7 +183,7 @@
                     <tr>
                         <td colspan="7" class="px-4 py-10 text-center text-slate-450">
                             <i class="fas fa-inbox text-3xl block mb-2 text-slate-350"></i>
-                            {{ __('Belum ada data. Silakan import file.') }}
+                            {{ __('Belum ada data. Silakan import data.') }}
                         </td>
                     </tr>
                     @endforelse
