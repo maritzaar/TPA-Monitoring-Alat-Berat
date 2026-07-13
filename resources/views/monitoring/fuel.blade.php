@@ -5,76 +5,6 @@
 @section('content')
 <div class="space-y-6">
 
-    {{-- ====== FILTER BAR ====== --}}
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
-        <form action="{{ route('monitoring.fuel') }}" method="GET">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-end">
-                {{-- Bulan --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
-                    <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>{{ __('Semua Bulan') }}</option>
-                        @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
-                            <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Tahun --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
-                    <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-
-                    <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>{{ __('Semua Tahun') }}</option>
-                        @for($i = 2023; $i <= date('Y') + 1; $i++)
-                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
-                        @endfor
-                    </select>
-                </div>
-                {{-- Aset --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
-                    <select name="id_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua Aset') }} --</option>
-                        @foreach($filterUnits as $unit)
-                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Grup --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
-                    <select name="group_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua Grup') }} --</option>
-                        @foreach($filterGroups as $group)
-                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Area --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
-                    <select name="area" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua Area') }} --</option>
-                        @foreach($filterAreas as $a)
-                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
-                <a href="{{ route('monitoring.fuel') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
-                    {{ __('Reset Filter') }}
-                </a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
-                    <i class="fas fa-filter mr-2"></i> Apply Filter
-                </button>
-                <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
-                    <i class="fas fa-file-excel mr-2"></i> Export Excel
-                </a>
-            </div>
-        </form>
-    </div>
-
     {{-- ====== HEADER ====== --}}
     <div class="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-xl p-5 text-white shadow-md">
         <div class="flex items-center space-x-4">
@@ -106,17 +36,142 @@
             </p>
         </div>
 
-
-
         {{-- Total Fuel --}}
         <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-emerald-500 p-4 shadow-sm">
-            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Fuel (Aktual)</p>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Solar (Aktual)</p>
             <p class="text-2xl font-bold text-slate-800 mt-1">
                 {{ number_format($stats->actual_fuel, 0) }}
                 <span class="text-xs font-normal text-slate-400 ml-1">L</span>
             </p>
         </div>
+
+        {{-- Avg Fuel --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 p-4 shadow-sm">
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Rata-Rata Solar / Unit</p>
+            <p class="text-2xl font-bold text-slate-800 mt-1">
+                {{ number_format($stats->avg_fuel, 0) }}
+                <span class="text-xs font-normal text-slate-400 ml-1">L</span>
+            </p>
+        </div>
+
+        {{-- Max Fuel --}}
+        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-rose-500 p-4 shadow-sm flex flex-col justify-between">
+            <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Konsumsi Tertinggi</p>
+                <p class="text-2xl font-bold text-slate-800 mt-1">
+                    {{ number_format($stats->max_fuel_val, 0) }}
+                    <span class="text-xs font-normal text-slate-400 ml-1">L</span>
+                </p>
+            </div>
+            @if($stats->max_fuel_aset !== '-')
+            <div class="text-[10px] text-slate-500 font-semibold mt-1">
+                Unit: <span class="text-rose-600 font-bold font-mono">{{ $stats->max_fuel_aset }}</span>
+            </div>
+            @endif
+        </div>
     </div>
+
+    {{-- ====== CHART SECTION ====== --}}
+    @if($reports->isNotEmpty())
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Bar Chart (Kiri - 2/3 width) -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-indigo-600 mr-2"></i> Perbandingan Konsumsi Solar per Aset
+            </h3>
+            <div class="relative h-72 sm:h-96">
+                <canvas id="fuelReportChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Doughnut Chart (Kanan - 1/3 width) -->
+        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm flex flex-col">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider flex items-center">
+                    <i class="fas fa-chart-pie text-indigo-600 mr-2"></i> Distribusi Konsumsi Solar
+                </h3>
+                <div class="flex bg-slate-100 rounded-lg p-0.5 border border-slate-200 no-print text-[10px] font-bold">
+                    <button type="button" id="toggleDoughnutGroup" class="px-2 py-1 rounded-md bg-white text-slate-800 shadow-sm border border-slate-250 transition-all focus:outline-none">Grup</button>
+                    <button type="button" id="toggleDoughnutArea" class="px-2 py-1 rounded-md text-slate-500 hover:text-slate-800 transition-all focus:outline-none ml-0.5">Area</button>
+                </div>
+            </div>
+            <div class="relative h-72 sm:h-96 flex-1 flex items-center justify-center">
+                <canvas id="fuelDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- ====== FILTER BAR ====== --}}
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
+        <form action="{{ route('monitoring.fuel') }}" method="GET">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-end">
+                {{-- Bulan --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
+                    <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : ' ' }}>{{ __('Semua Bulan') }}</option>
+                        @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
+                            <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Tahun --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
+                    <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+
+                    <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>{{ __('Semua Tahun') }}</option>
+                        @for($i = 2023; $i <= date('Y') + 1; $i++)
+                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                {{-- Aset --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
+                    <select name="id_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">{{ __('Semua Aset') }}</option>
+                        @foreach($filterUnits as $unit)
+                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Grup --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
+                    <select name="group_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">{{ __('Semua Grup') }}</option>
+                        @foreach($filterGroups as $group)
+                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Area --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
+                    <select name="area" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="">{{ __('Semua Area') }}</option>
+                        @foreach($filterAreas as $a)
+                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
+                <a href="{{ route('monitoring.fuel') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
+                    {{ __('Reset Filter') }}
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
+                    <i class="fas fa-filter mr-2"></i> Apply Filter
+                </button>
+                <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
+                    <i class="fas fa-file-excel mr-2"></i> Export Excel
+                </a>
+            </div>
+        </form>
+    </div>
+
 
 
 
@@ -151,6 +206,8 @@
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Area</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Bulan</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tahun</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Akt (L)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
@@ -162,6 +219,8 @@
                         <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->area ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->bulan }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->tahun }}</td>
                         <td class="px-3 py-2.5 text-right font-mono text-xs font-bold text-emerald-600">{{ number_format($row->actual_fuel, 0) }}</td>
                         <td class="px-3 py-2.5 text-right">
                             <a href="{{ route('monitoring.fuel_detail', $row->id_aset) }}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> Detail</a>
@@ -365,4 +424,138 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+
+@if($reports->isNotEmpty())
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Bar Chart
+    const labels = @json($chartData->pluck('id_aset'));
+    const fuelData = @json($chartData->pluck('actual_fuel'));
+    
+    const barCtx = document.getElementById('fuelReportChart').getContext('2d');
+    const gradient = barCtx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, 'rgba(79, 70, 229, 0.85)');
+    gradient.addColorStop(1, 'rgba(6, 182, 212, 0.35)');
+
+    new Chart(barCtx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Solar (L)',
+                data: fuelData,
+                backgroundColor: gradient,
+                borderColor: '#4f46e5',
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.parsed.y.toLocaleString()} L`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    type: 'linear',
+                    display: true,
+                    title: { display: true, text: 'Volume (L)', font: { weight: 'bold' } }
+                }
+            }
+        }
+    });
+
+    // Doughnut Chart
+    const groupLabels = @json($groupChartData->pluck('group_aset'));
+    const groupData = @json($groupChartData->pluck('actual_fuel'));
+
+    const areaLabels = @json($areaChartData->pluck('area'));
+    const areaData = @json($areaChartData->pluck('actual_fuel'));
+
+    const palette = [
+        '#4f46e5', // indigo
+        '#06b6d4', // cyan
+        '#10b981', // emerald
+        '#f59e0b', // amber
+        '#ef4444', // red
+        '#ec4899', // pink
+        '#8b5cf6', // violet
+        '#14b8a6', // teal
+        '#f97316', // orange
+        '#64748b'  // slate
+    ];
+
+    const doughnutCtx = document.getElementById('fuelDistributionChart').getContext('2d');
+    const distributionChart = new Chart(doughnutCtx, {
+        type: 'doughnut',
+        data: {
+            labels: groupLabels,
+            datasets: [{
+                data: groupData,
+                backgroundColor: palette,
+                borderColor: '#ffffff',
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        font: { size: 11 }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const val = context.parsed;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const pct = total > 0 ? ((val / total) * 100).toFixed(1) : 0;
+                            return ` ${val.toLocaleString()} L (${pct}%)`;
+                        }
+                    }
+                }
+            },
+            cutout: '65%'
+        }
+    });
+
+    // Toggle Handler
+    const groupBtn = document.getElementById('toggleDoughnutGroup');
+    const areaBtn = document.getElementById('toggleDoughnutArea');
+
+    if (groupBtn && areaBtn) {
+        const setActive = (active, inactive) => {
+            active.className = 'px-2 py-1 rounded-md bg-white text-slate-800 shadow-sm border border-slate-250 transition-all focus:outline-none';
+            inactive.className = 'px-2 py-1 rounded-md text-slate-500 hover:text-slate-800 transition-all focus:outline-none ml-0.5';
+        };
+
+        groupBtn.addEventListener('click', () => {
+            setActive(groupBtn, areaBtn);
+            distributionChart.data.labels = groupLabels;
+            distributionChart.data.datasets[0].data = groupData;
+            distributionChart.update();
+        });
+
+        areaBtn.addEventListener('click', () => {
+            setActive(areaBtn, groupBtn);
+            distributionChart.data.labels = areaLabels;
+            distributionChart.data.datasets[0].data = areaData;
+            distributionChart.update();
+        });
+    }
+});
+</script>
+@endif
 @endsection

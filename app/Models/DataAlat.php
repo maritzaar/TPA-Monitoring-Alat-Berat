@@ -24,3 +24,5 @@ class DataAlat extends Model
         'laporan_pemanfaatan' => 'datetime',
     ];
 }
+
+// belum dapat deteksi kolom IO, IO Group, Area, Group Aset. 

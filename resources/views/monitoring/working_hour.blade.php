@@ -5,95 +5,6 @@
 @section('content')
 <div class="space-y-6">
 
-    {{-- ====== FILTER BAR ====== --}}
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
-        <form action="{{ route('monitoring.working_hour') }}" method="GET">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
-                {{-- Bulan --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
-                    <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>-- {{ __('Semua Bulan') }} --</option>
-                        @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
-                            <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Tahun --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
-                    <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>-- {{ __('Semua Tahun') }} --</option>
-                        @for($i = 2023; $i <= date('Y') + 1; $i++)
-                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
-                        @endfor
-                    </select>
-                </div>
-                {{-- Aset --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
-                    <select name="id_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua Aset') }} --</option>
-                        @foreach($filterUnits as $unit)
-                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Grup --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
-                    <select name="group_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua Grup') }} --</option>
-                        @foreach($filterGroups as $group)
-                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Area --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
-                    <select name="area" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua Area') }} --</option>
-                        @foreach($filterAreas as $a)
-                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- IO Group --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">IO Group</label>
-                    <select name="group_internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua IO Group') }} --</option>
-                        @foreach($filterIoGroups as $ig)
-                            <option value="{{ $ig }}" {{ $group_internal_order == $ig ? 'selected' : '' }}>{{ $ig }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                {{-- Internal Order --}}
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Internal Order</label>
-                    <select name="internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">-- {{ __('Semua IO') }} --</option>
-                        @foreach($filterInternalOrders as $io)
-                            <option value="{{ $io }}" {{ $internal_order == $io ? 'selected' : '' }}>{{ $io }}</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
-                <a href="{{ route('monitoring.working_hour') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
-                    {{ __('Reset Filter') }}
-                </a>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
-                    <i class="fas fa-filter mr-2"></i> Apply Filter
-                </button>
-                <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
-                    <i class="fas fa-file-excel mr-2"></i> Export Excel
-                </a>
-            </div>
-        </form>
-    </div>
-
     {{-- ====== HEADER ====== --}}
     <div class="bg-gradient-to-r from-slate-900 to-indigo-950 rounded-xl p-5 text-white shadow-md">
         <div class="flex items-center space-x-4">
@@ -101,8 +12,8 @@
                 <i class="fas fa-file-invoice-dollar text-xl text-indigo-400"></i>
             </div>
             <div>
-                <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Operational & Fuel Reports</p>
-                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsolidasi Jam Kerja & Bahan Bakar</h2>
+                <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Operational Reports</p>
+                <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsolidasi Jam Kerja</h2>
             </div>
             <div class="ml-auto text-right hidden sm:block">
                 <p class="text-xs text-indigo-300">Periode</p>
@@ -146,24 +57,125 @@
 
     {{-- ====== CHART SECTION ====== --}}
     @if($reports->isNotEmpty())
-    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-        <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
-            <i class="fas fa-chart-line text-indigo-600 mr-2"></i> Perbandingan Jam Kerja (Kiri) & Pengisian Bahan Bakar Aktual (Kanan)
-        </h3>
-        <div class="relative h-72 sm:h-96">
-            <canvas id="consolidatedReportChart"></canvas>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Bar Chart (Kiri - 2/3 width) -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-indigo-600 mr-2"></i> Perbandingan Jam Kerja & Jam Idle per Aset
+            </h3>
+            <div class="relative h-72 sm:h-96">
+                <canvas id="consolidatedReportChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Doughnut Chart (Kanan - 1/3 width) -->
+        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
+            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
+                <i class="fas fa-chart-pie text-indigo-600 mr-2"></i> Rasio Total Jam Kerja vs Jam Idle
+            </h3>
+            <div class="relative h-72 sm:h-96 flex items-center justify-center">
+                <canvas id="workingHourPieChart"></canvas>
+            </div>
         </div>
     </div>
     @endif
+
+    {{-- ====== FILTER BAR ====== --}}
+    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
+        <form action="{{ route('monitoring.working_hour') }}" method="GET">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end">
+                {{-- Bulan --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
+                    <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>{{ __('Semua Bulan') }}</option>
+                        @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
+                            <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Tahun --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
+                    <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>{{ __('Semua Tahun') }}</option>
+                        @for($i = 2023; $i <= date('Y') + 1; $i++)
+                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                {{-- Aset --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
+                    <select name="id_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $id_aset == 'ALL' ? 'selected' : '' }}>{{ __('Semua Aset') }}</option>
+                        @foreach($filterUnits as $unit)
+                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Grup --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
+                    <select name="group_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $group_aset == 'ALL' ? 'selected' : '' }}>{{ __('Semua Grup') }}</option>
+                        @foreach($filterGroups as $group)
+                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Area --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
+                    <select name="area" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $area == 'ALL' ? 'selected' : '' }}>{{ __('Semua Area') }}</option>
+                        @foreach($filterAreas as $a)
+                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- IO Group --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">IO Group</label>
+                    <select name="group_internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $group_internal_order == 'ALL' ? 'selected' : '' }}>{{ __('Semua IO Group') }}</option>
+                        @foreach($filterIoGroups as $ig)
+                            <option value="{{ $ig }}" {{ $group_internal_order == $ig ? 'selected' : '' }}>{{ $ig }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Internal Order --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Internal Order</label>
+                    <select name="internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ $internal_order == 'ALL' ? 'selected' : '' }}>{{ __('Semua IO') }}</option>
+                        @foreach($filterInternalOrders as $io)
+                            <option value="{{ $io }}" {{ $internal_order == $io ? 'selected' : '' }}>{{ $io }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
+                <a href="{{ route('monitoring.working_hour') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
+                    {{ __('Reset Filter') }}
+                </a>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
+                    <i class="fas fa-filter mr-2"></i> Apply Filter
+                </button>
+                <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
+                    <i class="fas fa-file-excel mr-2"></i> Export Excel
+                </a>
+            </div>
+        </form>
+    </div>
 
     {{-- ====== DATA TABLE ====== --}}
     <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
         <div class="border-b border-slate-100 pb-3 mb-4 flex flex-wrap justify-between items-center gap-2">
             <div>
                 <h3 class="text-md font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-list-check text-indigo-600 mr-2"></i> Rincian Kinerja Operasional & Konsumsi Solar Aset
+                    <i class="fas fa-list-check text-indigo-600 mr-2"></i> Rincian Kinerja Operasional Aset
                 </h3>
-                <p class="text-xs text-slate-450 mt-0.5">Gabungan data telemetri (Jam Kerja, Jam Operasi, Idle) & transaksi pengisian solar riil</p>
             </div>
             <div class="text-right flex items-center justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                 <div class="relative">
@@ -201,7 +213,7 @@
                     @forelse($reports as $row)
                     <tr class="hover:bg-slate-50/50 transition">
                         <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs font-mono">{{ $bulan }} {{ $tahun }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs font-mono">{{ $row->tanggal->format('d/m/Y') }}</td>
                         <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->model }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
@@ -240,10 +252,9 @@
 @if($reports->isNotEmpty())
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const labels = @json($reports->pluck('id_aset'));
-    const workHours = @json($reports->pluck('total_kerja'));
-    const idleHours = @json($reports->pluck('total_idle'));
-    const actualFuel = @json($reports->pluck('actual_fuel'));
+    const labels = @json($chartData->pluck('id_aset'));
+    const workHours = @json($chartData->pluck('total_kerja'));
+    const idleHours = @json($chartData->pluck('total_idle'));
 
     new Chart(document.getElementById('consolidatedReportChart').getContext('2d'), {
         type: 'bar',
@@ -292,6 +303,36 @@ document.addEventListener('DOMContentLoaded', function () {
                     title: { display: true, text: 'Liters', font: { weight: 'bold' } }
                 }
             }
+        }
+    });
+
+    // Doughnut chart initialization for Jam Kerja vs Jam Idle
+    new Chart(document.getElementById('workingHourPieChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Jam Kerja (Hrs)', 'Jam Idle (Hrs)'],
+            datasets: [{
+                data: [{{ $stats->total_kerja }}, {{ $stats->total_idle }}],
+                backgroundColor: ['#4f46e5', '#f59e0b'],
+                borderColor: ['#ffffff', '#ffffff'],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        boxWidth: 12,
+                        font: {
+                            size: 11
+                        }
+                    }
+                }
+            },
+            cutout: '65%'
         }
     });
 });

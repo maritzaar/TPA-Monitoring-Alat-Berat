@@ -8,6 +8,17 @@
         <i class="fas fa-upload text-blue-600 mr-2"></i> {{ __('Import Data') }}
     </h2>
 
+    @if ($errors->any())
+        <div class="bg-rose-50 border border-rose-200 text-rose-800 p-4 rounded-xl text-sm space-y-1">
+            <p class="font-bold">{{ __('Gagal Validasi:') }}</p>
+            <ul class="list-disc pl-5">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
+
     <!-- Form Import -->
     <div class="bg-blue-50/50 p-4 sm:p-6 rounded-xl border border-blue-100">
         <form action="{{ route('import.upload') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -53,6 +64,11 @@
                         @foreach(($summary['periods'] ?? []) as $period)
                             <span class="px-2.5 py-1 rounded-full bg-white border border-slate-200 text-slate-700 text-xs font-semibold">{{ $period }}</span>
                         @endforeach
+                        @if(!empty($summary['detected_format']))
+                            <span class="px-2.5 py-1 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-semibold">
+                                Format: {{ $summary['detected_format'] }}
+                            </span>
+                        @endif
                     </div>
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3 min-w-full lg:min-w-[520px]">

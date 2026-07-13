@@ -21,7 +21,7 @@ class ImportController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv',
+            'file' => 'required|file',
             'sumber' => 'required|in:CATERPILLAR,INTERNAL,SAP,FUEL'
         ]);
 
