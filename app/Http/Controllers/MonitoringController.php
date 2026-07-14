@@ -321,6 +321,55 @@ class MonitoringController extends Controller
         return Excel::download(new DataAlatExport($filters), $fileName);
     }
 
+    public function exportPdf(Request $request)
+    {
+        $filters = $request->only([
+            'start_date', 'end_date', 'bulan', 'tahun', 'group_aset', 'area', 'id_aset',
+            'group_desc', 'group_internal_order', 'internal_order', 'pt',
+        ]);
+
+        $type = $request->get('type', 'working_hour');
+
+        if (empty($filters['bulan']) && empty($filters['tahun']) && empty($filters['start_date'])) {
+            $filters['bulan'] = now()->format('F');
+            $filters['tahun'] = now()->year;
+        }
+
+        if ($type === 'fuel') {
+            $export = new \App\Exports\FuelExport($filters);
+            $data = $export->query()->get();
+            $title = 'Laporan Konsumsi Solar';
+            $view = 'exports.fuel_pdf';
+        } else {
+            $export = new \App\Exports\DataAlatExport($filters);
+            $data = $export->query()->get();
+            $title = 'Laporan Konsolidasi Jam Kerja';
+            $view = 'exports.working_hour_pdf';
+        }
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, compact('data', 'filters', 'title'))
+            ->setPaper('a4', 'landscape');
+
+        // Build a nice filename
+        $nameParts = ['laporan_monitoring_alat'];
+        if (! empty($filters['group_aset']) && $filters['group_aset'] !== 'ALL') {
+            $nameParts[] = $filters['group_aset'];
+        }
+        if (! empty($filters['area']) && $filters['area'] !== 'ALL') {
+            $nameParts[] = $filters['area'];
+        }
+        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
+            $nameParts[] = $filters['start_date'].'_to_'.$filters['end_date'];
+        } else {
+            $nameParts[] = strtolower($filters['bulan'] ?? 'all');
+            $nameParts[] = $filters['tahun'] ?? 'all';
+        }
+
+        $fileName = implode('_', $nameParts).'.pdf';
+
+        return $pdf->download($fileName);
+    }
+
     public function getFilterOptions(Request $request)
     {
         $query = MasterAset::query();

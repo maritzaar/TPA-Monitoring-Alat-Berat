@@ -172,9 +172,14 @@
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
                     <i class="fas fa-filter mr-2"></i> Apply Filter
                 </button>
-                <a href="{{ route('monitoring.export', request()->all()) }}" class="w-full sm:w-auto bg-emerald-600 text-white px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-semibold shadow-sm inline-flex items-center justify-center">
-                    <i class="fas fa-file-excel mr-2"></i> Export Excel
-                </a>
+                <div class="flex gap-2 ml-2">
+                    <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
+                        <i class="fas fa-file-excel mr-2"></i> Excel
+                    </a>
+                    <a href="{{ route('monitoring.export_pdf', request()->all()) }}" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
+                        <i class="fas fa-file-pdf mr-2"></i> PDF
+                    </a>
+                </div>
             </div>
         </form>
     </div>

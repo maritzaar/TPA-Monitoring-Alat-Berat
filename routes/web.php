@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('monitoring/fuel/detail/{idAset}', [MonitoringController::class, 'fuelDetail'])->name('monitoring.fuel_detail');
     Route::get('api/monitoring/filter-options', [MonitoringController::class, 'getFilterOptions'])->name('api.monitoring.filter_options');
     Route::get('monitoring/export', [MonitoringController::class, 'export'])->name('monitoring.export');
+    Route::get('monitoring/export-pdf', [MonitoringController::class, 'exportPdf'])->name('monitoring.export_pdf');
 
     // System Flow
     Route::get('monitoring/flow', function () {
