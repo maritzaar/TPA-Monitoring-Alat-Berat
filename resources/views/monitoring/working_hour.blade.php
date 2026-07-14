@@ -107,37 +107,47 @@
                 {{-- Grup --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
-                    <select name="group_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $group_aset == 'ALL' ? 'selected' : '' }}>{{ __('Semua Grup') }}</option>
+                    <select name="group_aset" id="filter_group_aset" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($group_aset) || $group_aset == 'ALL') ? 'selected' : '' }}>{{ __('Semua Grup') }}</option>
                         @foreach($filterGroups as $group)
-                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
+                            <option value="{{ $group }}" {{ (isset($group_aset) && $group_aset == $group) ? 'selected' : '' }}>{{ $group }}</option>
                         @endforeach
                     </select>
                 </div>
                 {{-- Area --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
-                    <select name="area" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $area == 'ALL' ? 'selected' : '' }}>{{ __('Semua Area') }}</option>
+                    <select name="area" id="filter_area" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($area) || $area == 'ALL') ? 'selected' : '' }}>{{ __('Semua Area') }}</option>
                         @foreach($filterAreas as $a)
-                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            <option value="{{ $a }}" {{ (isset($area) && $area == $a) ? 'selected' : '' }}>{{ $a }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- PT --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">PT</label>
+                    <select name="pt" id="filter_pt" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($pt) || $pt == 'ALL') ? 'selected' : '' }}>{{ __('Semua PT') }}</option>
+                        @foreach($filterPts as $p)
+                            <option value="{{ $p }}" {{ (isset($pt) && $pt == $p) ? 'selected' : '' }}>{{ $p }}</option>
                         @endforeach
                     </select>
                 </div>
                 {{-- Aset --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
-                    <select name="id_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $id_aset == 'ALL' ? 'selected' : '' }}>{{ __('Semua Aset') }}</option>
+                    <select name="id_aset" id="filter_id_aset" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($id_aset) || $id_aset == 'ALL') ? 'selected' : '' }}>{{ __('Semua Aset') }}</option>
                         @foreach($filterUnits as $unit)
-                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                            <option value="{{ $unit }}" {{ (isset($id_aset) && $id_aset == $unit) ? 'selected' : '' }}>{{ $unit }}</option>
                         @endforeach
                     </select>
                 </div>
                 {{-- Group Desc --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Desc</label>
-                    <select name="group_desc" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                    <select name="group_desc" id="filter_group_desc" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
                         <option value="ALL" {{ (!isset($group_desc) || $group_desc == 'ALL') ? 'selected' : '' }}>{{ __('Semua Group Desc') }}</option>
                         @foreach($filterGroupDescs as $gd)
                             <option value="{{ $gd }}" {{ (isset($group_desc) && $group_desc == $gd) ? 'selected' : '' }}>{{ $gd }}</option>
@@ -147,20 +157,20 @@
                 {{-- IO Group --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">IO Group</label>
-                    <select name="group_internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $group_internal_order == 'ALL' ? 'selected' : '' }}>{{ __('Semua IO Group') }}</option>
+                    <select name="group_internal_order" id="filter_group_internal_order" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($group_internal_order) || $group_internal_order == 'ALL') ? 'selected' : '' }}>{{ __('Semua IO Group') }}</option>
                         @foreach($filterIoGroups as $ig)
-                            <option value="{{ $ig }}" {{ $group_internal_order == $ig ? 'selected' : '' }}>{{ $ig }}</option>
+                            <option value="{{ $ig }}" {{ (isset($group_internal_order) && $group_internal_order == $ig) ? 'selected' : '' }}>{{ $ig }}</option>
                         @endforeach
                     </select>
                 </div>
                 {{-- Internal Order --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Internal Order</label>
-                    <select name="internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $internal_order == 'ALL' ? 'selected' : '' }}>{{ __('Semua IO') }}</option>
+                    <select name="internal_order" id="filter_internal_order" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($internal_order) || $internal_order == 'ALL') ? 'selected' : '' }}>{{ __('Semua Internal Order') }}</option>
                         @foreach($filterInternalOrders as $io)
-                            <option value="{{ $io }}" {{ $internal_order == $io ? 'selected' : '' }}>{{ $io }}</option>
+                            <option value="{{ $io }}" {{ (isset($internal_order) && $internal_order == $io) ? 'selected' : '' }}>{{ $io }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -449,6 +459,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
         
         populateOptions();
+        select.updateCustomUI = populateOptions;
         
         // Dropdown Toggle
         function openDropdown() {
@@ -532,4 +543,68 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const dependentFilters = document.querySelectorAll('.dependent-filter');
+    
+    dependentFilters.forEach(filter => {
+        filter.addEventListener('change', async function(e) {
+            const params = new URLSearchParams();
+            dependentFilters.forEach(f => {
+                if (f.value && f.value !== 'ALL') {
+                    params.append(f.name, f.value);
+                }
+            });
+
+            try {
+                const response = await fetch(`/api/monitoring/filter-options?${params.toString()}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                
+                updateFilterOptions('filter_id_aset', data.filterUnits, 'Semua Aset');
+                updateFilterOptions('filter_group_aset', data.filterGroups, 'Semua Grup');
+                updateFilterOptions('filter_area', data.filterAreas, 'Semua Area');
+                updateFilterOptions('filter_group_internal_order', data.filterIoGroups, 'Semua IO Group');
+                updateFilterOptions('filter_internal_order', data.filterInternalOrders, 'Semua Internal Order');
+                updateFilterOptions('filter_group_desc', data.filterGroupDescs, 'Semua Group Desc');
+                updateFilterOptions('filter_pt', data.filterPts, 'Semua PT');
+
+            } catch (error) {
+                console.error('Error fetching filter options:', error);
+            }
+        });
+    });
+
+    function updateFilterOptions(selectId, newOptions, defaultLabel) {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+
+        const currentValue = select.value;
+        select.innerHTML = `<option value="ALL">${defaultLabel}</option>`;
+        
+        let valueStillExists = false;
+        if (currentValue === 'ALL') valueStillExists = true;
+
+        newOptions.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt;
+            option.textContent = opt;
+            if (opt === currentValue) {
+                option.selected = true;
+                valueStillExists = true;
+            }
+            select.appendChild(option);
+        });
+
+        if (!valueStillExists) {
+            select.value = 'ALL';
+        }
+
+        if (typeof select.updateCustomUI === 'function') {
+            select.updateCustomUI();
+        }
+    }
+});
+</script>
+
 @endsection
