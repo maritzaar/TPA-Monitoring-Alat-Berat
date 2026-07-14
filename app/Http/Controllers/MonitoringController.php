@@ -27,14 +27,14 @@ class MonitoringController extends Controller
 
     public function workingHour(Request $request)
     {
-        $bulan = $request->get('bulan');
-        $tahun = $request->get('tahun');
+        $start_date = $request->get('start_date');
+        $end_date = $request->get('end_date');
 
-        if (! $bulan) {
-            $bulan = 'ALL';
+        if (! $start_date) {
+            $start_date = now()->startOfMonth()->format('Y-m-d');
         }
-        if (! $tahun) {
-            $tahun = 'ALL';
+        if (! $end_date) {
+            $end_date = now()->endOfMonth()->format('Y-m-d');
         }
 
         $id_aset = $request->get('id_aset');
@@ -48,12 +48,8 @@ class MonitoringController extends Controller
         $query = DataAlat::query()
             ->leftJoin('master_asets', 'data_alat.id_aset', '=', 'master_asets.unit_code');
 
-        if (! empty($bulan) && $bulan !== 'ALL') {
-            $query->where('data_alat.bulan', $bulan);
-        }
-        if (! empty($tahun) && $tahun !== 'ALL') {
-            $query->where('data_alat.tahun', $tahun);
-        }
+        $query->whereBetween('data_alat.tanggal', [$start_date, $end_date]);
+
         if (! empty($id_aset) && $id_aset !== 'ALL') {
             $query->where(function ($q) use ($id_aset) {
                 $q->where('master_asets.unit_code', $id_aset)
@@ -123,31 +119,29 @@ class MonitoringController extends Controller
         $filters = $this->getFilters();
 
         return view('monitoring.working_hour', array_merge(compact(
-            'reports', 'stats', 'chartData', 'bulan', 'tahun',
+            'reports', 'stats', 'chartData', 'start_date', 'end_date',
             'id_aset', 'group_aset', 'area', 'group_internal_order', 'internal_order', 'group_desc', 'pt'
         ), $filters));
     }
 
     public function workingHourDetail(Request $request, $idAset)
     {
-        $bulan = $request->get('bulan');
-        $tahun = $request->get('tahun');
+        $start_date = $request->get('start_date');
+        $end_date = $request->get('end_date');
 
-        if (! $bulan || ! $tahun) {
-            $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
-            $bulan = $latestData ? $latestData->bulan : now()->format('F');
-            $tahun = $latestData ? $latestData->tahun : now()->year;
+        if (! $start_date || ! $end_date) {
+            $start_date = now()->startOfMonth()->format('Y-m-d');
+            $end_date = now()->endOfMonth()->format('Y-m-d');
         }
 
         $alat = DataAlat::where('id_aset', $idAset)->first();
 
         $data = DataAlat::where('id_aset', $idAset)
-            ->where('bulan', $bulan)
-            ->where('tahun', $tahun)
+            ->whereBetween('tanggal', [$start_date, $end_date])
             ->orderBy('tanggal', 'asc')
             ->get();
 
-        return view('monitoring.working_hour_detail', compact('alat', 'data', 'bulan', 'tahun', 'idAset'));
+        return view('monitoring.working_hour_detail', compact('alat', 'data', 'start_date', 'end_date', 'idAset'));
     }
 
     public function fuel(Request $request)
@@ -291,19 +285,13 @@ class MonitoringController extends Controller
     public function export(Request $request)
     {
         $filters = $request->only([
-            'tahun', 'bulan', 'group_aset', 'area', 'id_aset',
+            'start_date', 'end_date', 'bulan', 'tahun', 'group_aset', 'area', 'id_aset',
             'group_desc', 'group_internal_order', 'internal_order',
         ]);
 
-        if (empty($filters['bulan']) || empty($filters['tahun'])) {
-            $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
-            if ($latestData) {
-                $filters['bulan'] = $latestData->bulan;
-                $filters['tahun'] = $latestData->tahun;
-            } else {
-                $filters['bulan'] = now()->format('F');
-                $filters['tahun'] = now()->year;
-            }
+        if (empty($filters['bulan']) && empty($filters['tahun']) && empty($filters['start_date'])) {
+            $filters['bulan'] = now()->format('F');
+            $filters['tahun'] = now()->year;
         }
 
         // Build a nice filename
@@ -314,8 +302,12 @@ class MonitoringController extends Controller
         if (! empty($filters['area']) && $filters['area'] !== 'ALL') {
             $nameParts[] = $filters['area'];
         }
-        $nameParts[] = strtolower($filters['bulan']);
-        $nameParts[] = $filters['tahun'];
+        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
+            $nameParts[] = $filters['start_date'].'_to_'.$filters['end_date'];
+        } else {
+            $nameParts[] = strtolower($filters['bulan'] ?? 'all');
+            $nameParts[] = $filters['tahun'] ?? 'all';
+        }
 
         $fileName = implode('_', $nameParts).'.xlsx';
 

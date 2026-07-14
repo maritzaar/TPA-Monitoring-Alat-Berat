@@ -18,8 +18,8 @@
             <div class="ml-auto text-right hidden sm:block">
                 <p class="text-xs text-indigo-300">Periode</p>
                 <p class="text-md font-bold">
-                    {{ $bulan == 'ALL' ? __('Semua Bulan') : __($bulan) }} 
-                    {{ $tahun == 'ALL' ? __('Semua Tahun') : $tahun }}
+                    {{ \Carbon\Carbon::parse($start_date)->translatedFormat('d M Y') }} - 
+                    {{ \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y') }}
                 </p>
             </div>
         </div>
@@ -84,25 +84,15 @@
     <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
         <form action="{{ route('monitoring.working_hour') }}" method="GET">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 items-end">
-                {{-- Tahun --}}
+                {{-- Tanggal Mulai --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
-                    <select name="tahun" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>{{ __('Semua Tahun') }}</option>
-                        @for($i = 2023; $i <= date('Y') + 1; $i++)
-                            <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
-                        @endfor
-                    </select>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Start Date</label>
+                    <input type="date" name="start_date" id="filter_start_date" value="{{ $start_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
                 </div>
-                {{-- Bulan --}}
+                {{-- Tanggal Akhir --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
-                    <select name="bulan" class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : '' }}>{{ __('Semua Bulan') }}</option>
-                        @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
-                            <option value="{{ $m }}" {{ $bulan == $m ? 'selected' : '' }}>{{ $m }}</option>
-                        @endforeach
-                    </select>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">End Date</label>
+                    <input type="date" name="end_date" id="filter_end_date" value="{{ $end_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
                 </div>
                 {{-- Grup --}}
                 <div>
@@ -176,13 +166,13 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
-                <a href="{{ route('monitoring.working_hour', ['bulan' => 'ALL', 'tahun' => 'ALL']) }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
-                    {{ __('Reset Filter') }}
+                <a href="{{ route('monitoring.working_hour') }}" class="px-4 py-2 rounded-lg text-sm font-semibold text-slate-600 hover:text-slate-800 hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-undo mr-1.5"></i> Reset Filter
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
                     <i class="fas fa-filter mr-2"></i> Apply Filter
                 </button>
-                <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
+                <a href="{{ route('monitoring.export', request()->all()) }}" class="w-full sm:w-auto bg-emerald-600 text-white px-5 py-2.5 rounded-lg hover:bg-emerald-700 transition-colors text-sm font-semibold shadow-sm inline-flex items-center justify-center">
                     <i class="fas fa-file-excel mr-2"></i> Export Excel
                 </a>
             </div>

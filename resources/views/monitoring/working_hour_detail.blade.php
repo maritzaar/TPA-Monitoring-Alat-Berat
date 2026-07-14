@@ -18,7 +18,7 @@
                 </p>
             @endif
         </div>
-        <a href="{{ route('monitoring.working_hour') }}?bulan={{ $bulan }}&tahun={{ $tahun }}"
+        <a href="{{ route('monitoring.working_hour') }}?start_date={{ $start_date }}&end_date={{ $end_date }}"
            class="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 transition text-sm font-semibold shadow-sm inline-flex items-center justify-center">
             <i class="fas fa-arrow-left mr-2"></i> {{ __('Kembali') }}
         </a>
@@ -28,7 +28,7 @@
     <div class="bg-blue-50/55 border border-blue-100 p-4 rounded-lg mb-6 flex items-center space-x-2">
         <i class="fas fa-calendar-alt text-blue-650"></i>
         <p class="text-sm text-slate-700">
-            {{ __('Data untuk periode:') }} <span class="font-bold text-slate-800">{{ __($bulan) }} {{ $tahun }}</span>
+            {{ __('Data untuk periode:') }} <span class="font-bold text-slate-800">{{ \Carbon\Carbon::parse($start_date)->translatedFormat('d M Y') }} - {{ \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y') }}</span>
         </p>
     </div>
 
@@ -72,8 +72,7 @@
                 @empty
                 <tr>
                     <td colspan="8" class="px-4 py-10 text-center text-slate-450">
-                        <i class="fas fa-inbox text-3xl block mb-2 text-slate-350"></i>
-                        <span class="text-sm">{{ __('Tidak ada data untuk aset ini pada periode :bulan :tahun.', ['bulan' => __($bulan), 'tahun' => $tahun]) }}</span>
+                        <span class="text-sm">{{ __('Tidak ada data untuk aset ini pada periode ') . \Carbon\Carbon::parse($start_date)->translatedFormat('d M Y') . ' s/d ' . \Carbon\Carbon::parse($end_date)->translatedFormat('d M Y') }}</span>
                     </td>
                 </tr>
                 @endforelse
