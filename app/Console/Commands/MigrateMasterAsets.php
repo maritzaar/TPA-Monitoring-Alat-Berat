@@ -2,13 +2,12 @@
 
 namespace App\Console\Commands;
 
-use Illuminate\Console\Attributes\Description;
-use Illuminate\Console\Attributes\Signature;
-use Illuminate\Console\Command;
-
 use App\Models\DataAlat;
 use App\Models\FuelTransaction;
 use App\Models\MasterAset;
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
+use Illuminate\Console\Command;
 
 #[Signature('app:migrate-master-asets')]
 #[Description('Command description')]
@@ -31,6 +30,7 @@ class MigrateMasterAsets extends Command
             'area',
             'internal_order',
             'group_internal_order',
+            'group_desc',
             'pt'
         )->distinct()->get();
 
@@ -44,6 +44,7 @@ class MigrateMasterAsets extends Command
                     'area' => $t->area,
                     'internal_order' => $t->internal_order,
                     'group_internal_order' => $t->group_internal_order,
+                    'group_desc' => $t->group_desc,
                     'pt' => $t->pt,
                 ]
             );
@@ -72,6 +73,6 @@ class MigrateMasterAsets extends Command
             $master->save();
         }
 
-        $this->info('Selesai! Total master aset saat ini: ' . MasterAset::count());
+        $this->info('Selesai! Total master aset saat ini: '.MasterAset::count());
     }
 }

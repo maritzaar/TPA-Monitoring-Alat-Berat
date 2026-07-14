@@ -4,23 +4,32 @@ namespace App\Imports;
 
 use App\Models\DataAlat;
 use App\Models\MasterAset;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithChunkReading;
-use Maatwebsite\Excel\Concerns\WithBatchInserts;
 use Carbon\Carbon;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithBatchInserts;
+use Maatwebsite\Excel\Concerns\WithChunkReading;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
-class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, WithBatchInserts
+class DataAlatSheetImport implements ToModel, WithBatchInserts, WithChunkReading, WithHeadingRow
 {
     protected $sumber;
+
     protected $importLogId;
+
     protected int $processedRows = 0;
+
     protected int $validRows = 0;
+
     protected array $skipReasons = [];
+
     protected array $periods = [];
+
     protected array $assetIds = [];
+
     protected array $assetsMap = [];
+
     protected ?string $detectedFormat = null;
+
     protected ?array $headerMap = null;
 
     public function __construct($sumber = 'CATERPILLAR', $importLogId = null)
@@ -37,25 +46,25 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
                     'area' => $m->area,
                     'internal_order' => $m->internal_order,
                     'group_internal_order' => $m->group_internal_order,
-                    'pt' => !empty($m->pt) ? $m->pt : $m->company_code
+                    'pt' => ! empty($m->pt) ? $m->pt : $m->company_code,
                 ];
 
                 $unitCodeUpper = strtoupper($m->unit_code);
-                if (!isset($this->assetsMap[$unitCodeUpper]) || (empty($this->assetsMap[$unitCodeUpper]['internal_order']) && !empty($m->internal_order))) {
+                if (! isset($this->assetsMap[$unitCodeUpper]) || (empty($this->assetsMap[$unitCodeUpper]['internal_order']) && ! empty($m->internal_order))) {
                     $this->assetsMap[$unitCodeUpper] = $mapData;
                 }
 
-                if (!empty($m->nomor_seri)) {
+                if (! empty($m->nomor_seri)) {
                     $serialUpper = strtoupper($m->nomor_seri);
-                    if (!isset($this->assetsMap[$serialUpper]) || (empty($this->assetsMap[$serialUpper]['internal_order']) && !empty($m->internal_order))) {
+                    if (! isset($this->assetsMap[$serialUpper]) || (empty($this->assetsMap[$serialUpper]['internal_order']) && ! empty($m->internal_order))) {
                         $this->assetsMap[$serialUpper] = $mapData;
                     }
                 }
 
                 $parts = explode('-', $m->unit_code);
                 $short = strtoupper($parts[1] ?? $parts[0] ?? '');
-                if (!empty($short)) {
-                    if (!isset($this->assetsMap[$short]) || (empty($this->assetsMap[$short]['internal_order']) && !empty($m->internal_order))) {
+                if (! empty($short)) {
+                    if (! isset($this->assetsMap[$short]) || (empty($this->assetsMap[$short]['internal_order']) && ! empty($m->internal_order))) {
                         $this->assetsMap[$short] = $mapData;
                     }
                 }
@@ -80,26 +89,26 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         $map = [];
 
         $knownMappings = [
-            'tahun'      => ['tahun', 'year'],
-            'bulan'      => ['bulan', 'month'],
-            'tanggal'    => ['tanggal', 'date', 'tgl', 'timestamp'],
-            'id_aset'    => ['id_aset', 'idaset', 'asset_id', 'keterangan'],
+            'tahun' => ['tahun', 'year'],
+            'bulan' => ['bulan', 'month'],
+            'tanggal' => ['tanggal', 'date', 'tgl', 'timestamp'],
+            'id_aset' => ['id_aset', 'idaset', 'asset_id', 'keterangan'],
             'nomor_seri' => ['nomor_seri', 'nomor_seri_aset', 'serial_number', 'sn'],
             'internal_order' => ['internal_order', 'internal_os', 'internal_o', 'internalorder'],
-            'group'      => ['group', 'group_aset', 'groupaset'],
-            'area'       => ['area'],
-            'code_unit'  => ['code_unit', 'code_uc', 'codeuc', 'code_uni'],
-            'code_cop'   => ['code_cop', 'code_company'],
-            'io_group'   => ['io_group', 'io_grou', 'iogroup', 'group_internal_order'],
-            'io_desc'    => ['io_desc', 'io_d', 'iodesc', 'group_desc'],
-            'buatan'     => ['buatan', 'manufacturer', 'mfg'],
-            'model'      => ['model'],
+            'group' => ['group', 'group_aset', 'groupaset'],
+            'area' => ['area'],
+            'code_unit' => ['code_unit', 'code_uc', 'codeuc', 'code_uni'],
+            'code_cop' => ['code_cop', 'code_company'],
+            'io_group' => ['io_group', 'io_grou', 'iogroup', 'group_internal_order'],
+            'io_desc' => ['io_desc', 'io_d', 'iodesc', 'group_desc'],
+            'buatan' => ['buatan', 'manufacturer', 'mfg'],
+            'model' => ['model'],
             'meteran_jam' => ['meteran_jam_jam', 'meteran_jam', 'hour_meter'],
             'waktu_terakhir' => ['waktu_terakhir_dilaporkan_meteran_jam', 'waktu_terakhir', 'last_reported'],
             'laporan_pemanfaatan' => ['laporan_pemanfaatan_terakhir', 'laporan_pemanfaatan', 'last_utilization'],
             'offset_zona_waktu' => ['offset_zona_waktu', 'timezone_offset'],
             'zona_waktu' => ['zona_waktu', 'timezone'],
-            'nama_zona'  => ['nama_tampilan_zona_waktu', 'timezone_name', 'nama_zona'],
+            'nama_zona' => ['nama_tampilan_zona_waktu', 'timezone_name', 'nama_zona'],
             'waktu_operasi' => ['waktu_operasi_jam', 'waktu_operasi', 'operating_hours'],
             'waktu_idle' => ['waktu_idle_jam', 'waktu_idle', 'idle_hours'],
             'waktu_kerja' => ['waktu_kerja_jam', 'waktu_kerja', 'working_hours'],
@@ -117,7 +126,7 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         $mappedKeys = [];
         foreach ($knownMappings as $purpose => $aliases) {
             foreach ($aliases as $alias) {
-                if (array_key_exists($alias, $row) && !in_array($alias, $mappedKeys)) {
+                if (array_key_exists($alias, $row) && ! in_array($alias, $mappedKeys)) {
                     $map[$purpose] = $alias;
                     $mappedKeys[] = $alias;
                     break;
@@ -133,7 +142,7 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
             if (preg_match('/(xlfn|xlookup|iferror|vlookup|hlookup|index|match)/', $keyLower)) {
                 $keyIndex = array_search($key, $keys);
                 // Position 3 in extended format = ID Aset (unit name from XLOOKUP)
-                if ($keyIndex === 3 && !isset($map['id_aset'])) {
+                if ($keyIndex === 3 && ! isset($map['id_aset'])) {
                     $map['id_aset'] = $key;
                     $mappedKeys[] = $key;
                 }
@@ -141,16 +150,17 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         }
 
         // Fallback: if id_aset still not found, try position 3
-        if (!isset($map['id_aset'])) {
-            if (isset($keys[3]) && !in_array($keys[3], $mappedKeys)) {
+        if (! isset($map['id_aset'])) {
+            if (isset($keys[3]) && ! in_array($keys[3], $mappedKeys)) {
                 $testVal = $row[$keys[3]] ?? '';
-                if (!empty($testVal) && !is_numeric($testVal)) {
+                if (! empty($testVal) && ! is_numeric($testVal)) {
                     $map['id_aset'] = $keys[3];
                 }
             }
         }
 
         $this->headerMap = $map;
+
         return $map;
     }
 
@@ -162,7 +172,7 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
     {
         $map = $this->headerMap ?? $this->buildHeaderMap($row);
 
-        if (!isset($map[$purpose])) {
+        if (! isset($map[$purpose])) {
             return $default;
         }
 
@@ -195,26 +205,29 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
 
         if ($hasCodeUnit || ($hasGroup && $hasInternalOrder) || ($hasIOGroup && $hasInternalOrder)) {
             $this->detectedFormat = 'extended';
+
             return 'extended';
         }
 
         if ($hasKeterangan) {
             $keteranganVal = $row[$map['keterangan_col']] ?? '';
-            if (!empty(trim($keteranganVal))) {
+            if (! empty(trim($keteranganVal))) {
                 $kLower = strtolower($keteranganVal);
                 $isError = str_contains($kLower, 'insufficient') ||
                            str_contains($kLower, 'invalid') ||
                            str_contains($kLower, 'missing') ||
                            str_contains($kLower, 'value includes') ||
                            str_contains($kLower, 'accumulated');
-                if (!$isError) {
+                if (! $isError) {
                     $this->detectedFormat = 'legacy_shifted';
+
                     return 'legacy_shifted';
                 }
             }
         }
 
         $this->detectedFormat = 'legacy_unshifted';
+
         return 'legacy_unshifted';
     }
 
@@ -312,9 +325,13 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
                 $dayaPerUnit = $row['beban_harian_rata_rata'] ?? null;
             }
 
-            $directGroup = null; $directArea = null; $directCodeUnit = null;
-            $directInternalOrder = null; $directIOGroup = null;
-            $directIODesc = null; $directPT = null;
+            $directGroup = null;
+            $directArea = null;
+            $directCodeUnit = null;
+            $directInternalOrder = null;
+            $directIOGroup = null;
+            $directIODesc = null;
+            $directPT = null;
 
         } else {
             $unitCode = $row['id_aset'] ?? null;
@@ -338,13 +355,18 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
             $bebanHarian = $row['beban_harian_rata_rata'] ?? null;
             $dayaPerUnit = $row['daya_per_unit_bahan_bakar_kwhl'] ?? null;
 
-            $directGroup = null; $directArea = null; $directCodeUnit = null;
-            $directInternalOrder = null; $directIOGroup = null;
-            $directIODesc = null; $directPT = null;
+            $directGroup = null;
+            $directArea = null;
+            $directCodeUnit = null;
+            $directInternalOrder = null;
+            $directIOGroup = null;
+            $directIODesc = null;
+            $directPT = null;
         }
 
         if (empty($unitCode)) {
             $this->recordSkip('ID aset kosong');
+
             return null;
         }
 
@@ -363,34 +385,41 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
             $tahunRaw = $this->getMappedField($row, 'tahun');
             $bulanRaw = $this->getMappedField($row, 'bulan');
 
-            if (empty($tanggalRaw) && !empty($tahunRaw) && !empty($bulanRaw)) {
+            if (empty($tanggalRaw) && ! empty($tahunRaw) && ! empty($bulanRaw)) {
                 $tanggal = Carbon::parse("1 $bulanRaw $tahunRaw");
             } else {
                 $tanggal = $this->parseDate($tanggalRaw);
             }
 
-            if (!$tanggal && !empty($tahunRaw) && !empty($bulanRaw)) {
-                try { $tanggal = Carbon::parse("1 $bulanRaw $tahunRaw"); }
-                catch (\Exception $e) { /* ignore */ }
+            if (! $tanggal && ! empty($tahunRaw) && ! empty($bulanRaw)) {
+                try {
+                    $tanggal = Carbon::parse("1 $bulanRaw $tahunRaw");
+                } catch (\Exception $e) { /* ignore */
+                }
             }
 
-            if (!$tanggal) {
-                $this->recordSkip('Tanggal tidak valid (raw: ' . substr((string)($tanggalRaw ?? 'null'), 0, 30) . ')');
+            if (! $tanggal) {
+                $this->recordSkip('Tanggal tidak valid (raw: '.substr((string) ($tanggalRaw ?? 'null'), 0, 30).')');
+
                 return null;
             }
         } catch (\Exception $e) {
-            $this->recordSkip('Tanggal error: ' . substr($e->getMessage(), 0, 50));
+            $this->recordSkip('Tanggal error: '.substr($e->getMessage(), 0, 50));
+
             return null;
         }
 
         if (empty($bulanRaw)) {
             $bulan = $tanggal->format('F');
         } else {
-            try { $bulan = Carbon::parse("1 $bulanRaw 2025")->format('F'); }
-            catch (\Exception $e) { $bulan = $tanggal->format('F'); }
+            try {
+                $bulan = Carbon::parse("1 $bulanRaw 2025")->format('F');
+            } catch (\Exception $e) {
+                $bulan = $tanggal->format('F');
+            }
         }
 
-        $tahun = !empty($tahunRaw) && is_numeric($tahunRaw) ? (int) $tahunRaw : $tanggal->year;
+        $tahun = ! empty($tahunRaw) && is_numeric($tahunRaw) ? (int) $tahunRaw : $tanggal->year;
 
         // ===== RESOLVE METADATA =====
         $short = '';
@@ -403,11 +432,11 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         $serialUpper = $serialNumber ? strtoupper(trim($serialNumber)) : '';
         $unitCodeUpper = $unitCode ? strtoupper(trim($unitCode)) : '';
 
-        if (!empty($serialUpper) && isset($this->assetsMap[$serialUpper])) {
+        if (! empty($serialUpper) && isset($this->assetsMap[$serialUpper])) {
             $mapped = $this->assetsMap[$serialUpper];
-        } elseif (!empty($unitCodeUpper) && isset($this->assetsMap[$unitCodeUpper])) {
+        } elseif (! empty($unitCodeUpper) && isset($this->assetsMap[$unitCodeUpper])) {
             $mapped = $this->assetsMap[$unitCodeUpper];
-        } elseif (!empty($short) && isset($this->assetsMap[$short])) {
+        } elseif (! empty($short) && isset($this->assetsMap[$short])) {
             $mapped = $this->assetsMap[$short];
         }
 
@@ -417,7 +446,7 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
             // Force group child units (e.g. AME 01) into their parent unit code (e.g. E005-AME) if available
             $parts = explode(' ', trim($idAset));
             $shortChild = strtoupper($parts[0] ?? '');
-            if (!empty($shortChild) && isset($this->assetsMap[$shortChild])) {
+            if (! empty($shortChild) && isset($this->assetsMap[$shortChild])) {
                 $parentMap = $this->assetsMap[$shortChild];
                 if (str_contains($parentMap['unit_code'], '-')) {
                     $idAset = $parentMap['unit_code'];
@@ -425,11 +454,11 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
             }
 
             // Fallback to Excel value if MasterAset is empty
-            $groupAset = !empty($mapped['group_aset']) ? $mapped['group_aset'] : $directGroup;
-            $area = !empty($mapped['area']) ? $mapped['area'] : $directArea;
-            $internalOrder = !empty($mapped['internal_order']) ? $mapped['internal_order'] : $directInternalOrder;
-            $groupInternalOrder = !empty($mapped['group_internal_order']) ? $mapped['group_internal_order'] : $directIOGroup;
-            $pt = !empty($mapped['pt']) ? $mapped['pt'] : $directPT;
+            $groupAset = ! empty($mapped['group_aset']) ? $mapped['group_aset'] : $directGroup;
+            $area = ! empty($mapped['area']) ? $mapped['area'] : $directArea;
+            $internalOrder = ! empty($mapped['internal_order']) ? $mapped['internal_order'] : $directInternalOrder;
+            $groupInternalOrder = ! empty($mapped['group_internal_order']) ? $mapped['group_internal_order'] : $directIOGroup;
+            $pt = ! empty($mapped['pt']) ? $mapped['pt'] : $directPT;
         } else {
             $idAset = $unitCode;
             $groupAset = $directGroup ?? ($row['group'] ?? $row['group_aset'] ?? null);
@@ -440,14 +469,24 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         }
 
         if ($format === 'extended') {
-            if (!empty($directGroup)) $groupAset = $directGroup;
-            if (!empty($directArea)) $area = $directArea;
-            if (!empty($directInternalOrder)) $internalOrder = $directInternalOrder;
-            if (!empty($directIOGroup)) $groupInternalOrder = $directIOGroup;
-            if (!empty($directPT)) $pt = $directPT;
+            if (! empty($directGroup)) {
+                $groupAset = $directGroup;
+            }
+            if (! empty($directArea)) {
+                $area = $directArea;
+            }
+            if (! empty($directInternalOrder)) {
+                $internalOrder = $directInternalOrder;
+            }
+            if (! empty($directIOGroup)) {
+                $groupInternalOrder = $directIOGroup;
+            }
+            if (! empty($directPT)) {
+                $pt = $directPT;
+            }
         }
 
-        if (!empty($directCodeUnit)) {
+        if (! empty($directCodeUnit)) {
             $idAset = $directCodeUnit;
         }
 
@@ -466,17 +505,20 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         $zonaWaktuVal = $offsetZonaWaktu ?? $zonaWaktu ?? null;
         $namaZonaVal = $namaTampilanZona ?? $zonaWaktu ?? null;
 
-        if ($zonaWaktuVal && !is_numeric($zonaWaktuVal) && str_contains($zonaWaktuVal, '/')) {
+        if ($zonaWaktuVal && ! is_numeric($zonaWaktuVal) && str_contains($zonaWaktuVal, '/')) {
             try {
                 $tz = new \DateTimeZone($zonaWaktuVal);
                 $namaZonaVal = $zonaWaktuVal;
                 $dateTime = new \DateTime('now', $tz);
                 $zonaWaktuVal = $dateTime->format('P');
-            } catch (\Exception $e) { /* ignore */ }
+            } catch (\Exception $e) { /* ignore */
+            }
         }
 
         if ($zonaWaktuVal && strlen($zonaWaktuVal) > 10) {
-            if (!$namaZonaVal) $namaZonaVal = $zonaWaktuVal;
+            if (! $namaZonaVal) {
+                $namaZonaVal = $zonaWaktuVal;
+            }
             $zonaWaktuVal = substr($zonaWaktuVal, 0, 10);
         }
         if ($namaZonaVal && strlen($namaZonaVal) > 50) {
@@ -484,7 +526,7 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
         }
 
         $this->validRows++;
-        $this->periods[$bulan . ' ' . $tahun] = true;
+        $this->periods[$bulan.' '.$tahun] = true;
         $this->assetIds[$idAset] = true;
 
         $parsedWaktuOperasi = $this->parseNumeric($waktuOperasi);
@@ -558,49 +600,81 @@ class DataAlatSheetImport implements ToModel, WithHeadingRow, WithChunkReading, 
 
     private function parseNumeric($value)
     {
-        if (is_null($value) || $value === '' || $value === ' ') return null;
-        if (is_string($value) && str_starts_with($value, '=')) return null;
+        if (is_null($value) || $value === '' || $value === ' ') {
+            return null;
+        }
+        if (is_string($value) && str_starts_with($value, '=')) {
+            return null;
+        }
         if (is_string($value)) {
             $value = str_replace(',', '.', $value);
             $value = str_replace(' ', '', $value);
         }
+
         return is_numeric($value) ? (float) $value : null;
     }
 
     private function parseDateTime($value)
     {
-        if (empty($value)) return null;
-        if (is_string($value) && str_starts_with($value, '=')) return null;
+        if (empty($value)) {
+            return null;
+        }
+        if (is_string($value) && str_starts_with($value, '=')) {
+            return null;
+        }
         try {
             if (is_numeric($value)) {
                 return Carbon::createFromFormat('Y-m-d', '1900-01-01')->addDays($value - 2);
             }
             $formats = ['d/m/Y H:i:s', 'm/d/Y H:i:s', 'Y-m-d H:i:s', 'd/m/Y', 'm/d/Y', 'Y-m-d'];
             foreach ($formats as $format) {
-                try { return Carbon::createFromFormat($format, $value); }
-                catch (\Exception $e) { continue; }
+                try {
+                    return Carbon::createFromFormat($format, $value);
+                } catch (\Exception $e) {
+                    continue;
+                }
             }
+
             return Carbon::parse($value);
-        } catch (\Exception $e) { return null; }
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     private function parseDate($value)
     {
-        if (empty($value)) return null;
-        if (is_string($value) && str_starts_with($value, '=')) return null;
+        if (empty($value)) {
+            return null;
+        }
+        if (is_string($value) && str_starts_with($value, '=')) {
+            return null;
+        }
         try {
             if (is_numeric($value)) {
                 return Carbon::createFromFormat('Y-m-d', '1900-01-01')->addDays($value - 2);
             }
             $formats = ['d/m/Y', 'm/d/Y', 'Y-m-d', 'd/m/Y H:i:s', 'm/d/Y H:i:s', 'Y-m-d H:i:s'];
             foreach ($formats as $format) {
-                try { return Carbon::createFromFormat($format, $value); }
-                catch (\Exception $e) { continue; }
+                try {
+                    return Carbon::createFromFormat($format, $value);
+                } catch (\Exception $e) {
+                    continue;
+                }
             }
+
             return Carbon::parse($value);
-        } catch (\Exception $e) { return null; }
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
-    public function chunkSize(): int { return 1000; }
-    public function batchSize(): int { return 1000; }
+    public function chunkSize(): int
+    {
+        return 1000;
+    }
+
+    public function batchSize(): int
+    {
+        return 1000;
+    }
 }

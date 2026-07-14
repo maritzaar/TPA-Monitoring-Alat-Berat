@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\DataAlatExport;
 use App\Models\DataAlat;
 use App\Models\FuelTransaction;
 use App\Models\MasterAset;
@@ -19,7 +20,7 @@ class MonitoringController extends Controller
             'filterAreas' => MasterAset::select('area')->whereNotNull('area')->distinct()->orderBy('area')->pluck('area'),
             'filterIoGroups' => MasterAset::select('group_internal_order')->whereNotNull('group_internal_order')->distinct()->orderBy('group_internal_order')->pluck('group_internal_order'),
             'filterInternalOrders' => MasterAset::select('internal_order')->whereNotNull('internal_order')->distinct()->orderBy('internal_order')->pluck('internal_order'),
-            'filterGroupDescs' => \App\Models\DataAlat::select('group_desc')->whereNotNull('group_desc')->distinct()->orderBy('group_desc')->pluck('group_desc'),
+            'filterGroupDescs' => DataAlat::select('group_desc')->whereNotNull('group_desc')->distinct()->orderBy('group_desc')->pluck('group_desc'),
         ];
     }
 
@@ -28,10 +29,11 @@ class MonitoringController extends Controller
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
 
-        if (!$bulan || !$tahun) {
-            $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
-            $bulan = $latestData ? $latestData->bulan : now()->format('F');
-            $tahun = $latestData ? $latestData->tahun : now()->year;
+        if (! $bulan) {
+            $bulan = 'ALL';
+        }
+        if (! $tahun) {
+            $tahun = 'ALL';
         }
 
         $id_aset = $request->get('id_aset');
@@ -43,41 +45,55 @@ class MonitoringController extends Controller
 
         $query = DataAlat::query()
             ->leftJoin('master_asets', 'data_alat.id_aset', '=', 'master_asets.unit_code');
-        
-        if (!empty($bulan) && $bulan !== 'ALL') $query->where('data_alat.bulan', $bulan);
-        if (!empty($tahun) && $tahun !== 'ALL') $query->where('data_alat.tahun', $tahun);
-        if (!empty($id_aset) && $id_aset !== 'ALL') {
-            $query->where(function($q) use ($id_aset) {
+
+        if (! empty($bulan) && $bulan !== 'ALL') {
+            $query->where('data_alat.bulan', $bulan);
+        }
+        if (! empty($tahun) && $tahun !== 'ALL') {
+            $query->where('data_alat.tahun', $tahun);
+        }
+        if (! empty($id_aset) && $id_aset !== 'ALL') {
+            $query->where(function ($q) use ($id_aset) {
                 $q->where('master_asets.unit_code', $id_aset)
-                  ->orWhere('data_alat.id_aset', $id_aset);
+                    ->orWhere('data_alat.id_aset', $id_aset);
             });
         }
-        if (!empty($group_aset) && $group_aset !== 'ALL') $query->where('data_alat.group_aset', $group_aset);
-        if (!empty($area) && $area !== 'ALL') $query->where('data_alat.area', $area);
-        if (!empty($group_internal_order) && $group_internal_order !== 'ALL') $query->where('data_alat.group_internal_order', $group_internal_order);
-        if (!empty($internal_order) && $internal_order !== 'ALL') $query->where('data_alat.internal_order', $internal_order);
-        if (!empty($group_desc) && $group_desc !== 'ALL') $query->where('data_alat.group_desc', $group_desc);
+        if (! empty($group_aset) && $group_aset !== 'ALL') {
+            $query->where('data_alat.group_aset', $group_aset);
+        }
+        if (! empty($area) && $area !== 'ALL') {
+            $query->where('data_alat.area', $area);
+        }
+        if (! empty($group_internal_order) && $group_internal_order !== 'ALL') {
+            $query->where('data_alat.group_internal_order', $group_internal_order);
+        }
+        if (! empty($internal_order) && $internal_order !== 'ALL') {
+            $query->where('data_alat.internal_order', $internal_order);
+        }
+        if (! empty($group_desc) && $group_desc !== 'ALL') {
+            $query->where('data_alat.group_desc', $group_desc);
+        }
 
         $reports = $query->select(
-                'data_alat.id as id',
-                DB::raw('COALESCE(master_asets.unit_code, data_alat.id_aset) as id_aset'),
-                'data_alat.tanggal as tanggal',
-                'data_alat.internal_order as internal_order',
-                'data_alat.model as model',
-                'data_alat.group_aset as group_aset',
-                'data_alat.area as area',
-                'data_alat.group_internal_order as group_internal_order',
-                'data_alat.pt as pt',
-                'data_alat.group_desc as group_desc',
-                'data_alat.waktu_kerja as total_kerja',
-                'data_alat.waktu_operasi as total_operasi',
-                'data_alat.waktu_idle as total_idle',
-                'data_alat.persen_idle as avg_idle'
-            )
+            'data_alat.id as id',
+            DB::raw('COALESCE(master_asets.unit_code, data_alat.id_aset) as id_aset'),
+            'data_alat.tanggal as tanggal',
+            'data_alat.internal_order as internal_order',
+            'data_alat.model as model',
+            'data_alat.group_aset as group_aset',
+            'data_alat.area as area',
+            'data_alat.group_internal_order as group_internal_order',
+            'data_alat.pt as pt',
+            'data_alat.group_desc as group_desc',
+            'data_alat.waktu_kerja as total_kerja',
+            'data_alat.waktu_operasi as total_operasi',
+            'data_alat.waktu_idle as total_idle',
+            'data_alat.persen_idle as avg_idle'
+        )
             ->orderBy('data_alat.tanggal', 'desc')
             ->get();
 
-        $stats = (object)[
+        $stats = (object) [
             'total_aset' => $reports->pluck('id_aset')->unique()->count(),
             'total_kerja' => $reports->sum('total_kerja'),
             'total_operasi' => $reports->sum('total_operasi'),
@@ -85,8 +101,8 @@ class MonitoringController extends Controller
             'avg_idle' => $reports->count() > 0 ? $reports->avg('avg_idle') : 0,
         ];
 
-        $chartData = $reports->groupBy('id_aset')->map(function($group) {
-            return (object)[
+        $chartData = $reports->groupBy('id_aset')->map(function ($group) {
+            return (object) [
                 'id_aset' => $group->first()->id_aset,
                 'total_kerja' => $group->sum('total_kerja'),
                 'total_idle' => $group->sum('total_idle'),
@@ -106,7 +122,7 @@ class MonitoringController extends Controller
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
 
-        if (!$bulan || !$tahun) {
+        if (! $bulan || ! $tahun) {
             $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
             $bulan = $latestData ? $latestData->bulan : now()->format('F');
             $tahun = $latestData ? $latestData->tahun : now()->year;
@@ -127,11 +143,12 @@ class MonitoringController extends Controller
     {
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
-        
-        if (!$bulan || !$tahun) {
-            $latest = FuelTransaction::orderBy('created_at', 'desc')->first();
-            $bulan = $latest ? $latest->bulan : now()->format('F');
-            $tahun = $latest ? $latest->tahun : now()->year;
+
+        if (! $bulan) {
+            $bulan = 'ALL';
+        }
+        if (! $tahun) {
+            $tahun = 'ALL';
         }
 
         $id_aset = $request->get('id_aset');
@@ -139,52 +156,79 @@ class MonitoringController extends Controller
         $area = $request->get('area');
         $group_internal_order = $request->get('group_internal_order');
         $internal_order = $request->get('internal_order');
+        $group_desc = $request->get('group_desc');
 
-        $query = FuelTransaction::query();
-        
-        if (!empty($bulan) && $bulan !== 'ALL') {
-            $query->where(function($q) use ($bulan) {
-                $q->where('bulan', $bulan)->orWhere('bulan', substr($bulan, 0, 3));
+        $query = FuelTransaction::query()
+            ->leftJoin('master_asets', 'fuel_transactions.unit_code', '=', 'master_asets.unit_code');
+
+        if (! empty($bulan) && $bulan !== 'ALL') {
+            $query->where(function ($q) use ($bulan) {
+                $q->where('fuel_transactions.bulan', $bulan)->orWhere('fuel_transactions.bulan', substr($bulan, 0, 3));
             });
         }
-        if (!empty($tahun) && $tahun !== 'ALL') $query->where('tahun', $tahun);
-        if (!empty($id_aset) && $id_aset !== 'ALL') $query->where('unit_code', $id_aset);
-        if (!empty($group_aset) && $group_aset !== 'ALL') $query->where('group_aset', $group_aset);
-        if (!empty($area) && $area !== 'ALL') $query->where('area', $area);
-        if (!empty($group_internal_order) && $group_internal_order !== 'ALL') $query->where('internal_order', 'like', '%' . $group_internal_order . '%');
-        if (!empty($internal_order) && $internal_order !== 'ALL') $query->where('internal_order', $internal_order);
+        if (! empty($tahun) && $tahun !== 'ALL') {
+            $query->where('fuel_transactions.tahun', $tahun);
+        }
+        if (! empty($id_aset) && $id_aset !== 'ALL') {
+            $query->where('fuel_transactions.unit_code', $id_aset);
+        }
+        if (! empty($group_aset) && $group_aset !== 'ALL') {
+            $query->where('fuel_transactions.group_aset', $group_aset);
+        }
+        if (! empty($area) && $area !== 'ALL') {
+            $query->where('fuel_transactions.area', $area);
+        }
+        if (! empty($group_internal_order) && $group_internal_order !== 'ALL') {
+            $query->where('fuel_transactions.internal_order', 'like', '%'.$group_internal_order.'%');
+        }
+        if (! empty($internal_order) && $internal_order !== 'ALL') {
+            $query->where('fuel_transactions.internal_order', $internal_order);
+        }
+        if (! empty($group_desc) && $group_desc !== 'ALL') {
+            $query->where('master_asets.group_desc', $group_desc);
+        }
 
         $reports = $query->select(
-                'unit_code as id_aset', 'internal_order', 'group_aset', 'area', 'total_quantity as actual_fuel', 'bulan', 'tahun'
-            )
+            'fuel_transactions.id as id',
+            'fuel_transactions.unit_code as id_aset',
+            'fuel_transactions.internal_order',
+            'fuel_transactions.group_aset',
+            'fuel_transactions.area',
+            'fuel_transactions.total_quantity as actual_fuel',
+            'fuel_transactions.bulan',
+            'fuel_transactions.tahun',
+            'master_asets.pt as pt',
+            'master_asets.group_desc as group_desc',
+            'master_asets.group_internal_order as group_internal_order'
+        )
             ->get();
 
         // Calculate aggregated fuel per asset (ordered descending by fuel usage)
-        $chartData = $reports->groupBy('id_aset')->map(function($group) {
-            return (object)[
+        $chartData = $reports->groupBy('id_aset')->map(function ($group) {
+            return (object) [
                 'id_aset' => $group->first()->id_aset,
                 'actual_fuel' => $group->sum('actual_fuel'),
             ];
         })->sortByDesc('actual_fuel')->values();
 
         // Calculate aggregated fuel per asset group
-        $groupChartData = $reports->groupBy('group_aset')->map(function($group) {
-            return (object)[
+        $groupChartData = $reports->groupBy('group_aset')->map(function ($group) {
+            return (object) [
                 'group_aset' => $group->first()->group_aset ?? 'Lain-lain',
                 'actual_fuel' => $group->sum('actual_fuel'),
             ];
         })->sortByDesc('actual_fuel')->values();
 
         // Calculate aggregated fuel per area
-        $areaChartData = $reports->groupBy('area')->map(function($group) {
-            return (object)[
+        $areaChartData = $reports->groupBy('area')->map(function ($group) {
+            return (object) [
                 'area' => $group->first()->area ?? 'Lain-lain',
                 'actual_fuel' => $group->sum('actual_fuel'),
             ];
         })->sortByDesc('actual_fuel')->values();
 
         $totalAsetCount = $reports->pluck('id_aset')->unique()->count();
-        $stats = (object)[
+        $stats = (object) [
             'total_aset' => $totalAsetCount,
             'actual_fuel' => $reports->sum('actual_fuel'),
             'avg_fuel' => $totalAsetCount > 0 ? $reports->sum('actual_fuel') / $totalAsetCount : 0,
@@ -196,7 +240,7 @@ class MonitoringController extends Controller
 
         return view('monitoring.fuel', array_merge(compact(
             'reports', 'stats', 'chartData', 'groupChartData', 'areaChartData', 'bulan', 'tahun',
-            'id_aset', 'group_aset', 'area', 'group_internal_order', 'internal_order'
+            'id_aset', 'group_aset', 'area', 'group_internal_order', 'internal_order', 'group_desc'
         ), $filters));
     }
 
@@ -205,25 +249,25 @@ class MonitoringController extends Controller
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
 
-        if (!$bulan || !$tahun) {
+        if (! $bulan || ! $tahun) {
             $latest = FuelTransaction::orderBy('created_at', 'desc')->first();
             $bulan = $latest ? $latest->bulan : now()->format('F');
             $tahun = $latest ? $latest->tahun : now()->year;
         }
 
         $alat = FuelTransaction::where('unit_code', $idAset)->first();
-        
+
         $data = FuelTransaction::where('unit_code', $idAset)
-            ->where(function($q) use ($bulan) {
+            ->where(function ($q) use ($bulan) {
                 if ($bulan !== 'ALL') {
                     $q->where('bulan', $bulan)->orWhere('bulan', substr($bulan, 0, 3));
                 }
             });
-            
+
         if ($tahun !== 'ALL') {
             $data = $data->where('tahun', $tahun);
         }
-            
+
         $data = $data->orderBy('created_at', 'asc')->get();
 
         return view('monitoring.fuel_detail', compact('alat', 'data', 'bulan', 'tahun', 'idAset'));
@@ -232,8 +276,8 @@ class MonitoringController extends Controller
     public function export(Request $request)
     {
         $filters = $request->only([
-            'tahun', 'bulan', 'group_aset', 'area', 'id_aset', 
-            'group_desc', 'group_internal_order', 'internal_order'
+            'tahun', 'bulan', 'group_aset', 'area', 'id_aset',
+            'group_desc', 'group_internal_order', 'internal_order',
         ]);
 
         if (empty($filters['bulan']) || empty($filters['tahun'])) {
@@ -249,13 +293,17 @@ class MonitoringController extends Controller
 
         // Build a nice filename
         $nameParts = ['laporan_monitoring_alat'];
-        if (!empty($filters['group_aset']) && $filters['group_aset'] !== 'ALL') $nameParts[] = $filters['group_aset'];
-        if (!empty($filters['area']) && $filters['area'] !== 'ALL') $nameParts[] = $filters['area'];
+        if (! empty($filters['group_aset']) && $filters['group_aset'] !== 'ALL') {
+            $nameParts[] = $filters['group_aset'];
+        }
+        if (! empty($filters['area']) && $filters['area'] !== 'ALL') {
+            $nameParts[] = $filters['area'];
+        }
         $nameParts[] = strtolower($filters['bulan']);
         $nameParts[] = $filters['tahun'];
-        
-        $fileName = implode('_', $nameParts) . '.xlsx';
 
-        return Excel::download(new \App\Exports\DataAlatExport($filters), $fileName);
+        $fileName = implode('_', $nameParts).'.xlsx';
+
+        return Excel::download(new DataAlatExport($filters), $fileName);
     }
 }

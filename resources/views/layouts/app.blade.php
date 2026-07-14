@@ -1,14 +1,30 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', 'Dashboard') - Teladan Prima Agro</title>
+    <title>@yield('title', 'Beranda') - Teladan Prima Agro</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        forest: '#218838',
+                        chalice: '#AAAAAA',
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Merriweather', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="{{ asset('js/chart.js') }}"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Outfit:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Outfit', sans-serif; font-size: 1rem; }
         @media print { .no-print { display: none !important; } }
 
@@ -72,7 +88,7 @@
             <a href="{{ route('home') }}"
                class="flex items-center space-x-3 px-4 py-2.5 rounded-lg transition text-sm font-semibold
                {{ Route::currentRouteName() === 'home'
-                   ? 'bg-blue-50 text-blue-700 border-l-4 border-blue-600 pl-3'
+                   ? 'bg-blue-50 text-forest border-l-4 border-blue-600 pl-3'
                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
                 <i class="fas fa-home w-5 text-center text-sm"></i>
                 <span>Home</span>
@@ -87,11 +103,11 @@
                 {{-- Group header button --}}
                 <button type="button" id="navMonitoringToggle"
                         class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition text-sm font-bold
-                               {{ $monitoringActive ? 'text-blue-700 bg-blue-50/60' : 'text-slate-700 hover:bg-slate-50' }}">
-                    <span class="flex items-center space-x-3">
-                        <i class="fas fa-chart-bar w-5 text-center text-sm"></i>
-                        <span>Monitoring</span>
-                    </span>
+                               {{ $monitoringActive ? 'text-forest bg-forest/10' : 'text-slate-700 hover:bg-slate-50' }}">
+                            <div class="flex items-center">
+                                <i class="fas fa-chart-line w-5 mr-3 text-center text-slate-400 group-hover:text-slate-600 transition-colors"></i>
+                                Pemantauan
+                            </div>
                     <i id="navMonitoringChevron"
                        class="fas fa-chevron-down text-xs transition-transform duration-200
                               {{ $monitoringActive ? 'rotate-180' : '' }}"></i>
@@ -108,31 +124,25 @@
                         <a href="{{ route('monitoring.working_hour') }}"
                            class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
                                   {{ in_array(Route::currentRouteName(), ['monitoring.working_hour', 'monitoring.working_hour_detail'])
-                                      ? 'bg-blue-600 text-white shadow-sm'
+                                      ? 'bg-forest text-white shadow-sm'
                                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <i class="fas fa-clock w-4 text-center"></i>
-                            <span>Working Hour</span>
+                            <span>Jam Kerja</span>
                         </a>
 
                         {{-- Laporan Fuel --}}
-                        <a href="{{ route('monitoring.fuel') }}"
-                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
-                                  {{ in_array(Route::currentRouteName(), ['monitoring.fuel', 'monitoring.fuel_detail'])
-                                      ? 'bg-blue-600 text-white shadow-sm'
-                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                            <i class="fas fa-gas-pump w-4 text-center"></i>
-                            <span>Fuel</span>
-                        </a>
+                        <a href="{{ route('monitoring.fuel') }}" class="flex items-center py-2 text-sm font-medium rounded-md transition-colors
+                                    {{ request()->routeIs('monitoring.fuel*') ? 'text-forest font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
+                                    <i class="fas fa-gas-pump text-[10px] mr-2 {{ request()->routeIs('monitoring.fuel*') ? 'text-forest' : 'text-slate-300' }}"></i>
+                                    Konsumsi BBM
+                                </a>
 
                         {{-- Alur Sistem --}}
-                        <a href="{{ route('monitoring.flow') }}"
-                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
-                                  {{ Route::currentRouteName() === 'monitoring.flow'
-                                      ? 'bg-blue-600 text-white shadow-sm'
-                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                            <i class="fas fa-project-diagram w-4 text-center"></i>
-                            <span>Alur Sistem</span>
-                        </a>
+                        <a href="{{ route('monitoring.flow') }}" class="flex items-center py-2 text-sm font-medium rounded-md transition-colors
+                                    {{ request()->routeIs('monitoring.flow*') ? 'text-forest font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
+                                    <i class="fas fa-project-diagram text-[10px] mr-2 {{ request()->routeIs('monitoring.flow*') ? 'text-forest' : 'text-slate-300' }}"></i>
+                                    Alur Sistem
+                                </a>
 
                     </div>
                 </div>
@@ -147,7 +157,7 @@
             <div>
                 <button type="button" id="navAdminToggle"
                         class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition text-sm font-bold
-                               {{ $adminActive ? 'text-blue-700 bg-blue-50/60' : 'text-slate-700 hover:bg-slate-50' }}">
+                               {{ $adminActive ? 'text-forest bg-forest/10' : 'text-slate-700 hover:bg-slate-50' }}">
                     <span class="flex items-center space-x-3">
                         <i class="fas fa-shield-alt w-5 text-center text-sm"></i>
                         <span>Kelola Data</span>
@@ -165,20 +175,17 @@
                         <a href="{{ route('import.index') }}"
                            class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
                                   {{ Route::currentRouteName() === 'import.index'
-                                      ? 'bg-blue-600 text-white shadow-sm'
+                                      ? 'bg-forest text-white shadow-sm'
                                       : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
                             <i class="fas fa-upload w-4 text-center"></i>
                             <span>Import Data</span>
                         </a>
 
-                        <a href="{{ route('users.index') }}"
-                           class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
-                                  {{ Route::currentRouteName() === 'users.index'
-                                      ? 'bg-blue-600 text-white shadow-sm'
-                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
-                            <i class="fas fa-users w-4 text-center"></i>
-                            <span>Manage Users</span>
-                        </a>
+                        <a href="{{ route('users.index') }}" class="flex items-center py-2 text-sm font-medium rounded-md transition-colors
+                                    {{ request()->routeIs('users.index') ? 'text-forest font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
+                                    <i class="fas fa-users-cog text-[10px] mr-2 {{ request()->routeIs('users.index') ? 'text-forest' : 'text-slate-300' }}"></i>
+                                    Kelola Pengguna
+                                </a>
 
                     </div>
                 </div>
@@ -222,7 +229,7 @@
                     </span>
                     <!-- Avatar button -->
                     <button type="button" id="profileDropdownButton"
-                            class="w-9 h-9 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold
+                            class="w-9 h-9 rounded-full bg-forest hover:bg-blue-700 text-white font-bold
                                    flex items-center justify-center transition focus:outline-none select-none text-sm shadow flex-shrink-0">
                         {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
                     </button>
@@ -232,28 +239,26 @@
                 <div id="profileDropdownMenu"
                      class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 divide-y divide-slate-100 z-50 text-sm no-print">
                     <div class="p-3">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5 px-2">My Profile</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5 px-2">Profil Saya</p>
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center space-x-2 px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-blue-600 rounded-lg transition font-medium">
+                           class="flex items-center space-x-2 px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-forest rounded-lg transition font-medium">
                             <i class="fas fa-user-cog text-slate-400"></i>
-                            <span>Edit Profile</span>
+                            <span>Edit Profil</span>
                         </a>
                     </div>
                     <div class="p-3">
                         <form action="{{ route('logout') }}" method="POST" class="w-full">
                             @csrf
-                            <button type="submit"
-                                    class="w-full flex items-center space-x-2 px-3 py-2 text-rose-600 hover:bg-rose-50 rounded-lg transition font-semibold text-left">
-                                <i class="fas fa-sign-out-alt text-rose-500"></i>
-                                <span>Logout</span>
-                            </button>
+                            <button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-sm font-bold transition duration-200">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Keluar
+                        </button>
                         </form>
                     </div>
                 </div>
             </div>
             @else
             <!-- Guest controls -->
-            <a href="{{ route('login') }}" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg transition flex items-center text-sm font-semibold shadow-sm">
+            <a href="{{ route('login') }}" class="bg-forest hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg transition flex items-center text-sm font-semibold shadow-sm">
                 <i class="fas fa-sign-in-alt mr-1"></i>
                 <span>Login</span>
             </a>

@@ -11,6 +11,6 @@ class ImportLog extends Model
     protected $fillable = [
         'filename',
         'sumber',
-        'rows_count'
+        'rows_count',
     ];
 }

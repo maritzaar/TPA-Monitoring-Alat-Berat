@@ -12,14 +12,11 @@ class RoleMiddleware
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     * @param  string  $role
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next, string $role): Response
     {
-        if (!Auth::check() || Auth::user()->role !== $role) {
+        if (! Auth::check() || Auth::user()->role !== $role) {
             abort(403, __('Akses ditolak. Peran Anda tidak diizinkan.'));
         }
 

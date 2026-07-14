@@ -14,6 +14,7 @@ class UserController extends Controller
     {
         // Get all users except current admin
         $users = User::where('id', '!=', Auth::id())->orderBy('name')->get();
+
         return view('users.index', compact('users'));
     }
 
@@ -57,6 +58,20 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->back()->with('success', 'User account deleted successfully!');
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'max:255', 'unique:users,email,'.$user->id],
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        return redirect()->back()->with('success', __('Data pengguna :name berhasil diperbarui.', ['name' => $user->name]));
     }
 
     public function resetPassword(Request $request, User $user)

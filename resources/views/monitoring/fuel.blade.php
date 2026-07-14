@@ -131,9 +131,9 @@
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
                     <select name="id_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">{{ __('Semua Aset') }}</option>
+                        <option value="ALL" {{ (!isset($id_aset) || $id_aset == 'ALL') ? 'selected' : '' }}>{{ __('Semua Aset') }}</option>
                         @foreach($filterUnits as $unit)
-                            <option value="{{ $unit }}" {{ $id_aset == $unit ? 'selected' : '' }}>{{ $unit }}</option>
+                            <option value="{{ $unit }}" {{ (isset($id_aset) && $id_aset == $unit) ? 'selected' : '' }}>{{ $unit }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -141,9 +141,9 @@
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Aset</label>
                     <select name="group_aset" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">{{ __('Semua Grup') }}</option>
+                        <option value="ALL" {{ (!isset($group_aset) || $group_aset == 'ALL') ? 'selected' : '' }}>{{ __('Semua Grup') }}</option>
                         @foreach($filterGroups as $group)
-                            <option value="{{ $group }}" {{ $group_aset == $group ? 'selected' : '' }}>{{ $group }}</option>
+                            <option value="{{ $group }}" {{ (isset($group_aset) && $group_aset == $group) ? 'selected' : '' }}>{{ $group }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -151,15 +151,45 @@
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Area</label>
                     <select name="area" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
-                        <option value="">{{ __('Semua Area') }}</option>
+                        <option value="ALL" {{ (!isset($area) || $area == 'ALL') ? 'selected' : '' }}>{{ __('Semua Area') }}</option>
                         @foreach($filterAreas as $a)
-                            <option value="{{ $a }}" {{ $area == $a ? 'selected' : '' }}>{{ $a }}</option>
+                            <option value="{{ $a }}" {{ (isset($area) && $area == $a) ? 'selected' : '' }}>{{ $a }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Group Desc --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Group Desc</label>
+                    <select name="group_desc" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($group_desc) || $group_desc == 'ALL') ? 'selected' : '' }}>{{ __('Semua Group Desc') }}</option>
+                        @foreach($filterGroupDescs as $gd)
+                            <option value="{{ $gd }}" {{ (isset($group_desc) && $group_desc == $gd) ? 'selected' : '' }}>{{ $gd }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- IO Group --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">IO Group</label>
+                    <select name="group_internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($group_internal_order) || $group_internal_order == 'ALL') ? 'selected' : '' }}>{{ __('Semua IO Group') }}</option>
+                        @foreach($filterIoGroups as $ig)
+                            <option value="{{ $ig }}" {{ (isset($group_internal_order) && $group_internal_order == $ig) ? 'selected' : '' }}>{{ $ig }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                {{-- Internal Order --}}
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Internal Order</label>
+                    <select name="internal_order" class="searchable-select w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                        <option value="ALL" {{ (!isset($internal_order) || $internal_order == 'ALL') ? 'selected' : '' }}>{{ __('Semua IO') }}</option>
+                        @foreach($filterInternalOrders as $io)
+                            <option value="{{ $io }}" {{ (isset($internal_order) && $internal_order == $io) ? 'selected' : '' }}>{{ $io }}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
-                <a href="{{ route('monitoring.fuel') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
+                <a href="{{ route('monitoring.fuel', ['bulan' => 'ALL', 'tahun' => 'ALL']) }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
                     {{ __('Reset Filter') }}
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
@@ -202,12 +232,15 @@
             <table class="min-w-full divide-y divide-slate-200 border border-slate-100 text-sm">
                 <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
                     <tr>
-                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aset ID</th>
-                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Area</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">PT</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Unit</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Bulan</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Tahun</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">IO Group</th>
+                        <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group Desc</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Akt (L)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
@@ -215,12 +248,15 @@
                 <tbody class="bg-white divide-y divide-slate-100">
                     @forelse($reports as $row)
                     <tr class="hover:bg-slate-50/50 transition">
-                        <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
-                        <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->area ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->pt ?? '-' }}</td>
+                        <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->bulan }}</td>
                         <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->tahun }}</td>
+                        <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_internal_order ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_desc ?? '-' }}</td>
                         <td class="px-3 py-2.5 text-right font-mono text-xs font-bold text-emerald-600">{{ number_format($row->actual_fuel, 0) }}</td>
                         <td class="px-3 py-2.5 text-right">
                             <a href="{{ route('monitoring.fuel_detail', $row->id_aset) }}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> Detail</a>

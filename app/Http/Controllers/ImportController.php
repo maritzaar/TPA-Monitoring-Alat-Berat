@@ -3,18 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Imports\DataAlatImport;
+use App\Imports\FuelImportCollection;
 use App\Models\DataAlat;
+use App\Models\FuelTransaction;
+use App\Models\ImportLog;
 use App\Models\MonitoringSummary;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ImportController extends Controller
 {
     public function index()
     {
         $data = DataAlat::orderBy('tanggal', 'desc')->paginate(50);
-        $history = \App\Models\ImportLog::orderBy('created_at', 'desc')->take(10)->get();
+        $history = ImportLog::orderBy('created_at', 'desc')->take(10)->get();
+
         return view('import.index', compact('data', 'history'));
     }
 
@@ -22,20 +29,20 @@ class ImportController extends Controller
     {
         $request->validate([
             'file' => 'required|file',
-            'sumber' => 'required|in:CATERPILLAR,INTERNAL,SAP,FUEL'
+            'sumber' => 'required|in:CATERPILLAR,INTERNAL,SAP,FUEL',
         ]);
 
         try {
             set_time_limit(120); // max upload time 2 minutes
             $filename = $request->file('file')->getClientOriginalName();
             $path = $request->file('file')->storeAs('debug', 'debug_upload.xlsx');
-            
-            $importLog = \App\Models\ImportLog::create([
+
+            $importLog = ImportLog::create([
                 'filename' => $filename,
                 'sumber' => $request->sumber,
-                'rows_count' => 0
+                'rows_count' => 0,
             ]);
-            
+
             $importSummary = [
                 'filename' => $filename,
                 'sumber' => $request->sumber,
@@ -48,9 +55,9 @@ class ImportController extends Controller
             ];
 
             if ($request->sumber === 'FUEL') {
-                $filePath = \Illuminate\Support\Facades\Storage::disk('local')->path($path);
-                $sheets = Excel::toCollection(new \App\Imports\FuelImportCollection, $filePath);
-                
+                $filePath = Storage::disk('local')->path($path);
+                $sheets = Excel::toCollection(new FuelImportCollection, $filePath);
+
                 $transactions = $sheets[0] ?? collect();
                 $units = $sheets[1] ?? collect();
 
@@ -60,7 +67,7 @@ class ImportController extends Controller
                     $unitCodeRaw = $unitRow['unitcode'] ?? null;
                     if ($unitCodeRaw) {
                         $unitCodeClean = trim(strtoupper($unitCodeRaw));
-                        
+
                         $unitShortName = isset($unitRow['unitshortname']) ? trim(strtoupper($unitRow['unitshortname'])) : '';
                         $codeUniCalculated = $unitShortName !== '' ? "{$unitCodeClean}-{$unitShortName}" : $unitCodeClean;
 
@@ -89,13 +96,14 @@ class ImportController extends Controller
                 foreach ($transactions as $row) {
                     $importSummary['processed_rows']++;
                     $unitCodeRaw = $row['unitcode'] ?? null;
-                    if (empty($unitCodeRaw) && !empty($row['internalorder'])) {
+                    if (empty($unitCodeRaw) && ! empty($row['internalorder'])) {
                         $unitCodeRaw = substr($row['internalorder'], 0, 4);
                     }
 
                     if (empty($unitCodeRaw)) {
                         $rowsSkipped++;
                         $skipReasons['Unit code kosong'] = ($skipReasons['Unit code kosong'] ?? 0) + 1;
+
                         continue;
                     }
 
@@ -123,6 +131,7 @@ class ImportController extends Controller
                     if ($qtyRaw === null || $qtyRaw === '' || $qtyRaw === ' ') {
                         $rowsSkipped++;
                         $skipReasons['Quantity kosong'] = ($skipReasons['Quantity kosong'] ?? 0) + 1;
+
                         continue;
                     }
 
@@ -135,9 +144,9 @@ class ImportController extends Controller
                     // Parse Year and Month
                     $yearVal = intval($row['year'] ?? now()->year);
                     $monthRaw = trim($row['monthname'] ?? $row['month_name'] ?? $row['month'] ?? now()->format('F'));
-                    
+
                     try {
-                        $monthVal = \Carbon\Carbon::parse('1 ' . $monthRaw . ' ' . $yearVal)->format('F');
+                        $monthVal = Carbon::parse('1 '.$monthRaw.' '.$yearVal)->format('F');
                     } catch (\Exception $e) {
                         $monthVal = ucfirst(strtolower($monthRaw));
                     }
@@ -158,10 +167,10 @@ class ImportController extends Controller
                         'code_company' => $codeCompany,
                         'code_unit' => $codeUnit,
                         'created_at' => $now,
-                        'updated_at' => $now
+                        'updated_at' => $now,
                     ];
                     $rowsImported++;
-                    $periods[$monthVal . ' ' . $yearVal] = true;
+                    $periods[$monthVal.' '.$yearVal] = true;
                     $unitCodes[$codeUnit] = true;
                 }
 
@@ -172,52 +181,53 @@ class ImportController extends Controller
                 $importSummary['unique_assets'] = count($unitCodes);
 
                 // Bulk insert in chunks of 500
-                if (!empty($insertData)) {
+                if (! empty($insertData)) {
                     foreach (array_chunk($insertData, 500) as $chunk) {
-                        \App\Models\FuelTransaction::insert($chunk);
+                        FuelTransaction::insert($chunk);
                     }
                 }
             } else {
                 $countBefore = DataAlat::count();
                 $importer = new DataAlatImport($request->sumber, $importLog->id);
-                Excel::import($importer, \Illuminate\Support\Facades\Storage::disk('local')->path($path));
-                
+                Excel::import($importer, Storage::disk('local')->path($path));
+
                 $countAfter = DataAlat::count();
                 $rowsImported = $countAfter - $countBefore;
                 $importSummary = array_merge($importSummary, $importer->summary());
                 $importSummary['filename'] = $filename;
                 $importSummary['sumber'] = $request->sumber;
             }
-            
+
             $importLog->update([
-                'rows_count' => $rowsImported
+                'rows_count' => $rowsImported,
             ]);
 
             $this->updateSummary($importLog->id);
 
-            // Sync master aset 
-            \Illuminate\Support\Facades\Artisan::call('app:migrate-master-asets');
+            // Sync master aset
+            Artisan::call('app:migrate-master-asets');
 
             $message = "Data berhasil diimport! ($rowsImported baris baru ditambahkan)";
+
             return redirect()->back()
                 ->with('success', $message)
                 ->with('import_summary', $importSummary);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal import: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal import: '.$e->getMessage());
         }
     }
 
     public function deleteLog($id)
     {
         try {
-            $log = \App\Models\ImportLog::findOrFail($id);
-            
+            $log = ImportLog::findOrFail($id);
+
             // Hapus data alat berat yang terkait dengan file ini
             DataAlat::where('import_log_id', $log->id)->delete();
-            
-            // Hapus fuel transactions yang terkait 
-            \App\Models\FuelTransaction::where('import_log_id', $log->id)->delete();
-            
+
+            // Hapus fuel transactions yang terkait
+            FuelTransaction::where('import_log_id', $log->id)->delete();
+
             $filename = $log->filename;
             $log->delete();
 
@@ -227,7 +237,7 @@ class ImportController extends Controller
 
             return redirect()->back()->with('success', "Data dari file '$filename' berhasil dihapus!");
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal menghapus file: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal menghapus file: '.$e->getMessage());
         }
     }
 
@@ -288,7 +298,7 @@ class ImportController extends Controller
             }
 
             // Bulk upsert dalam chunks — satu query per chunk, bukan per baris
-            if (!empty($upsertData)) {
+            if (! empty($upsertData)) {
                 foreach (array_chunk($upsertData, 500) as $chunk) {
                     MonitoringSummary::upsert(
                         $chunk,
@@ -304,7 +314,7 @@ class ImportController extends Controller
     {
         DataAlat::truncate();
         MonitoringSummary::truncate();
-        \App\Models\ImportLog::truncate();
+        ImportLog::truncate();
 
         return redirect()->back()->with('success', 'Semua data dan riwayat import berhasil dihapus!');
     }

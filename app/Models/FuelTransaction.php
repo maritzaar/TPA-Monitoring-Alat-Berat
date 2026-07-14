@@ -25,7 +25,7 @@ class FuelTransaction extends Model
         'group_aset',
         'area',
         'code_company',
-        'code_unit'
+        'code_unit',
     ];
 
     public function importLog()

@@ -15,7 +15,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        //(not requiring @email format)
+        // (not requiring @email format)
         $credentials = $request->validate([
             'email' => ['required', 'string'],
             'password' => ['required'],
@@ -25,7 +25,7 @@ class LoginController extends Controller
             $request->session()->regenerate();
 
             return redirect()->intended(route('monitoring.index'))
-                ->with('success', 'Welcome back, ' . Auth::user()->name . '!');
+                ->with('success', 'Welcome back, '.Auth::user()->name.'!');
         }
 
         return back()->withErrors([

@@ -166,7 +166,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2 mt-4 pt-2 border-t border-slate-100">
-                <a href="{{ route('monitoring.working_hour') }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
+                <a href="{{ route('monitoring.working_hour', ['bulan' => 'ALL', 'tahun' => 'ALL']) }}" class="px-4 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 font-semibold rounded-lg text-sm transition">
                     {{ __('Reset Filter') }}
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">

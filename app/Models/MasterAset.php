@@ -16,7 +16,8 @@ class MasterAset extends Model
         'area',
         'internal_order',
         'group_internal_order',
+        'group_desc',
         'pt',
-        'company_code'
+        'company_code',
     ];
 }

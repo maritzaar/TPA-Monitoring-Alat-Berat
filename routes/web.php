@@ -1,21 +1,21 @@
 <?php
 
-use App\Http\Controllers\ImportController;
-use App\Http\Controllers\MonitoringController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ProfileController;
 use App\Http\Controllers\Auth\UserController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ImportController;
+use App\Http\Controllers\MonitoringController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->middleware('auth')->name('home');
+Route::get('/', [HomeController::class, 'index'])->middleware('auth')->name('home');
 
 // Language Switcher
 Route::get('lang/{locale}', function ($locale) {
     if (in_array($locale, ['id', 'en'])) {
         session()->put('locale', $locale);
     }
+
     return redirect()->back();
 })->name('lang.switch');
 
@@ -39,21 +39,26 @@ Route::middleware('auth')->group(function () {
     Route::get('monitoring/fuel', [MonitoringController::class, 'fuel'])->name('monitoring.fuel');
     Route::get('monitoring/fuel/detail/{idAset}', [MonitoringController::class, 'fuelDetail'])->name('monitoring.fuel_detail');
     Route::get('monitoring/export', [MonitoringController::class, 'export'])->name('monitoring.export');
-    
+
     // System Flow
     Route::get('monitoring/flow', function () {
         return view('monitoring.flow');
     })->name('monitoring.flow');
 
     // Fallback for old routes
-    Route::get('monitoring', function() { return redirect()->route('monitoring.working_hour'); })->name('monitoring.index');
-    Route::get('monitoring/laporan', function() { return redirect()->route('monitoring.working_hour'); })->name('monitoring.laporan');
+    Route::get('monitoring', function () {
+        return redirect()->route('monitoring.working_hour');
+    })->name('monitoring.index');
+    Route::get('monitoring/laporan', function () {
+        return redirect()->route('monitoring.working_hour');
+    })->name('monitoring.laporan');
 
     // Admin Routes
     Route::middleware('role:admin')->group(function () {
         // User Management
         Route::get('pengguna', [UserController::class, 'index'])->name('users.index');
         Route::post('pengguna/create', [UserController::class, 'store'])->name('users.store');
+        Route::post('pengguna/edit/{user}', [UserController::class, 'update'])->name('users.update');
         Route::post('pengguna/toggle/{user}', [UserController::class, 'toggleRole'])->name('users.toggle');
         Route::post('pengguna/reset-password/{user}', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::delete('pengguna/delete/{user}', [UserController::class, 'destroy'])->name('users.destroy');

@@ -3,8 +3,8 @@
 namespace App\Exports;
 
 use App\Models\DataAlat;
-use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 
@@ -23,28 +23,28 @@ class DataAlatExport implements FromQuery, WithHeadings, WithMapping
     {
         $query = DataAlat::query();
 
-        if (!empty($this->filters['tahun'])) {
+        if (! empty($this->filters['tahun'])) {
             $query->where('tahun', $this->filters['tahun']);
         }
-        if (!empty($this->filters['bulan'])) {
+        if (! empty($this->filters['bulan'])) {
             $query->where('bulan', $this->filters['bulan']);
         }
-        if (!empty($this->filters['group_aset']) && $this->filters['group_aset'] !== 'ALL') {
+        if (! empty($this->filters['group_aset']) && $this->filters['group_aset'] !== 'ALL') {
             $query->where('group_aset', $this->filters['group_aset']);
         }
-        if (!empty($this->filters['area']) && $this->filters['area'] !== 'ALL') {
+        if (! empty($this->filters['area']) && $this->filters['area'] !== 'ALL') {
             $query->where('area', $this->filters['area']);
         }
-        if (!empty($this->filters['id_aset']) && $this->filters['id_aset'] !== 'ALL') {
+        if (! empty($this->filters['id_aset']) && $this->filters['id_aset'] !== 'ALL') {
             $query->where('id_aset', $this->filters['id_aset']);
         }
-        if (!empty($this->filters['group_desc']) && $this->filters['group_desc'] !== 'ALL') {
+        if (! empty($this->filters['group_desc']) && $this->filters['group_desc'] !== 'ALL') {
             $query->where('group_desc', $this->filters['group_desc']);
         }
-        if (!empty($this->filters['group_internal_order']) && $this->filters['group_internal_order'] !== 'ALL') {
+        if (! empty($this->filters['group_internal_order']) && $this->filters['group_internal_order'] !== 'ALL') {
             $query->where('group_internal_order', $this->filters['group_internal_order']);
         }
-        if (!empty($this->filters['internal_order']) && $this->filters['internal_order'] !== 'ALL') {
+        if (! empty($this->filters['internal_order']) && $this->filters['internal_order'] !== 'ALL') {
             $query->where('internal_order', $this->filters['internal_order']);
         }
 
@@ -82,7 +82,7 @@ class DataAlatExport implements FromQuery, WithHeadings, WithMapping
             'Daya Dihasilkan (kWh)',
             'Beban Harian Rata-rata',
             'Daya per Unit Bahan Bakar (kWh/L)',
-            'Sumber Data'
+            'Sumber Data',
         ];
     }
 
@@ -117,7 +117,7 @@ class DataAlatExport implements FromQuery, WithHeadings, WithMapping
             $row->daya_dihasilkan,
             $row->beban_harian,
             $row->daya_per_unit,
-            $row->sumber_data
+            $row->sumber_data,
         ];
     }
 }

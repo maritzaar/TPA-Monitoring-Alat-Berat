@@ -3,15 +3,15 @@
 @section('title', __('Manage Users'))
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div class="w-full space-y-6">
     
     <!-- Header Block -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm">
         <h2 class="text-xl sm:text-2xl font-bold text-slate-800 flex items-center">
-            <i class="fas fa-users text-blue-600 mr-2"></i>
+            <i class="fas fa-users text-forest mr-2"></i>
             {{ __('Manage Users') }}
         </h2>
-        <button onclick="toggleUserModal(true)" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-lg transition text-sm font-semibold shadow-sm inline-flex items-center justify-center">
+        <button onclick="toggleUserModal(true)" class="bg-forest hover:bg-green-700 text-white px-4 py-2.5 rounded-lg transition text-sm font-semibold shadow-sm inline-flex items-center justify-center">
             <i class="fas fa-user-plus mr-2"></i> {{ __('Add New User') }}
         </button>
     </div>
@@ -22,11 +22,11 @@
             <table class="min-w-full divide-y divide-slate-200 border border-slate-100 rounded-lg overflow-hidden">
                 <thead class="bg-slate-50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Name') }}</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Email Address') }}</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Registration Date') }}</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Role') }}</th>
-                        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Action') }}</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Nama Lengkap') }}</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Alamat Email (Username)') }}</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Tanggal Terdaftar') }}</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Peran') }}</th>
+                        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Aksi') }}</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-slate-100 text-sm">
@@ -36,10 +36,10 @@
                         <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $user->email }}</td>
                         <td class="px-4 py-3 text-slate-550 whitespace-nowrap">{{ $user->created_at->format('d/m/Y') }}</td>
                         <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="px-2.5 py-1 text-xs rounded-full font-semibold border
-                                @if($user->role === 'admin') bg-blue-50 text-blue-750 border-blue-100
+                                <span class="px-2.5 py-1 text-xs rounded-full font-semibold border
+                                @if($user->role === 'admin') bg-green-50 text-green-700 border-green-200
                                 @else bg-slate-100 text-slate-600 border-slate-200 @endif">
-                                {{ $user->role === 'admin' ? __('Admin/Operator') : __('Viewer') }}
+                                {{ $user->role === 'admin' ? __('Admin/Operator') : __('Penonton') }}
                             </span>
                         </td>
                         <td class="px-4 py-3 text-center whitespace-nowrap space-x-1.5">
@@ -49,7 +49,7 @@
                                 @csrf
                                 <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg border transition inline-flex items-center
                                     @if($user->role === 'admin') bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200
-                                    @else bg-blue-600 text-white border-transparent hover:bg-blue-700 shadow-sm @endif">
+                                    @else bg-forest text-white border-transparent hover:bg-green-700 shadow-sm @endif">
                                     @if($user->role === 'admin')
                                         <i class="fas fa-user-minus mr-1.5 text-slate-400"></i> {{ __('Make Viewer') }}
                                     @else
@@ -58,21 +58,26 @@
                                 </button>
                             </form>
 
+                            <button type="button" onclick="openEditUserModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')"
+                                    class="text-xs font-bold px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition inline-flex items-center shadow-sm">
+                                <i class="fas fa-edit mr-1.5 text-blue-500"></i> {{ __('Edit') }}
+                            </button>
+
                             <button type="button" onclick="openResetPasswordModal({{ $user->id }}, '{{ addslashes($user->name) }}')"
                                     class="text-xs font-bold px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center shadow-sm">
                                 <i class="fas fa-key mr-1.5 text-slate-500"></i> {{ __('Reset Password') }}
                             </button>
 
                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"
-                                  onsubmit="return confirm('{{ __('Are you sure you want to permanently delete this user account?') }}')">
+                                  onsubmit="return confirm('{{ __('Apakah Anda yakin ingin menghapus akun pengguna ini secara permanen?') }}')">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg border border-transparent bg-rose-600 hover:bg-rose-700 text-white transition inline-flex items-center shadow-sm">
-                                    <i class="fas fa-trash-can mr-1.5 text-rose-200"></i> {{ __('Delete') }}
+                                    <i class="fas fa-trash-can mr-1.5 text-rose-200"></i> {{ __('Hapus') }}
                                 </button>
                             </form>
                             @else
-                            <span class="text-xs text-slate-400 font-medium italic"><i class="fas fa-user-lock mr-1"></i>{{ __('You') }}</span>
+                            <span class="text-xs text-slate-400 font-medium italic"><i class="fas fa-user-lock mr-1"></i>{{ __('Anda') }}</span>
                             @endif
                         </td>
                     </tr>
@@ -148,7 +153,7 @@
                 <button type="button" onclick="toggleUserModal(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition text-xs font-semibold">
                     {{ __('Cancel') }}
                 </button>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition text-xs font-semibold shadow-sm inline-flex items-center">
+                <button type="submit" class="bg-forest hover:bg-green-700 text-white px-4 py-2 rounded-lg transition text-xs font-semibold shadow-sm inline-flex items-center">
                     <i class="fas fa-save mr-1.5"></i> {{ __('Save User') }}
                 </button>
             </div>
@@ -192,8 +197,53 @@
                 <button type="button" onclick="toggleResetPasswordModal(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition text-xs font-semibold">
                     {{ __('Cancel') }}
                 </button>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition text-xs font-semibold shadow-sm inline-flex items-center">
+                <button type="submit" class="bg-forest hover:bg-green-700 text-white px-4 py-2 rounded-lg transition text-xs font-semibold shadow-sm inline-flex items-center">
                     <i class="fas fa-save mr-1.5"></i> {{ __('Save Password') }}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ================= EDIT USER MODAL ================= -->
+<div id="editUserModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl border border-slate-200 w-full max-w-md shadow-2xl overflow-hidden transform transition-all duration-300">
+        <!-- Modal Header -->
+        <div class="h-14 bg-[#0F172A] text-white px-5 flex items-center justify-between">
+            <span class="font-bold text-sm tracking-wider flex items-center">
+                <i class="fas fa-user-edit mr-2 text-blue-400"></i>
+                {{ __('Edit User') }}
+            </span>
+            <button type="button" onclick="toggleEditUserModal(false)" class="text-slate-400 hover:text-white transition focus:outline-none p-1">
+                <i class="fas fa-times text-lg"></i>
+            </button>
+        </div>
+        
+        <!-- Modal Body -->
+        <form id="editUserForm" action="" method="POST" class="p-5 space-y-4 text-left">
+            @csrf
+            
+            <!-- Full Name -->
+            <div>
+                <label for="edit_name" class="block text-xs font-semibold text-slate-600 mb-1.5">{{ __('Full Name') }} <span class="text-rose-500">*</span></label>
+                <input type="text" name="name" id="edit_name" required
+                       class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-800 py-2.5 px-3 focus:border-blue-600 focus:ring-blue-600 focus:outline-none text-sm">
+            </div>
+
+            <!-- Username -->
+            <div>
+                <label for="edit_email" class="block text-xs font-semibold text-slate-600 mb-1.5">{{ __('Username') }} <span class="text-rose-500">*</span></label>
+                <input type="text" name="email" id="edit_email" required
+                       class="w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-800 py-2.5 px-3 focus:border-blue-600 focus:ring-blue-600 focus:outline-none text-sm">
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex justify-end space-x-2.5 pt-4 border-t border-slate-100">
+                <button type="button" onclick="toggleEditUserModal(false)" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg transition text-xs font-semibold">
+                    {{ __('Cancel') }}
+                </button>
+                <button type="submit" class="bg-forest hover:bg-green-700 text-white px-4 py-2 rounded-lg transition text-xs font-semibold shadow-sm inline-flex items-center">
+                    <i class="fas fa-save mr-1.5"></i> {{ __('Save Changes') }}
                 </button>
             </div>
         </form>
@@ -228,6 +278,26 @@ function openResetPasswordModal(userId, userName) {
     form.action = `/pengguna/reset-password/${userId}`;
     
     toggleResetPasswordModal(true);
+}
+
+function toggleEditUserModal(show) {
+    const modal = document.getElementById('editUserModal');
+    if (show) {
+        modal.classList.remove('hidden');
+    } else {
+        modal.classList.add('hidden');
+    }
+}
+
+function openEditUserModal(userId, userName, userEmail) {
+    document.getElementById('edit_name').value = userName;
+    document.getElementById('edit_email').value = userEmail;
+    
+    // Set dynamic route action
+    const form = document.getElementById('editUserForm');
+    form.action = `/pengguna/edit/${userId}`;
+    
+    toggleEditUserModal(true);
 }
 </script>
 @endsection

@@ -7,7 +7,9 @@ use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 class DataAlatImport implements WithMultipleSheets
 {
     protected $sumber;
+
     protected $importLogId;
+
     protected ?DataAlatSheetImport $mainSheet = null;
 
     public function __construct($sumber = 'CATERPILLAR', $importLogId = null)
