@@ -92,7 +92,7 @@
         Akses Cepat
     </h2>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         
         <!-- Bootstrap Inspired Card 1 -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-200">

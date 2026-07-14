@@ -30,27 +30,27 @@
     {{-- ====== STAT CARDS ====== --}}
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {{-- Total Assets --}}
-        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-blue-500 p-4 shadow-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-blue-500 p-4 shadow-sm transition-colors duration-200">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Unit Aset</p>
-            <p class="text-2xl font-bold text-slate-800 mt-1">
+            <p class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
                 {{ number_format($stats->total_aset, 0) }}
                 <span class="text-xs font-normal text-slate-400 ml-1">Unit</span>
             </p>
         </div>
 
         {{-- Total Kerja --}}
-        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-indigo-500 p-4 shadow-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-indigo-500 p-4 shadow-sm transition-colors duration-200">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Jam Kerja</p>
-            <p class="text-2xl font-bold text-slate-800 mt-1">
+            <p class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
                 {{ number_format($stats->total_kerja, 1) }}
                 <span class="text-xs font-normal text-slate-400 ml-1">Jam</span>
             </p>
         </div>
 
         {{-- Avg Idle --}}
-        <div class="bg-white rounded-xl border border-slate-200 border-l-4 border-l-amber-500 p-4 shadow-sm">
+        <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 border-l-4 border-l-amber-500 p-4 shadow-sm transition-colors duration-200">
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Rata-Rata Idle</p>
-            <p class="text-2xl font-bold text-slate-800 mt-1">
+            <p class="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
                 {{ number_format($stats->avg_idle, 1) }}
                 <span class="text-xs font-normal text-slate-400 ml-1">%</span>
             </p>
@@ -61,9 +61,9 @@
     @if($reports->isNotEmpty())
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Bar Chart (Kiri - 2/3 width) -->
-        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
-                <i class="fas fa-chart-bar text-indigo-600 mr-2"></i> Perbandingan Jam Kerja & Jam Idle per Aset
+        <div class="lg:col-span-2 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-5 shadow-sm transition-colors duration-200">
+            <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center">
+                <i class="fas fa-chart-bar text-indigo-600 dark:text-indigo-400 mr-2"></i> Perbandingan Jam Kerja & Jam Idle per Aset
             </h3>
             <div class="relative h-72 sm:h-96">
                 <canvas id="consolidatedReportChart"></canvas>
@@ -71,9 +71,9 @@
         </div>
 
         <!-- Doughnut Chart (Kanan - 1/3 width) -->
-        <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4 flex items-center">
-                <i class="fas fa-chart-pie text-indigo-600 mr-2"></i> Rasio Total Jam Kerja vs Jam Idle
+        <div class="lg:col-span-1 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-5 shadow-sm transition-colors duration-200">
+            <h3 class="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-4 flex items-center">
+                <i class="fas fa-chart-pie text-indigo-600 dark:text-indigo-400 mr-2"></i> Rasio Total Jam Kerja vs Jam Idle
             </h3>
             <div class="relative h-72 sm:h-96 flex items-center justify-center">
                 <canvas id="workingHourPieChart"></canvas>
@@ -83,18 +83,18 @@
     @endif
 
     {{-- ====== FILTER BAR ====== --}}
-    <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm no-print">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm no-print transition-colors duration-200">
         <form action="{{ route('monitoring.working_hour') }}" method="GET">
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 items-end">
                 {{-- Tanggal Mulai --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Start Date</label>
-                    <input type="date" name="start_date" id="filter_start_date" value="{{ $start_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                    <input type="date" name="start_date" id="filter_start_date" value="{{ $start_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none transition-colors duration-200">
                 </div>
                 {{-- Tanggal Akhir --}}
                 <div>
                     <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">End Date</label>
-                    <input type="date" name="end_date" id="filter_end_date" value="{{ $end_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
+                    <input type="date" name="end_date" id="filter_end_date" value="{{ $end_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none transition-colors duration-200">
                 </div>
                 {{-- Grup --}}
                 <div>
@@ -187,30 +187,30 @@
     </div>
 
     {{-- ====== DATA TABLE ====== --}}
-    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-5 shadow-sm">
-        <div class="border-b border-slate-100 pb-3 mb-4 flex flex-wrap justify-between items-center gap-2">
+    <div class="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-5 shadow-sm transition-colors duration-200">
+        <div class="border-b border-slate-100 dark:border-slate-700 pb-3 mb-4 flex flex-wrap justify-between items-center gap-2">
             <div>
-                <h3 class="text-md font-bold text-slate-800 flex items-center">
-                    <i class="fas fa-list-check text-indigo-600 mr-2"></i> Rincian Kinerja Operasional Aset
+                <h3 class="text-md font-bold text-slate-800 dark:text-slate-200 flex items-center">
+                    <i class="fas fa-list-check text-indigo-600 dark:text-indigo-400 mr-2"></i> Rincian Kinerja Operasional Aset
                 </h3>
             </div>
             <div class="text-right flex items-center justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 dark:text-slate-500">
                         <i class="fas fa-search text-xs"></i>
                     </div>
                     <input type="text" id="assetSearchInput" placeholder="Cari data..."
-                           class="pl-8 pr-3 py-1.5 w-full sm:w-48 border border-slate-300 rounded-lg text-sm bg-slate-50 text-slate-800 placeholder-slate-400 focus:ring-blue-600 focus:border-blue-600 focus:outline-none transition-all">
+                           class="pl-8 pr-3 py-1.5 w-full sm:w-48 border border-slate-300 dark:border-slate-600 rounded-lg text-sm bg-slate-50 dark:bg-slate-700 text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-blue-600 focus:border-blue-600 focus:outline-none transition-all">
                 </div>
-                <span class="text-xs bg-slate-100 text-slate-600 font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 shadow-sm whitespace-nowrap">
+                <span class="text-xs bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-600 shadow-sm whitespace-nowrap">
                     {{ number_format($reports->count()) }} records
                 </span>
             </div>
         </div>
 
         <div class="overflow-x-auto max-h-[600px] table-scroll">
-            <table class="min-w-full divide-y divide-slate-200 border border-slate-100 text-sm">
-                <thead class="bg-slate-50 sticky top-0 shadow-sm z-10">
+            <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700 border border-slate-100 dark:border-slate-700 text-sm">
+                <thead class="bg-slate-50 dark:bg-slate-900/50 sticky top-0 shadow-sm z-10">
                     <tr>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Area</th>
@@ -227,20 +227,20 @@
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-slate-100">
+                <tbody class="bg-white dark:bg-slate-800 divide-y divide-slate-100 dark:divide-slate-700">
                     @forelse($reports as $row)
-                    <tr class="hover:bg-slate-50/50 transition">
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_aset ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->area ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->pt ?? '-' }}</td>
-                        <td class="px-3 py-2.5 font-bold text-slate-700 font-mono">{{ $row->id_aset }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs font-mono">{{ $row->tanggal->format('d/m/Y') }}</td>
-                        <td class="px-3 py-2.5 text-slate-700 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_internal_order ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-slate-600 text-xs">{{ $row->group_desc ?? '-' }}</td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_kerja, 1) }}</td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_operasi, 1) }}</td>
-                        <td class="px-3 py-2.5 text-right font-mono text-xs">{{ number_format($row->total_idle, 1) }}</td>
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-700/50 transition">
+                        <td class="px-3 py-2.5 text-slate-600 dark:text-slate-400 text-xs">{{ $row->group_aset ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 dark:text-slate-400 text-xs">{{ $row->area ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 dark:text-slate-400 text-xs">{{ $row->pt ?? '-' }}</td>
+                        <td class="px-3 py-2.5 font-bold text-slate-700 dark:text-slate-300 font-mono">{{ $row->id_aset }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 dark:text-slate-400 text-xs font-mono">{{ $row->tanggal->format('d/m/Y') }}</td>
+                        <td class="px-3 py-2.5 text-slate-700 dark:text-slate-300 font-mono text-xs">{{ $row->internal_order ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 dark:text-slate-400 text-xs">{{ $row->group_internal_order ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-slate-600 dark:text-slate-400 text-xs">{{ $row->group_desc ?? '-' }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-700 dark:text-slate-300">{{ number_format($row->total_kerja, 1) }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-700 dark:text-slate-300">{{ number_format($row->total_operasi, 1) }}</td>
+                        <td class="px-3 py-2.5 text-right font-mono text-xs text-slate-700 dark:text-slate-300">{{ number_format($row->total_idle, 1) }}</td>
                         <td class="px-3 py-2.5 text-right">
                             <span class="px-1.5 py-0.5 rounded text-[10px] font-semibold
                                 @if(($row->avg_idle ?? 0) < 30) bg-emerald-50 text-emerald-800
@@ -368,7 +368,7 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Selected text element
         const btn = document.createElement('div');
-        btn.className = 'w-full flex items-center justify-between rounded-lg border border-slate-350 bg-white text-slate-700 text-sm py-2 px-3 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 focus:outline-none cursor-pointer select-none';
+        btn.className = 'w-full flex items-center justify-between rounded-lg border border-slate-350 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus-within:border-blue-600 focus-within:ring-1 focus-within:ring-blue-600 focus:outline-none cursor-pointer select-none transition-colors duration-200';
         
         // Label/Value inside button
         const btnText = document.createElement('span');
@@ -392,17 +392,17 @@ document.addEventListener('DOMContentLoaded', function () {
         
         // Dropdown Menu Container
         const menu = document.createElement('div');
-        menu.className = 'absolute left-0 right-0 mt-1 bg-white border border-slate-200 rounded-lg shadow-xl z-50 flex flex-col hidden';
+        menu.className = 'absolute left-0 right-0 mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg shadow-xl z-50 flex flex-col hidden transition-colors duration-200';
         menu.style.maxHeight = '280px';
         
         // Search Input
         const searchBox = document.createElement('div');
-        searchBox.className = 'p-2 border-b border-slate-100 flex-shrink-0';
+        searchBox.className = 'p-2 border-b border-slate-100 dark:border-slate-700 flex-shrink-0';
         
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
         searchInput.placeholder = 'Search...';
-        searchInput.className = 'w-full rounded-md border border-slate-300 bg-slate-50 text-slate-700 text-xs py-1.5 px-2.5 focus:border-blue-600 focus:outline-none';
+        searchInput.className = 'w-full rounded-md border border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 text-xs py-1.5 px-2.5 focus:border-blue-600 focus:outline-none transition-colors duration-200';
         searchBox.appendChild(searchInput);
         menu.appendChild(searchBox);
         
@@ -422,12 +422,12 @@ document.addEventListener('DOMContentLoaded', function () {
             const options = Array.from(select.options);
             options.forEach(opt => {
                 const optItem = document.createElement('div');
-                optItem.className = 'px-3 py-2 text-xs text-slate-700 hover:bg-blue-600 hover:text-white cursor-pointer transition-colors';
+                optItem.className = 'px-3 py-2 text-xs text-slate-700 dark:text-slate-300 hover:bg-blue-600 dark:hover:bg-blue-700 hover:text-white cursor-pointer transition-colors';
                 optItem.textContent = opt.text;
                 optItem.dataset.value = opt.value;
                 
                 if (opt.selected) {
-                    optItem.classList.add('bg-blue-50', 'text-blue-800', 'font-semibold');
+                    optItem.classList.add('bg-blue-50', 'dark:bg-blue-900/30', 'text-blue-800', 'dark:text-blue-300', 'font-semibold');
                     btnText.textContent = opt.text;
                     if (opt.value !== '') {
                         clearBtn.classList.remove('hidden');

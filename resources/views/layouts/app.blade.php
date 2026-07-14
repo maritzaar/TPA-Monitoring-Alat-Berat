@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
@@ -23,6 +24,14 @@
     </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="{{ asset('js/chart.js') }}"></script>
+    <script>
+        // Check local storage for theme
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Outfit:wght@300;400;500;600;700&display=swap');
         body { font-family: 'Outfit', sans-serif; font-size: 1rem; }
@@ -59,7 +68,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col">
+<body class="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 flex flex-col transition-colors duration-200">
 
     @auth
     <!-- Sidebar Backdrop (mobile only) -->
@@ -68,10 +77,10 @@
 
     <!-- Sidebar Drawer -->
     <aside id="sidebarDrawer"
-           class="fixed top-16 left-0 bottom-0 w-64 bg-white border-r border-slate-200 z-30 -translate-x-full flex flex-col shadow-sm no-print">
+           class="fixed top-16 left-0 bottom-0 w-64 bg-white dark:bg-slate-800 border-r border-slate-200 dark:border-slate-700 z-30 -translate-x-full flex flex-col shadow-sm no-print">
 
         <!-- Mobile-only header inside drawer -->
-        <div class="h-14 bg-[#0F172A] flex items-center justify-between px-4 text-white md:hidden flex-shrink-0">
+        <div class="h-14 bg-[#0F172A] dark:bg-slate-950 flex items-center justify-between px-4 text-white md:hidden flex-shrink-0 transition-colors duration-200">
             <span class="font-bold tracking-wide flex items-center text-sm">
                 <i class="fas fa-desktop mr-2 text-blue-400"></i>
                 Navigation Menu
@@ -88,8 +97,8 @@
             <a href="{{ route('home') }}"
                class="flex items-center space-x-3 px-4 py-2.5 rounded-lg transition text-sm font-semibold
                {{ Route::currentRouteName() === 'home'
-                   ? 'bg-blue-50 text-forest border-l-4 border-blue-600 pl-3'
-                   : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800' }}">
+                   ? 'bg-blue-50 dark:bg-blue-900/30 text-forest border-l-4 border-blue-600 pl-3'
+                   : 'text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-slate-800 dark:hover:text-slate-200' }}">
                 <i class="fas fa-home w-5 text-center text-sm"></i>
                 <span>Home</span>
             </a>
@@ -103,9 +112,9 @@
                 {{-- Group header button --}}
                 <button type="button" id="navMonitoringToggle"
                         class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition text-sm font-bold
-                               {{ $monitoringActive ? 'text-forest bg-forest/10' : 'text-slate-700 hover:bg-slate-50' }}">
+                               {{ $monitoringActive ? 'text-forest bg-forest/10 dark:bg-forest/20' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50' }}">
                             <div class="flex items-center">
-                                <i class="fas fa-chart-line w-5 mr-3 text-center text-slate-400 group-hover:text-slate-600 transition-colors"></i>
+                                <i class="fas fa-chart-line w-5 mr-3 text-center text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-200 transition-colors"></i>
                                 Pemantauan
                             </div>
                     <i id="navMonitoringChevron"
@@ -125,21 +134,21 @@
                            class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
                                   {{ in_array(Route::currentRouteName(), ['monitoring.working_hour', 'monitoring.working_hour_detail'])
                                       ? 'bg-forest text-white shadow-sm'
-                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-200' }}">
                             <i class="fas fa-clock w-4 text-center"></i>
                             <span>Jam Kerja</span>
                         </a>
 
                         {{-- Laporan Fuel --}}
-                        <a href="{{ route('monitoring.fuel') }}" class="flex items-center py-2 text-sm font-medium rounded-md transition-colors
-                                    {{ request()->routeIs('monitoring.fuel*') ? 'text-forest font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
+                        <a href="{{ route('monitoring.fuel') }}" class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                    {{ request()->routeIs('monitoring.fuel*') ? 'bg-forest text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-200' }}">
                                     <i class="fas fa-gas-pump text-[10px] mr-2 {{ request()->routeIs('monitoring.fuel*') ? 'text-forest' : 'text-slate-300' }}"></i>
                                     Konsumsi BBM
                                 </a>
 
                         {{-- Alur Sistem --}}
-                        <a href="{{ route('monitoring.flow') }}" class="flex items-center py-2 text-sm font-medium rounded-md transition-colors
-                                    {{ request()->routeIs('monitoring.flow*') ? 'text-forest font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
+                        <a href="{{ route('monitoring.flow') }}" class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                    {{ request()->routeIs('monitoring.flow*') ? 'bg-forest text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-200' }}">
                                     <i class="fas fa-project-diagram text-[10px] mr-2 {{ request()->routeIs('monitoring.flow*') ? 'text-forest' : 'text-slate-300' }}"></i>
                                     Alur Sistem
                                 </a>
@@ -157,7 +166,7 @@
             <div>
                 <button type="button" id="navAdminToggle"
                         class="w-full flex items-center justify-between px-4 py-2.5 rounded-lg transition text-sm font-bold
-                               {{ $adminActive ? 'text-forest bg-forest/10' : 'text-slate-700 hover:bg-slate-50' }}">
+                               {{ $adminActive ? 'text-forest bg-forest/10 dark:bg-forest/20' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/50' }}">
                     <span class="flex items-center space-x-3">
                         <i class="fas fa-shield-alt w-5 text-center text-sm"></i>
                         <span>Kelola Data</span>
@@ -176,13 +185,13 @@
                            class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
                                   {{ Route::currentRouteName() === 'import.index'
                                       ? 'bg-forest text-white shadow-sm'
-                                      : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900' }}">
+                                      : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-200' }}">
                             <i class="fas fa-upload w-4 text-center"></i>
                             <span>Import Data</span>
                         </a>
 
-                        <a href="{{ route('users.index') }}" class="flex items-center py-2 text-sm font-medium rounded-md transition-colors
-                                    {{ request()->routeIs('users.index') ? 'text-forest font-semibold' : 'text-slate-500 hover:text-slate-800' }}">
+                        <a href="{{ route('users.index') }}" class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition text-xs font-semibold
+                                    {{ request()->routeIs('users.index') ? 'bg-forest text-white shadow-sm' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700/50 hover:text-slate-900 dark:hover:text-slate-200' }}">
                                     <i class="fas fa-users-cog text-[10px] mr-2 {{ request()->routeIs('users.index') ? 'text-forest' : 'text-slate-300' }}"></i>
                                     Kelola Pengguna
                                 </a>
@@ -202,7 +211,7 @@
     @endauth
 
     <!-- ======== TOP NAVBAR ======== -->
-    <nav class="fixed top-0 left-0 right-0 h-16 bg-[#0F172A] text-white px-3 sm:px-4 shadow-md z-40 flex justify-between items-center no-print">
+    <nav class="fixed top-0 left-0 right-0 h-16 bg-[#0F172A] dark:bg-slate-950 border-b border-transparent dark:border-slate-800 text-white px-3 sm:px-4 shadow-md z-40 flex justify-between items-center no-print transition-colors duration-200">
         <!-- Left: hamburger + brand -->
         <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
             @auth
@@ -212,14 +221,21 @@
                 <i class="fas fa-bars text-xl"></i>
             </button>
             @endauth
-            <h1 class="text-xs sm:text-sm md:text-base font-bold tracking-wider flex items-center select-none whitespace-nowrap text-white">
-                <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0">
-                <span>TELADAN PRIMA AGRO</span>
-            </h1>
+            <a href="{{ route('home') }}" class="flex items-center hover:opacity-80 transition-opacity">
+                <h1 class="text-xs sm:text-sm md:text-base font-bold tracking-wider flex items-center select-none whitespace-nowrap text-white">
+                    <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0">
+                    <span>TELADAN PRIMA AGRO</span>
+                </h1>
+            </a>
         </div>
 
-        <!-- Right: user info -->
+        <!-- Right: theme toggle + user info -->
         <div class="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+            <!-- Theme Toggle -->
+            <button id="themeToggleBtn" class="text-slate-300 hover:text-white transition focus:outline-none p-2 rounded-full hover:bg-slate-800">
+                <i id="themeToggleIcon" class="fas fa-moon text-lg"></i>
+            </button>
+            
             @auth
             <div class="relative inline-block text-left" id="profileDropdownContainer">
                 <div class="flex items-center space-x-2 sm:space-x-3">
@@ -237,11 +253,11 @@
 
                 <!-- Dropdown -->
                 <div id="profileDropdownMenu"
-                     class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 divide-y divide-slate-100 z-50 text-sm no-print">
+                     class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 divide-y divide-slate-100 dark:divide-slate-700 z-50 text-sm no-print">
                     <div class="p-3">
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5 px-2">Profil Saya</p>
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center space-x-2 px-3 py-2 text-slate-700 hover:bg-slate-50 hover:text-forest rounded-lg transition font-medium">
+                           class="flex items-center space-x-2 px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 hover:text-forest dark:hover:text-forest rounded-lg transition font-medium">
                             <i class="fas fa-user-cog text-slate-400"></i>
                             <span>Edit Profil</span>
                         </a>
@@ -249,9 +265,11 @@
                     <div class="p-3">
                         <form action="{{ route('logout') }}" method="POST" class="w-full">
                             @csrf
-                            <button type="submit" class="w-full flex items-center justify-center px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-lg text-sm font-bold transition duration-200">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Keluar
-                        </button>
+                            <button type="submit"
+                                    class="w-full flex items-center space-x-2 px-3 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition font-medium text-left">
+                                <i class="fas fa-sign-out-alt opacity-70"></i>
+                                <span>Logout</span>
+                            </button>
                         </form>
                     </div>
                 </div>
@@ -398,6 +416,36 @@
         }
         setupNavGroup('navMonitoringToggle', 'navMonitoringMenu', 'navMonitoringChevron');
         setupNavGroup('navAdminToggle',      'navAdminMenu',      'navAdminChevron');
+        
+        // --- Theme Toggle Logic ---
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeToggleIcon = document.getElementById('themeToggleIcon');
+        
+        function updateThemeIcon() {
+            if (document.documentElement.classList.contains('dark')) {
+                themeToggleIcon.classList.remove('fa-moon');
+                themeToggleIcon.classList.add('fa-sun');
+            } else {
+                themeToggleIcon.classList.remove('fa-sun');
+                themeToggleIcon.classList.add('fa-moon');
+            }
+        }
+        
+        // Initial icon update
+        if (themeToggleIcon) updateThemeIcon();
+        
+        if (themeToggleBtn) {
+            themeToggleBtn.addEventListener('click', () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.theme = 'light';
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.theme = 'dark';
+                }
+                updateThemeIcon();
+            });
+        }
     });
     </script>
 </body>
