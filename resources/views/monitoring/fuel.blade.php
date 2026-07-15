@@ -239,7 +239,6 @@
                 <h3 class="text-md font-bold text-slate-800 dark:text-slate-200 flex items-center">
                     <i class="fas fa-list-check text-indigo-600 dark:text-indigo-400 mr-2"></i> Rincian Konsumsi Solar Aset
                 </h3>
-                <p class="text-xs text-slate-450 dark:text-slate-400 mt-0.5">Data transaksi pengisian solar riil</p>
             </div>
             <div class="text-right flex items-center justify-end gap-3 w-full sm:w-auto mt-2 sm:mt-0">
                 <div class="relative">

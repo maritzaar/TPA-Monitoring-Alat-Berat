@@ -225,7 +225,7 @@
                                           ? 'bg-forest text-white shadow-sm'
                                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
                                 <i class="fas fa-project-diagram w-4 text-center"></i>
-                                <span>Alur Integrasi</span>
+                                <span>Alur Sistem Data</span>
                             </a>
                         </div>
                     </div>

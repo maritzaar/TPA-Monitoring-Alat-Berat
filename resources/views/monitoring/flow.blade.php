@@ -7,7 +7,7 @@
         <div>
             <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-100 flex items-center gap-2">
                 <i class="fas fa-project-diagram text-forest"></i>
-                Alur Integrasi & Aliran Data Sistem
+                Alur Sistem Data
             </h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Skema pemrosesan data pemantauan dari berbagai sumber hingga disajikan dalam bentuk analitik visual pada dashboard.
@@ -36,7 +36,7 @@
         <div class="bg-white dark:bg-[#0B1120]/40 rounded-2xl border border-slate-200 dark:border-white/5 p-4 sm:p-8 shadow-sm">
             
             <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="px-2.5 py-1 text-xs font-bold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-full">Pipeline Sinkronisasi Data</span>
+                <span class="px-2.5 py-1 text-xs font-bold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-full">Monitoring Pemakaian Solar</span>
                 <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Sinkronisasi Jarak Tempuh (KM) vs Volume Solar</h3>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Integrasi data jarak tempuh dari GPS AGI dengan volume pengisian solar pada dispenser bahan bakar.</p>
             </div>
@@ -47,7 +47,7 @@
                 <!-- Track 1: GPS Telemetry -->
                 <div class="space-y-3">
                     <div class="text-center md:text-left mb-4">
-                        <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Jalur A: Data Telemetri GPS</span>
+                        <span class="text-xs font-bold text-blue-500 uppercase tracking-wider">Data Telemetri GPS</span>
                     </div>
 
                     <!-- Step 1 -->
@@ -113,7 +113,7 @@
                 <!-- Track 2: Fuel Consumption -->
                 <div class="space-y-3">
                     <div class="text-center md:text-left mb-4">
-                        <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Jalur B: Transaksi Dispenser Solar</span>
+                        <span class="text-xs font-bold text-amber-500 uppercase tracking-wider">Transaksi Dispenser Solar</span>
                     </div>
 
                     <!-- Step 1 -->
@@ -169,7 +169,7 @@
                     <div class="flex-1 min-w-0">
                         <h4 class="text-base font-bold text-emerald-400">Sistem Kontrol Pemakaian Solar</h4>
                         <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                            Mesin ETL (Extract, Transform, Load) pada backend mencocokkan data odometer perjalanan (Jalur A) dengan volume solar (Jalur B) secara otomatis berdasarkan nomor identitas unit.
+                            Mesin ETL (Extract, Transform, Load) pada backend mencocokkan data odometer perjalanan dengan volume solar secara otomatis berdasarkan nomor identitas unit.
                         </p>
                     </div>
                 </div>
@@ -215,8 +215,8 @@
         <div class="bg-white dark:bg-[#0B1120]/40 rounded-2xl border border-slate-200 dark:border-white/5 p-4 sm:p-8 shadow-sm">
             
             <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="px-2.5 py-1 text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-full">Pipeline Integrasi Data</span>
-                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Pipeline Monitoring Alat Berat (Heavy Equipment)</h3>
+                <span class="px-2.5 py-1 text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-full">Sistem Monitoring Alat Berat</span>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Monitoring Alat Berat (Heavy Equipment)</h3>
                 <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Sinkronisasi akumulasi jam kerja mesin (Hour Meter/HM) dari server Caterpillar dengan database aset internal dan sistem SAP ERP.</p>
             </div>
 
