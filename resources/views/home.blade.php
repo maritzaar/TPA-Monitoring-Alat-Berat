@@ -26,15 +26,13 @@
 
     <!-- Hero Section -->
     <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-8 sm:p-10 text-white shadow-lg flex flex-col md:flex-row items-center justify-between relative overflow-hidden">
-        <div class="absolute right-0 top-0 opacity-10 pointer-events-none">
-            <i class="fas fa-chart-line text-[15rem] -mr-10 -mt-10"></i>
-        </div>
+        <!-- Ambient Glowing Backdrop -->
+        <div class="absolute -right-10 -top-10 w-80 h-80 bg-gradient-to-br from-tpaGreen/20 to-tpaOrange/25 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="relative z-10 md:w-2/3 text-center md:text-left mb-6 md:mb-0">
-            <h1 class="text-3xl sm:text-4xl font-bold font-serif mb-3">Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}!</h1>
+            <h1 class="text-3xl sm:text-4xl font-bold mb-3">Selamat Datang, {{ explode(' ', Auth::user()->name)[0] }}!</h1>
             <p class="text-slate-300 text-base max-w-xl">
-                Ini adalah ringkasan data operasional dan penggunaan solar keseluruhan alat berat dari seluruh periode yang terekam. 
-                Pilih menu akses cepat di bawah untuk melihat laporan secara detail.
+                Berikut merupakan ringkasan komprehensif data operasional armada kendaraan serta konsumsi bahan bakar solar untuk seluruh unit alat berat yang terpantau.
             </p>
         </div>
         <div class="relative z-10 md:w-1/3 flex justify-center md:justify-end">
@@ -52,35 +50,36 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- 3 card di home dashboard -->
         <!-- Stat 1 -->
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-sm flex items-center space-x-4 transition hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500/50 animate-stagger delay-100 group">
-            <div class="w-14 h-14 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-sm flex items-center space-x-4 transition hover:shadow-md hover:border-tpaGreen/30 dark:hover:border-tpaGreen/50 animate-stagger delay-100 group">
+            <div class="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/30 text-tpaGreen dark:text-emerald-400 flex items-center justify-center flex-shrink-0 group-hover:bg-tpaGreen group-hover:text-white transition-colors duration-300">
                 <i class="fas fa-tractor text-2xl group-hover:scale-110 transition-transform"></i>
             </div>
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Aset</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Unit Terpantau</p>
                 <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100"><span id="count_aset">0</span> <span class="text-sm font-medium text-slate-500 dark:text-slate-400">Unit</span></h3>
             </div>
         </div>
         
         <!-- Stat 2 -->
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-sm flex items-center space-x-4 transition hover:shadow-md hover:border-rose-200 dark:hover:border-rose-500/50 animate-stagger delay-200 group">
-            <div class="w-14 h-14 rounded-full bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-400 flex items-center justify-center flex-shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-sm flex items-center space-x-4 transition hover:shadow-md hover:border-rose-300 dark:hover:border-rose-500/50 animate-stagger delay-200 group">
+            <div class="w-14 h-14 rounded-full bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 flex items-center justify-center flex-shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors duration-300">
                 <i class="fas fa-clock text-2xl group-hover:scale-110 transition-transform"></i>
             </div>
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Idle</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Rata-rata Waktu Idle</p>
                 <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100"><span id="count_idle">0</span>%</h3>
             </div>
         </div>
         
         <!-- Stat 3 -->
-        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-sm flex items-center space-x-4 transition hover:shadow-md hover:border-amber-200 dark:hover:border-amber-500/50 animate-stagger delay-300 group">
-            <div class="w-14 h-14 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-400 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-600 group-hover:text-white transition-colors duration-300">
+        <div class="bg-white dark:bg-slate-900 rounded-xl p-6 border border-slate-200 dark:border-white/5 shadow-sm flex items-center space-x-4 transition hover:shadow-md hover:border-tpaOrange/30 dark:hover:border-tpaOrange/50 animate-stagger delay-300 group">
+            <div class="w-14 h-14 rounded-full bg-orange-50 dark:bg-orange-950/30 text-tpaOrange dark:text-orange-400 flex items-center justify-center flex-shrink-0 group-hover:bg-tpaOrange group-hover:text-white transition-colors duration-300">
                 <i class="fas fa-gas-pump text-2xl group-hover:scale-110 transition-transform"></i>
             </div>
             <div>
-                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Total Konsumsi Solar</p>
+                <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Akumulasi Konsumsi Solar</p>
                 <h3 class="text-2xl font-black text-slate-800 dark:text-slate-100"><span id="count_fuel">0</span> <span class="text-sm font-medium text-slate-500 dark:text-slate-400">L</span></h3>
             </div>
         </div>
@@ -96,13 +95,10 @@
         <!-- Jam Kerja Summary Card -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-200">
             <!-- Header Banner -->
-            <div class="h-24 bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
-                <div class="absolute right-0 top-0 opacity-10 pointer-events-none -mr-4 -mt-4">
-                    <i class="fas fa-clock text-7xl"></i>
-                </div>
+            <div class="h-24 bg-gradient-to-br from-tpaGreen to-[#165c26] text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
                 <div class="z-10">
                     <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Analitik</span>
-                    <h3 class="text-base font-bold font-serif mt-1">Rekap Jam Kerja</h3>
+                    <h3 class="text-base font-bold mt-1">Rekap Jam Kerja</h3>
                 </div>
                 <i class="fas fa-clock text-3xl opacity-80 z-10"></i>
             </div>
@@ -123,17 +119,17 @@
                 <!-- Progress Bar visualizer -->
                 <div class="mb-5">
                     <div class="flex justify-between items-center text-xs mb-1.5 font-semibold">
-                        <span class="text-slate-500 flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-forest mr-1.5"></span>Kerja: {{ number_format(100 - $avgIdle, 1, ',', '.') }}%</span>
+                        <span class="text-slate-500 flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-tpaGreen mr-1.5"></span>Kerja: {{ number_format(100 - $avgIdle, 1, ',', '.') }}%</span>
                         <span class="text-slate-500 flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 mr-1.5"></span>Idle: {{ number_format($avgIdle, 1, ',', '.') }}%</span>
                     </div>
                     <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 flex overflow-hidden shadow-inner">
-                        <div class="bg-forest h-full rounded-l-full" style="width: {{ 100 - $avgIdle }}%"></div>
+                        <div class="bg-tpaGreen h-full rounded-l-full" style="width: {{ 100 - $avgIdle }}%"></div>
                         <div class="bg-rose-500 h-full rounded-r-full" style="width: {{ $avgIdle }}%"></div>
                     </div>
                 </div>
 
                 <!-- Card Button -->
-                <a href="{{ route('monitoring.working_hour') }}" class="mt-auto w-full bg-forest dark:bg-emerald-600 hover:bg-green-700 dark:hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
+                <a href="{{ route('monitoring.working_hour') }}" class="mt-auto w-full bg-tpaGreen hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
                     <span>Laporan Lengkap</span>
                     <i class="fas fa-arrow-right text-xs"></i>
                 </a>
@@ -143,13 +139,10 @@
         <!-- Konsumsi Solar Summary Card -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-300">
             <!-- Header Banner -->
-            <div class="h-24 bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
-                <div class="absolute right-0 top-0 opacity-10 pointer-events-none -mr-4 -mt-4">
-                    <i class="fas fa-gas-pump text-7xl"></i>
-                </div>
+            <div class="h-24 bg-gradient-to-br from-[#E5A93C] to-tpaOrange text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
                 <div class="z-10">
                     <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Analitik</span>
-                    <h3 class="text-base font-bold font-serif mt-1">Rekap Konsumsi Solar</h3>
+                    <h3 class="text-base font-bold mt-1">Rekap Konsumsi Solar</h3>
                 </div>
                 <i class="fas fa-gas-pump text-3xl opacity-80 z-10"></i>
             </div>
@@ -163,7 +156,7 @@
                     </div>
                     <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
                         <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Rerata / Unit</span>
-                        <span class="text-base font-black text-amber-600 dark:text-amber-400">{{ number_format($totalFuel / max($totalAset, 1), 0, ',', '.') }} <span class="text-xs font-semibold text-slate-500">L</span></span>
+                        <span class="text-base font-black text-tpaOrange dark:text-orange-400">{{ number_format($totalFuel / max($totalAset, 1), 0, ',', '.') }} <span class="text-xs font-semibold text-slate-500">L</span></span>
                     </div>
                 </div>
 
@@ -180,7 +173,7 @@
                 </div>
 
                 <!-- Card Button -->
-                <a href="{{ route('monitoring.fuel') }}" class="mt-auto w-full bg-forest dark:bg-emerald-600 hover:bg-green-700 dark:hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
+                <a href="{{ route('monitoring.fuel') }}" class="mt-auto w-full bg-tpaOrange hover:bg-orange-600 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
                     <span>Laporan Lengkap</span>
                     <i class="fas fa-arrow-right text-xs"></i>
                 </a>
@@ -190,13 +183,10 @@
         <!-- Alur Sistem Card (Links style) -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-400">
             <!-- Header Banner -->
-            <div class="h-24 bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
-                <div class="absolute right-0 top-0 opacity-10 pointer-events-none -mr-4 -mt-4">
-                    <i class="fas fa-project-diagram text-7xl"></i>
-                </div>
+            <div class="h-24 bg-gradient-to-br from-tpaGreen to-tpaOrange text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
                 <div class="z-10">
                     <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Integrasi</span>
-                    <h3 class="text-base font-bold font-serif mt-1">Status Alur Data</h3>
+                    <h3 class="text-base font-bold mt-1">Status Alur Data</h3>
                 </div>
                 <i class="fas fa-project-diagram text-3xl opacity-80 z-10"></i>
             </div>
@@ -220,7 +210,7 @@
 
                 <!-- Card Links -->
                 <div class="pt-3 border-t border-slate-100 dark:border-white/5 mt-auto">
-                    <a href="{{ route('monitoring.flow') }}" class="text-forest dark:text-emerald-400 hover:text-green-800 dark:hover:text-emerald-300 hover:underline text-sm font-semibold transition flex items-center justify-center gap-1.5">
+                    <a href="{{ route('monitoring.flow') }}" class="text-tpaGreen dark:text-emerald-400 hover:text-emerald-700 hover:underline text-sm font-semibold transition flex items-center justify-center gap-1.5">
                         <span>Lihat Aliran Integrasi</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </a>

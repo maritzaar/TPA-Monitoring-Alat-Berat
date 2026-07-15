@@ -207,13 +207,13 @@ class ImportController extends Controller
             // Sync master aset
             Artisan::call('app:migrate-master-asets');
 
-            $message = "Data berhasil diimport! ($rowsImported baris baru ditambahkan)";
+            $message = "Data berhasil diimpor! ($rowsImported baris baru ditambahkan)";
 
             return redirect()->back()
                 ->with('success', $message)
                 ->with('import_summary', $importSummary);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Gagal import: '.$e->getMessage());
+            return redirect()->back()->with('error', 'Gagal impor: '.$e->getMessage());
         }
     }
 
@@ -316,6 +316,6 @@ class ImportController extends Controller
         MonitoringSummary::truncate();
         ImportLog::truncate();
 
-        return redirect()->back()->with('success', 'Semua data dan riwayat import berhasil dihapus!');
+        return redirect()->back()->with('success', 'Semua data dan riwayat impor berhasil dihapus!');
     }
 }

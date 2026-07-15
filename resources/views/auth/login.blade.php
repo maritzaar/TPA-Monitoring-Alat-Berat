@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In - Teladan Prima Agro</title>
+    <title>Masuk - Teladan Prima Agro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -16,7 +16,6 @@
 <body class="bg-white min-h-screen flex flex-col md:flex-row overflow-x-hidden">
     
     <!-- LEFT SIDE: Login Form (Dark Blue Background - 55% Width) -->
-     <!-- command -->
     <div class="w-full md:w-[55%] bg-[#0F172A] text-white flex flex-col justify-between p-6 sm:p-10 md:p-16 relative">
         
         <!-- Header Brand Info -->
@@ -28,7 +27,7 @@
         <!-- Form Container -->
         <div class="my-auto py-10 max-w-md w-full mx-auto z-10 space-y-8">
             <div>
-                <p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-2">Welcome back to</p>
+                <p class="text-blue-400 text-sm font-semibold uppercase tracking-wider mb-2">Selamat datang kembali di</p>
                 <h2 class="text-3xl font-extrabold text-white tracking-wide leading-tight">
                     Teladan Prima Agro
                 </h2>
@@ -57,34 +56,34 @@
                 
                 <!-- Username Input -->
                 <div class="space-y-2">
-                    <label for="email" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Username <span class="text-rose-500">*</span></label>
+                    <label for="email" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Nama Pengguna (Username) <span class="text-rose-500">*</span></label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="far fa-user text-sm"></i>
                         </span>
                         <input type="text" name="email" id="email" required value="{{ old('email') }}"
                                class="block w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-750 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-650 focus:border-transparent transition text-sm"
-                               placeholder="Username">
+                               placeholder="Nama Pengguna">
                     </div>
                 </div>
 
                 <!-- Password Input -->
                 <div class="space-y-2">
-                    <label for="password" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Password <span class="text-rose-500">*</span></label>
+                    <label for="password" class="block text-xs font-bold text-slate-400 uppercase tracking-wider">Kata Sandi (Password) <span class="text-rose-500">*</span></label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                             <i class="fas fa-lock text-sm"></i>
                         </span>
                         <input type="password" name="password" id="password" required
                                class="block w-full pl-10 pr-4 py-3 bg-slate-900 border border-slate-750 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-650 focus:border-transparent transition text-sm"
-                               placeholder="Password">
+                               placeholder="Kata Sandi">
                     </div>
                 </div>
 
                 <!-- Submit Button -->
                 <button type="submit" 
                         class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition duration-200 transform active:scale-98 shadow-md hover:shadow-blue-500/10 flex items-center justify-center text-sm">
-                    Login <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                    Masuk <i class="fas fa-arrow-right ml-2 text-xs"></i>
                 </button>
             </form>
         </div>

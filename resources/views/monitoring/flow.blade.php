@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Alur Sistem')
+@section('title', 'Alur Integrasi')
 @section('content')
 
 <div class="space-y-6">
@@ -10,7 +10,7 @@
                 Alur Integrasi & Aliran Data Sistem
             </h1>
             <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
-                Visualisasi bagaimana data monitoring diolah, diintegrasikan, dan disajikan pada dashboard.
+                Skema pemrosesan data pemantauan dari berbagai sumber hingga disajikan dalam bentuk analitik visual pada dashboard.
             </p>
         </div>
     </div>
@@ -31,14 +31,14 @@
         </nav>
     </div>
 
-    <!-- Tab Content: Solar -->
+    <!-- Tab Content: Solar  -->
     <div id="content-solar" class="relative opacity-100 visible w-full transition-all duration-300">
         <div class="bg-white dark:bg-[#0B1120]/40 rounded-2xl border border-slate-200 dark:border-white/5 p-4 sm:p-8 shadow-sm">
             
             <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="px-2.5 py-1 text-xs font-bold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-full">Pipelines Sinkronisasi</span>
-                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Sinkronisasi Data Kilometer vs Konsumsi BBM</h3>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Mengintegrasikan data jarak tempuh kendaraan dari GPS AGI dengan catatan konsumsi solar dispenser.</p>
+                <span class="px-2.5 py-1 text-xs font-bold bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 rounded-full">Pipeline Sinkronisasi Data</span>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Sinkronisasi Jarak Tempuh (KM) vs Volume Solar</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Integrasi data jarak tempuh dari GPS AGI dengan volume pengisian solar pada dispenser bahan bakar.</p>
             </div>
 
             <!-- Two-Track Input Streams -->
@@ -57,7 +57,7 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-bold">Estate LKE</h4>
-                            <p class="text-xs text-slate-400 mt-0.5">Lokasi wilayah operasional pengumpulan data.</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Lokasi operasional tempat pengumpulan data lapangan.</p>
                         </div>
                     </div>
 
@@ -73,7 +73,7 @@
                         </div>
                         <div class="flex-1 min-w-0">
                             <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Sistem AGI GPS</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pengiriman data koordinat & telemetri nirkabel.</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Transmisi koordinat lokasi dan telemetri nirkabel secara berkala.</p>
                         </div>
                     </div>
 
@@ -88,8 +88,8 @@
                             <i class="fas fa-truck-pickup text-base"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Vehicle Identifiers</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Identitas kendaraan: No. Mesin / Rangka / Nopol.</p>
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Parameter Identitas Armada</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Identifikasi armada: Nomor Mesin, Nomor Rangka, dan Nomor Polisi.</p>
                         </div>
                     </div>
 
@@ -104,8 +104,8 @@
                             <i class="fas fa-road text-base"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Data Kilometer (KM)</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Log jarak tempuh akhir per kendaraan.</p>
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Pencatatan Odometer (KM)</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Akumulasi log jarak tempuh terakhir per unit kendaraan.</p>
                         </div>
                     </div>
                 </div>
@@ -122,8 +122,8 @@
                             <i class="fas fa-id-card text-base"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold">Nomor Kendaraan TPA</h4>
-                            <p class="text-xs text-amber-100 dark:text-amber-400 mt-0.5">Verifikasi plat nomor (e.g. E031 XX) saat isi BBM.</p>
+                            <h4 class="text-sm font-bold">Pencocokan Identitas Kendaraan</h4>
+                            <p class="text-xs text-amber-100 dark:text-amber-400 mt-0.5">Verifikasi plat nomor kendaraan (contoh: E031 XX) saat pengisian solar.</p>
                         </div>
                     </div>
 
@@ -138,8 +138,8 @@
                             <i class="fas fa-gas-pump text-base"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Pemakaian Solar</h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Catatan dispenser BBM dalam satuan liter.</p>
+                            <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Volume Pengisian Solar</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Pencatatan volume pengisian solar dalam satuan liter.</p>
                         </div>
                     </div>
                 </div>
@@ -167,9 +167,9 @@
                         <i class="fas fa-cogs text-lg animate-spin" style="animation-duration: 8s;"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-base font-bold text-emerald-455 text-emerald-400">Sistem Kontrol Pemakaian Solar</h4>
+                        <h4 class="text-base font-bold text-emerald-400">Sistem Kontrol Pemakaian Solar</h4>
                         <p class="text-xs text-slate-300 mt-1 leading-relaxed">
-                            Algoritma ETL backend secara otomatis melakukan pencocokan silang (cross-match) data kilometer tempuh harian (Jalur A) dengan data liter solar yang diisi (Jalur B) menggunakan pencocokan plat nomor kendaraan.
+                            Mesin ETL (Extract, Transform, Load) pada backend mencocokkan data odometer perjalanan (Jalur A) dengan volume solar (Jalur B) secara otomatis berdasarkan nomor identitas unit.
                         </p>
                     </div>
                 </div>
@@ -185,8 +185,8 @@
                         <i class="fas fa-file-invoice text-base"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Laporan Kontrol Pemakaian BBM</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Penyusunan ringkasan efisiensi bahan bakar bulanan & mingguan.</p>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Laporan Kontrol Konsumsi BBM</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Kompilasi ringkasan performa dan tingkat efisiensi konsumsi bahan bakar secara berkala.</p>
                     </div>
                 </div>
 
@@ -201,8 +201,8 @@
                         <i class="fas fa-table text-base"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Tabel: Kilometer vs Liter</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Analisis efisiensi riil (KM/Liter) per unit alat transportasi untuk pengambilan keputusan.</p>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Tabel Evaluasi: Odometer vs Liter</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Perhitungan efisiensi riil rasio kilometer per liter (KM/L) untuk mendukung pengambilan keputusan operasional.</p>
                     </div>
                 </div>
             </div>
@@ -215,9 +215,9 @@
         <div class="bg-white dark:bg-[#0B1120]/40 rounded-2xl border border-slate-200 dark:border-white/5 p-4 sm:p-8 shadow-sm">
             
             <div class="text-center max-w-2xl mx-auto mb-8">
-                <span class="px-2.5 py-1 text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-full">Data Ingestion Pipeline</span>
-                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Pipa Data Monitoring Alat Berat (Heavy Equipment)</h3>
-                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Mengintegrasikan data jam kerja (Hour Meter/HM) Caterpillar dengan master data internal dan SAP.</p>
+                <span class="px-2.5 py-1 text-xs font-bold bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 rounded-full">Pipeline Integrasi Data</span>
+                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mt-2">Pipeline Monitoring Alat Berat (Heavy Equipment)</h3>
+                <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Sinkronisasi akumulasi jam kerja mesin (Hour Meter/HM) dari server Caterpillar dengan database aset internal dan sistem SAP ERP.</p>
             </div>
 
             <!-- Three Source Streams -->
@@ -230,26 +230,26 @@
                         <i class="fas fa-globe"></i>
                     </div>
                     <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">CATERPILLAR VL</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex-1">Website telemetry resmi Caterpillar (VL.cat.com).</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex-1">Portal telemetri resmi Caterpillar (VL.cat.com).</p>
                     <i class="fas fa-chevron-down text-slate-300 dark:text-slate-700 my-3"></i>
                     <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/5 rounded-lg p-2.5 text-xs text-slate-600 dark:text-slate-400 w-full font-medium">
                         <i class="fas fa-file-csv text-emerald-500 mr-1.5"></i>
-                        Caterpillar Export File
+                        Caterpillar Telemetry Export
                     </div>
                 </div>
 
                 <!-- Source 2 -->
                 <div class="flex flex-col items-center bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/5 rounded-2xl p-4 text-center transform hover:scale-[1.02] transition-all duration-200">
                     <span class="px-2 py-0.5 text-[10px] font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-md mb-3">Sumber Data 2</span>
-                    <div class="w-12 h-12 rounded-full bg-slate-905 bg-slate-900 text-white flex items-center justify-center text-lg mb-3 shadow-md">
+                    <div class="w-12 h-12 rounded-full bg-slate-900 text-white flex items-center justify-center text-lg mb-3 shadow-md">
                         <i class="fas fa-database"></i>
                     </div>
                     <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Master Data Internal</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex-1">Database aset & registrasi unit internal perusahaan.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex-1">Database master aset dan registrasi unit internal.</p>
                     <i class="fas fa-chevron-down text-slate-300 dark:text-slate-700 my-3"></i>
                     <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/5 rounded-lg p-2.5 text-xs text-slate-600 dark:text-slate-400 w-full font-medium">
                         <i class="fas fa-file-excel text-blue-500 mr-1.5"></i>
-                        Master Excel / System DB
+                        Master Asset Database
                     </div>
                 </div>
 
@@ -260,11 +260,11 @@
                         <i class="fas fa-network-wired"></i>
                     </div>
                     <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">SAP ERP</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex-1">Data master SAP logistik dan operasional perusahaan.</p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex-1">Modul data master logistik dan operasional SAP ERP.</p>
                     <i class="fas fa-chevron-down text-slate-300 dark:text-slate-700 my-3"></i>
                     <div class="bg-white dark:bg-slate-950 border border-slate-200 dark:border-white/5 rounded-lg p-2.5 text-xs text-slate-600 dark:text-slate-400 w-full font-medium">
                         <i class="fas fa-file-code text-indigo-500 mr-1.5"></i>
-                        SAP Data Extract
+                        SAP ERP Data Extract
                     </div>
                 </div>
 
@@ -289,7 +289,7 @@
                     </div>
                     <div class="flex-1 min-w-0">
                         <h4 class="text-sm font-bold text-amber-400">Normalisasi & Standardisasi Data</h4>
-                        <p class="text-xs text-slate-300 mt-0.5">Membersihkan noise, menyeragamkan format kode unit, tanggal, jam kerja, serta melakukan konversi unit yang berbeda.</p>
+                        <p class="text-xs text-slate-300 mt-0.5">Pembersihan data dari anomali, penyeragaman penamaan unit, penyelarasan format waktu, serta konversi satuan pengukuran.</p>
                     </div>
                 </div>
 
@@ -304,8 +304,8 @@
                         <i class="fas fa-compress-arrows-alt text-base"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Merge / Join by Unit ID</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Menyatukan data dari ketiga jalur sumber dengan kata kunci pengenal Unit ID.</p>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Konsolidasi Data (Merge/Join)</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Penggabungan data dari ketiga sumber utama berdasarkan parameter unik Unit ID.</p>
                     </div>
                 </div>
 
@@ -320,8 +320,8 @@
                         <i class="fas fa-database text-base"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Penyimpanan Database Lokasi (SQLite)</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Data terstruktur hasil integrasi disimpan ke dalam database SQLite lokal.</p>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Penyimpanan Database Lokal (SQLite)</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Penyimpanan data terstruktur ke dalam database SQLite lokal untuk performa kueri yang cepat.</p>
                     </div>
                 </div>
 
@@ -336,8 +336,8 @@
                         <i class="fas fa-desktop text-base"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Aplikasi Web Laravel (Dashboard)</h4>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Menyajikan dashboard visualisasi Operating Hours (HM), konsumsi BBM harian, dan grafik analitis.</p>
+                        <h4 class="text-sm font-bold text-slate-800 dark:text-slate-100">Aplikasi Pemantauan Laravel</h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Penyajian antarmuka grafis untuk visualisasi jam operasi (HM), konsumsi bahan bakar harian, serta tren kinerja alat berat.</p>
                     </div>
                 </div>
             </div>

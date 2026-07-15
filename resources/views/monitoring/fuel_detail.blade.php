@@ -51,7 +51,7 @@
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Tanggal') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Internal Order') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Cost Center') }}</th>
-                    <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Quantity (L)') }}</th>
+                    <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Volume (L)</th>
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Harga') }}</th>
                     <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">{{ __('Lokasi Pengisian') }}</th>
                 </tr>
@@ -59,7 +59,7 @@
             <tbody class="bg-white divide-y divide-slate-100">
                 @forelse($data as $item)
                 <tr class="hover:bg-slate-50/50 transition">
-                    <td class="px-4 py-3 text-sm text-slate-650 font-medium whitespace-nowrap">{{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}</td>
+                    <td class="px-4 py-3 text-sm text-slate-655 font-medium whitespace-nowrap">{{ $item->created_at ? $item->created_at->format('d/m/Y H:i') : '-' }}</td>
                     <td class="px-4 py-3 text-sm text-slate-700 font-semibold whitespace-nowrap">{{ $item->internal_order ?? '-' }}</td>
                     <td class="px-4 py-3 text-sm text-slate-700 font-semibold whitespace-nowrap">{{ $item->cost_center ?? '-' }}</td>
                     <td class="px-4 py-3 text-sm text-emerald-600 font-bold whitespace-nowrap">{{ number_format($item->total_quantity, 0) }}</td>
@@ -83,8 +83,8 @@
     <div class="mt-6 bg-slate-50 border border-slate-100 rounded-xl p-4 transition-colors duration-200">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-                <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Total Transaksi') }}</p>
-                <p class="text-lg font-bold text-slate-800 mt-1">{{ $data->count() }} {{ app()->getLocale() == 'en' ? 'trx' : 'kali' }}</p>
+                <p class="text-xs text-slate-455 font-bold uppercase tracking-wider">{{ __('Total Transaksi') }}</p>
+                <p class="text-lg font-bold text-slate-800 mt-1">{{ $data->count() }} transaksi</p>
             </div>
             <div>
                 <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Total Bahan Bakar') }}</p>

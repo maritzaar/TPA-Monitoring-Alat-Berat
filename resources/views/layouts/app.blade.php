@@ -13,6 +13,8 @@
                     colors: {
                         forest: '#218838',
                         chalice: '#AAAAAA',
+                        tpaGreen: '#218838',
+                        tpaOrange: '#D37A3C',
                     },
                     fontFamily: {
                         sans: ['Poppins', 'sans-serif'],
@@ -75,7 +77,7 @@
                    ? 'bg-white/10 text-white border-l-4 border-blue-500 pl-3'
                    : 'text-slate-300 hover:bg-white/5 hover:text-white' }}">
                 <i class="fas fa-home w-5 text-center"></i>
-                <span>Home</span>
+                <span>Beranda</span>
             </a>
 
             <!-- Pemantauan (Mobile Accordion) -->
@@ -107,13 +109,13 @@
                        class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition
                               {{ request()->routeIs('monitoring.fuel*') ? 'bg-forest text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5' }}">
                         <i class="fas fa-gas-pump w-4 text-center"></i>
-                        <span>Konsumsi BBM</span>
+                        <span>Konsumsi Solar</span>
                     </a>
                     <a href="{{ route('monitoring.flow') }}"
                        class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition
                               {{ request()->routeIs('monitoring.flow*') ? 'bg-forest text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5' }}">
                         <i class="fas fa-project-diagram w-4 text-center"></i>
-                        <span>Alur Sistem</span>
+                        <span>Alur Integrasi</span>
                     </a>
                 </div>
             </div>
@@ -130,7 +132,7 @@
                         {{ $adminActive ? 'text-white bg-white/10' : 'text-slate-300 hover:bg-white/5' }}">
                     <span class="flex items-center space-x-3">
                         <i class="fas fa-shield-alt w-5 text-center text-slate-400"></i>
-                        <span>Kelola Data</span>
+                        <span>Manajemen Data</span>
                     </span>
                     <i id="mobileAdminChevron"
                        class="fas fa-chevron-down text-xs transition-transform duration-200 {{ $adminActive ? 'rotate-180' : '' }}"></i>
@@ -140,13 +142,13 @@
                        class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition
                               {{ Route::currentRouteName() === 'import.index' ? 'bg-forest text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5' }}">
                         <i class="fas fa-upload w-4 text-center"></i>
-                        <span>Import Data</span>
+                        <span>Impor Telemetri</span>
                     </a>
                     <a href="{{ route('users.index') }}"
                        class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition
                               {{ request()->routeIs('users.index') ? 'bg-forest text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5' }}">
                         <i class="fas fa-users-cog w-4 text-center"></i>
-                        <span>Kelola Pengguna</span>
+                        <span>Manajemen Pengguna</span>
                     </a>
                 </div>
             </div>
@@ -183,7 +185,7 @@
                        ? 'bg-white/15 text-white shadow-sm'
                        : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                     <i class="fas fa-home text-sm"></i>
-                    <span>Home</span>
+                    <span>Beranda</span>
                 </a>
 
                 <!-- Pemantauan (Dropdown) -->
@@ -207,7 +209,7 @@
                                           ? 'bg-forest text-white shadow-sm'
                                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
                                 <i class="fas fa-clock w-4 text-center"></i>
-                                <span>Jam Kerja</span>
+                                <span>Jam Kerja (HM)</span>
                             </a>
                             <a href="{{ route('monitoring.fuel') }}"
                                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors font-medium
@@ -223,7 +225,7 @@
                                           ? 'bg-forest text-white shadow-sm'
                                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
                                 <i class="fas fa-project-diagram w-4 text-center"></i>
-                                <span>Alur Sistem</span>
+                                <span>Alur Integrasi</span>
                             </a>
                         </div>
                     </div>
@@ -238,7 +240,7 @@
                                 ? 'bg-white/15 text-white'
                                 : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                         <i class="fas fa-shield-alt text-sm"></i>
-                        <span>Kelola Data</span>
+                        <span>Manajemen Data</span>
                         <i class="fas fa-chevron-down text-[10px] transition-transform duration-150" id="adminChevron"></i>
                     </button>
                     <!-- Dropdown menu -->
@@ -251,7 +253,7 @@
                                           ? 'bg-forest text-white shadow-sm'
                                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
                                 <i class="fas fa-upload w-4 text-center"></i>
-                                <span>Import Data</span>
+                                <span>Impor Telemetri</span>
                             </a>
                             <a href="{{ route('users.index') }}"
                                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors font-medium
@@ -259,7 +261,7 @@
                                           ? 'bg-forest text-white shadow-sm'
                                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
                                 <i class="fas fa-users-cog w-4 text-center"></i>
-                                <span>Kelola Pengguna</span>
+                                <span>Manajemen Pengguna</span>
                             </a>
                         </div>
                     </div>
@@ -299,7 +301,7 @@
                         <a href="{{ route('profile.edit') }}"
                            class="flex items-center space-x-2 px-3 py-2 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest rounded-lg transition font-medium">
                             <i class="fas fa-user-cog text-slate-400"></i>
-                            <span>Edit Profil</span>
+                            <span>Ubah Profil</span>
                         </a>
                     </div>
                     <div class="p-3">
@@ -308,7 +310,7 @@
                             <button type="submit"
                                     class="w-full flex items-center space-x-2 px-3 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-lg transition font-medium text-left">
                                 <i class="fas fa-sign-out-alt opacity-70"></i>
-                                <span>Logout</span>
+                                <span>Keluar</span>
                             </button>
                         </form>
                     </div>
@@ -318,7 +320,7 @@
             <!-- Guest controls -->
             <a href="{{ route('login') }}" class="bg-forest hover:bg-blue-700 text-white px-2.5 py-1.5 rounded-lg transition flex items-center text-sm font-semibold shadow-sm">
                 <i class="fas fa-sign-in-alt mr-1"></i>
-                <span>Login</span>
+                <span>Masuk</span>
             </a>
             @endauth
         </div>
@@ -346,7 +348,7 @@
         </main>
 
         <footer class="bg-slate-100 dark:bg-[#0B1120] text-center p-3 text-slate-500 dark:text-slate-400 text-xs border-t border-slate-200 dark:border-white/5 no-print transition-colors duration-200">
-            &copy; {{ date('Y') }} PT. Teladan Prima Agro &mdash; @testing
+            &copy; {{ date('Y') }} PT. Teladan Prima Agro.
         </footer>
     </div>
 

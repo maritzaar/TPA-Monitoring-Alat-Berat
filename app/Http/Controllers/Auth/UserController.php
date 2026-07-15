@@ -34,30 +34,30 @@ class UserController extends Controller
             'role' => $request->role,
         ]);
 
-        return redirect()->back()->with('success', 'New user registered successfully!');
+        return redirect()->back()->with('success', 'Pengguna baru berhasil didaftarkan!');
     }
 
     public function toggleRole(User $user)
     {
         if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'You cannot change your own role.');
+            return redirect()->back()->with('error', 'Anda tidak dapat mengubah peran akun Anda sendiri.');
         }
 
         $user->role = $user->role === 'admin' ? 'viewer' : 'admin';
         $user->save();
 
-        return redirect()->back()->with('success', 'User role changed successfully!');
+        return redirect()->back()->with('success', 'Peran pengguna berhasil diubah!');
     }
 
     public function destroy(User $user)
     {
         if ($user->id === Auth::id()) {
-            return redirect()->back()->with('error', 'You cannot delete your own account.');
+            return redirect()->back()->with('error', 'Anda tidak dapat menghapus akun Anda sendiri.');
         }
 
         $user->delete();
 
-        return redirect()->back()->with('success', 'User account deleted successfully!');
+        return redirect()->back()->with('success', 'Akun pengguna berhasil dihapus!');
     }
 
     public function update(Request $request, User $user)

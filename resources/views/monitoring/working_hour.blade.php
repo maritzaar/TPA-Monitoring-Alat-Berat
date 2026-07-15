@@ -13,7 +13,7 @@
                     <i class="fas fa-file-invoice-dollar text-xl text-indigo-400"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Operational Reports</p>
+                    <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Laporan Operasional</p>
                     <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsolidasi Jam Kerja</h2>
                 </div>
             </div>
@@ -100,12 +100,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 items-end">
                 {{-- Tanggal Mulai --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Start Date</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Tanggal Mulai</label>
                     <input type="date" name="start_date" id="filter_start_date" value="{{ $start_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0B1120] text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none transition-colors duration-200">
                 </div>
                 {{-- Tanggal Akhir --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">End Date</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Tanggal Akhir</label>
                     <input type="date" name="end_date" id="filter_end_date" value="{{ $end_date }}" class="dependent-filter w-full rounded-lg border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0B1120] text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none transition-colors duration-200">
                 </div>
                 {{-- Grup --}}
@@ -140,7 +140,7 @@
                 </div>
                 {{-- Aset --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Aset (Unit)</label>
                     <select name="id_aset" id="filter_id_aset" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
                         <option value="ALL" {{ (!isset($id_aset) || $id_aset == 'ALL') ? 'selected' : '' }}>{{ __('Semua Aset') }}</option>
                         @foreach($filterUnits as $unit)
@@ -184,7 +184,7 @@
                     <i class="fas fa-undo mr-1.5"></i> Reset Filter
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
-                    <i class="fas fa-filter mr-2"></i> Apply Filter
+                    <i class="fas fa-filter mr-2"></i> Terapkan Filter
                 </button>
                 <div class="flex gap-2 ml-2">
                     <a href="{{ route('monitoring.export', request()->all()) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
@@ -215,7 +215,7 @@
                            class="pl-8 pr-3 py-1.5 w-full sm:w-48 border border-slate-300 dark:border-white/10 rounded-lg text-sm bg-slate-50 dark:bg-[#0B1120] text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-blue-600 focus:border-blue-600 focus:outline-none transition-all">
                 </div>
                 <span class="text-xs bg-slate-100 dark:bg-[#0B1120] text-slate-600 dark:text-slate-300 font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 shadow-sm whitespace-nowrap">
-                    {{ number_format($reports->count()) }} records
+                    {{ number_format($reports->count()) }} data
                 </span>
             </div>
         </div>
@@ -232,9 +232,9 @@
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">IO Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group Desc</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Work (hrs)</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Op (hrs)</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Idle (hrs)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Kerja (Jam)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Op (Jam)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Idle (Jam)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Idle</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', function () {
             labels: labels,
             datasets: [
                 {
-                    label: 'Jam Kerja (Hrs)',
+                    label: 'Jam Kerja (Jam)',
                     data: workHours,
                     backgroundColor: 'rgba(79, 70, 229, 0.75)',
                     borderColor: '#4f46e5',
@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     borderRadius: 3
                 },
                 {
-                    label: 'Jam Idle (Hrs)',
+                    label: 'Jam Idle (Jam)',
                     data: idleHours,
                     backgroundColor: 'rgba(245, 158, 11, 0.75)',
                     borderColor: '#d97706',
@@ -324,14 +324,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     type: 'linear',
                     display: true,
                     position: 'left',
-                    title: { display: true, text: 'Hours', font: { weight: 'bold' } }
+                    title: { display: true, text: 'Jam', font: { weight: 'bold' } }
                 },
                 y1: {
                     type: 'linear',
                     display: true,
                     position: 'right',
                     grid: { drawOnChartArea: false },
-                    title: { display: true, text: 'Liters', font: { weight: 'bold' } }
+                    title: { display: true, text: 'Liter', font: { weight: 'bold' } }
                 }
             }
         }
@@ -341,7 +341,7 @@ document.addEventListener('DOMContentLoaded', function () {
     new Chart(document.getElementById('workingHourPieChart').getContext('2d'), {
         type: 'doughnut',
         data: {
-            labels: ['Jam Kerja (Hrs)', 'Jam Idle (Hrs)'],
+            labels: ['Jam Kerja (Jam)', 'Jam Idle (Jam)'],
             datasets: [{
                 data: [{{ $stats->total_kerja }}, {{ $stats->total_idle }}],
                 backgroundColor: ['#4f46e5', '#f59e0b'],

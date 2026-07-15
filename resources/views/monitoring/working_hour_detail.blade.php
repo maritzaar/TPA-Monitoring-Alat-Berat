@@ -86,11 +86,11 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
                 <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Total Hari') }}</p>
-                <p class="text-lg font-bold text-slate-800 mt-1">{{ $data->count() }} {{ app()->getLocale() == 'en' ? 'days' : 'hari' }}</p>
+                <p class="text-lg font-bold text-slate-800 mt-1">{{ $data->count() }} hari</p>
             </div>
             <div>
                 <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Rata-rata Waktu Kerja') }}</p>
-                <p class="text-lg font-bold text-slate-800 mt-1">{{ number_format($data->avg('waktu_kerja') ?? 0, 1) }} {{ app()->getLocale() == 'en' ? 'hours' : 'jam' }}</p>
+                <p class="text-lg font-bold text-slate-800 mt-1">{{ number_format($data->avg('waktu_kerja') ?? 0, 1) }} jam</p>
             </div>
             <div>
                 <p class="text-xs text-slate-450 font-bold uppercase tracking-wider">{{ __('Rata-rata % Idle') }}</p>

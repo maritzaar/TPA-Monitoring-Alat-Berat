@@ -13,7 +13,7 @@
                     <i class="fas fa-file-invoice-dollar text-xl text-indigo-400"></i>
                 </div>
                 <div>
-                    <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Fuel Reports</p>
+                    <p class="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Laporan Konsumsi BBM/Solar</p>
                     <h2 class="text-2xl font-extrabold tracking-wide">Laporan Konsumsi Solar</h2>
                 </div>
             </div>
@@ -45,7 +45,7 @@
                 {{ number_format($stats->actual_fuel, 0) }}
                 <span class="text-xs font-normal text-slate-400 ml-1">L</span>
             </p>
-        </div>
+</div>
 
         {{-- Avg Fuel --}}
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 border-l-4 border-l-indigo-500 p-4 shadow-sm transition-colors duration-200">
@@ -122,7 +122,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 items-end">
                 {{-- Bulan --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Month</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Bulan</label>
                     <select name="bulan" class="w-full rounded-lg border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0B1120] text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none transition-colors duration-200">
                         <option value="ALL" {{ $bulan == 'ALL' ? 'selected' : ' ' }}>{{ __('Semua Bulan') }}</option>
                         @foreach(['January','February','March','April','May','June','July','August','September','October','November','December'] as $m)
@@ -132,7 +132,7 @@
                 </div>
                 {{-- Tahun --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Year</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Tahun</label>
                     <select name="tahun" class="w-full rounded-lg border border-slate-300 dark:border-white/10 bg-slate-50 dark:bg-[#0B1120] text-slate-700 dark:text-slate-200 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none transition-colors duration-200">
 
                     <option value="ALL" {{ $tahun == 'ALL' ? 'selected' : '' }}>{{ __('Semua Tahun') }}</option>
@@ -143,7 +143,7 @@
                 </div>
                 {{-- Aset --}}
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Asset (Unit)</label>
+                    <label class="text-xs font-bold text-slate-400 uppercase tracking-wider block mb-1">Aset (Unit)</label>
                     <select name="id_aset" id="filter_id_aset" class="searchable-select dependent-filter w-full rounded-lg border border-slate-300 bg-slate-50 text-slate-700 text-sm py-2 px-3 focus:border-blue-600 focus:outline-none">
                         <option value="ALL" {{ (!isset($id_aset) || $id_aset == 'ALL') ? 'selected' : '' }}>{{ __('Semua Aset') }}</option>
                         @foreach($filterUnits as $unit)
@@ -217,13 +217,13 @@
                     {{ __('Reset Filter') }}
                 </a>
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm">
-                    <i class="fas fa-filter mr-2"></i> Apply Filter
+                    <i class="fas fa-filter mr-2"></i> Terapkan Filter
                 </button>
                 <a href="{{ route('monitoring.export', array_merge(request()->all(), ['type' => 'fuel'])) }}" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
-                    <i class="fas fa-file-excel mr-2"></i> Export Excel
+                    <i class="fas fa-file-excel mr-2"></i> Ekspor Excel
                 </a>
                 <a href="{{ route('monitoring.export_pdf', array_merge(request()->all(), ['type' => 'fuel'])) }}" target="_blank" class="bg-red-600 hover:bg-red-700 text-white font-bold px-5 py-2 rounded-lg transition text-sm flex items-center shadow-sm ml-2">
-                    <i class="fas fa-file-pdf mr-2"></i> Export PDF
+                    <i class="fas fa-file-pdf mr-2"></i> Ekspor PDF
                 </a>
             </div>
         </form>
@@ -250,7 +250,7 @@
                            class="pl-8 pr-3 py-1.5 w-full sm:w-48 border border-slate-300 dark:border-white/10 rounded-lg text-sm bg-slate-50 dark:bg-[#0B1120] text-slate-800 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:ring-blue-600 focus:border-blue-600 focus:outline-none transition-all">
                 </div>
                 <span class="text-xs bg-slate-100 dark:bg-[#0B1120] text-slate-600 dark:text-slate-300 font-bold px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-white/10 shadow-sm whitespace-nowrap">
-                    {{ number_format($reports->count()) }} records
+                    {{ number_format($reports->count()) }} data
                 </span>
             </div>
         </div>
@@ -268,7 +268,7 @@
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Internal Order</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">IO Group</th>
                         <th class="px-3 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-wider">Group Desc</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Fuel Akt (L)</th>
+                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Solar Akt (L)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function () {
             caret.classList.remove('rotate-180');
         }
         
-        // Add identification classes for closing other dropdowns
+                // Add identification classes for closing other dropdowns
         menu.classList.add('searchable-select-menu');
         caret.classList.add('searchable-select-caret');
         
