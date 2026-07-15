@@ -15,8 +15,8 @@
                         chalice: '#AAAAAA',
                     },
                     fontFamily: {
-                        sans: ['Outfit', 'sans-serif'],
-                        serif: ['Merriweather', 'serif'],
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Poppins', 'sans-serif'],
                     }
                 }
             }
@@ -33,8 +33,8 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Outfit:wght@300;400;500;600;700&display=swap');
-        body { font-family: 'Outfit', sans-serif; font-size: 1rem; }
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Poppins', sans-serif; font-size: 1rem; }
         @media print { .no-print { display: none !important; } }
 
         /* Scale up Tailwind text utility classes globally for readability & comfort */

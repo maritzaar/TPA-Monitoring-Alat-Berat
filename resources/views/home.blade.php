@@ -93,81 +93,160 @@
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         
-        <!-- Bootstrap Inspired Card 1 -->
+        <!-- Jam Kerja Summary Card -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-200">
-            <!-- Image Cap Replacement (Icon/Color Banner) -->
-            <div class="h-28 bg-gradient-to-br from-blue-50 to-slate-100 dark:from-slate-800 dark:to-[#0B1120] flex items-center justify-center text-blue-200 dark:text-slate-700 border-b border-slate-100 dark:border-white/5 group relative overflow-hidden">
-                <div class="absolute inset-0 bg-blue-600/5 dark:bg-blue-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <i class="fas fa-clock text-5xl drop-shadow-sm group-hover:scale-110 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all duration-300"></i>
+            <!-- Header Banner -->
+            <div class="h-24 bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 pointer-events-none -mr-4 -mt-4">
+                    <i class="fas fa-clock text-7xl"></i>
+                </div>
+                <div class="z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Analitik</span>
+                    <h3 class="text-base font-bold font-serif mt-1">Rekap Jam Kerja</h3>
+                </div>
+                <i class="fas fa-clock text-3xl opacity-80 z-10"></i>
             </div>
             <!-- Card Body -->
             <div class="p-5 flex flex-col flex-grow">
-                <h3 class="text-lg font-bold font-serif text-slate-800 dark:text-slate-100 mb-1">Jam Kerja</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-5 flex-grow line-clamp-3">Laporan rincian waktu kerja, waktu operasi, dan idle alat berat sesuai dengan lokasi dan unit group.</p>
+                <!-- Metrics -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Waktu Kerja</span>
+                        <span class="text-base font-black text-slate-800 dark:text-slate-100">{{ number_format($totalKerja, 0, ',', '.') }} <span class="text-xs font-semibold text-slate-500">Jam</span></span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Rata-rata Idle</span>
+                        <span class="text-base font-black text-rose-600 dark:text-rose-400">{{ number_format($avgIdle, 1, ',', '.') }}%</span>
+                    </div>
+                </div>
+
+                <!-- Progress Bar visualizer -->
+                <div class="mb-5">
+                    <div class="flex justify-between items-center text-xs mb-1.5 font-semibold">
+                        <span class="text-slate-500 flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-forest mr-1.5"></span>Kerja: {{ number_format(100 - $avgIdle, 1, ',', '.') }}%</span>
+                        <span class="text-slate-500 flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-rose-500 mr-1.5"></span>Idle: {{ number_format($avgIdle, 1, ',', '.') }}%</span>
+                    </div>
+                    <div class="w-full bg-slate-100 dark:bg-slate-800 rounded-full h-2.5 flex overflow-hidden shadow-inner">
+                        <div class="bg-forest h-full rounded-l-full" style="width: {{ 100 - $avgIdle }}%"></div>
+                        <div class="bg-rose-500 h-full rounded-r-full" style="width: {{ $avgIdle }}%"></div>
+                    </div>
+                </div>
+
                 <!-- Card Button -->
-                <a href="{{ route('monitoring.working_hour') }}" class="w-full bg-forest dark:bg-emerald-600 hover:bg-green-700 dark:hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95">
-                    Buka Laporan
+                <a href="{{ route('monitoring.working_hour') }}" class="mt-auto w-full bg-forest dark:bg-emerald-600 hover:bg-green-700 dark:hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
+                    <span>Laporan Lengkap</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
                 </a>
             </div>
         </div>
         
-        <!-- Bootstrap Inspired Card 2 -->
+        <!-- Konsumsi Solar Summary Card -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-300">
-            <!-- Image Cap Replacement -->
-            <div class="h-28 bg-gradient-to-br from-emerald-50 to-slate-100 dark:from-slate-800 dark:to-[#0B1120] flex items-center justify-center text-emerald-200 dark:text-slate-700 border-b border-slate-100 dark:border-white/5 group relative overflow-hidden">
-                <div class="absolute inset-0 bg-emerald-600/5 dark:bg-emerald-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <i class="fas fa-gas-pump text-5xl drop-shadow-sm group-hover:scale-110 group-hover:text-emerald-500 dark:group-hover:text-emerald-400 transition-all duration-300"></i>
+            <!-- Header Banner -->
+            <div class="h-24 bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 pointer-events-none -mr-4 -mt-4">
+                    <i class="fas fa-gas-pump text-7xl"></i>
+                </div>
+                <div class="z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Analitik</span>
+                    <h3 class="text-base font-bold font-serif mt-1">Rekap Konsumsi Solar</h3>
+                </div>
+                <i class="fas fa-gas-pump text-3xl opacity-80 z-10"></i>
             </div>
             <!-- Card Body -->
             <div class="p-5 flex flex-col flex-grow">
-                <h3 class="text-lg font-bold font-serif text-slate-800 dark:text-slate-100 mb-1">Konsumsi Solar</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-5 flex-grow line-clamp-3">Pantau pengeluaran solar bulanan dan analisis tingkat efisiensi pembakaran setiap alat berat.</p>
+                <!-- Metrics -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Pemakaian</span>
+                        <span class="text-base font-black text-slate-800 dark:text-slate-100">{{ number_format($totalFuel, 0, ',', '.') }} <span class="text-xs font-semibold text-slate-500">L</span></span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Rerata / Unit</span>
+                        <span class="text-base font-black text-amber-600 dark:text-amber-400">{{ number_format($totalFuel / max($totalAset, 1), 0, ',', '.') }} <span class="text-xs font-semibold text-slate-500">L</span></span>
+                    </div>
+                </div>
+
+                <!-- Descriptive list summary -->
+                <div class="space-y-2 mb-5">
+                    <div class="flex items-center justify-between text-xs border-b border-slate-100 dark:border-white/5 pb-1.5">
+                        <span class="text-slate-500 dark:text-slate-400">Total Unit Dipantau</span>
+                        <span class="font-bold text-slate-700 dark:text-slate-200">{{ $totalAset }} Unit</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pb-0.5">
+                        <span class="text-slate-500 dark:text-slate-400">Status Data Dispenser</span>
+                        <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-md">Terintegrasi</span>
+                    </div>
+                </div>
+
                 <!-- Card Button -->
-                <a href="{{ route('monitoring.fuel') }}" class="w-full bg-forest dark:bg-emerald-600 hover:bg-green-700 dark:hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95">
-                    Buka Laporan
+                <a href="{{ route('monitoring.fuel') }}" class="mt-auto w-full bg-forest dark:bg-emerald-600 hover:bg-green-700 dark:hover:bg-emerald-500 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
+                    <span>Laporan Lengkap</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
                 </a>
             </div>
         </div>
         
-        <!-- Bootstrap Inspired Card 3 (Links style) -->
+        <!-- Alur Sistem Card (Links style) -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-400">
-            <!-- Image Cap Replacement -->
-            <div class="h-28 bg-gradient-to-br from-indigo-50 to-slate-100 dark:from-slate-800 dark:to-[#0B1120] flex items-center justify-center text-indigo-200 dark:text-slate-700 border-b border-slate-100 dark:border-white/5 group relative overflow-hidden">
-                <div class="absolute inset-0 bg-indigo-600/5 dark:bg-indigo-400/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                <i class="fas fa-project-diagram text-5xl drop-shadow-sm group-hover:scale-110 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-all duration-300"></i>
+            <!-- Header Banner -->
+            <div class="h-24 bg-gradient-to-br from-indigo-500 to-purple-600 text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
+                <div class="absolute right-0 top-0 opacity-10 pointer-events-none -mr-4 -mt-4">
+                    <i class="fas fa-project-diagram text-7xl"></i>
+                </div>
+                <div class="z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Integrasi</span>
+                    <h3 class="text-base font-bold font-serif mt-1">Status Alur Data</h3>
+                </div>
+                <i class="fas fa-project-diagram text-3xl opacity-80 z-10"></i>
             </div>
             <!-- Card Body -->
             <div class="p-5 flex flex-col flex-grow">
-                <h3 class="text-lg font-bold font-serif text-slate-800 dark:text-slate-100 mb-1">Alur Sistem</h3>
-                <p class="text-[11px] font-bold text-forest dark:text-emerald-400 uppercase tracking-wider mb-2">Dokumentasi</p>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mb-4 flex-grow line-clamp-3">Rancangan sumber data dari Caterpillar, SAP, dan Master Data.</p>
+                <!-- Status List -->
+                <div class="space-y-2 mb-5 flex-grow">
+                    <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-white/5">
+                        <span class="text-slate-600 dark:text-slate-400 font-semibold flex items-center"><i class="fas fa-satellite-dish text-blue-500 mr-2"></i>GPS AGI Ingestion</span>
+                        <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-md">Online</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-white/5">
+                        <span class="text-slate-600 dark:text-slate-400 font-semibold flex items-center"><i class="fas fa-globe text-amber-500 mr-2"></i>Caterpillar Telemetry</span>
+                        <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-md">Online</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-white/5">
+                        <span class="text-slate-600 dark:text-slate-400 font-semibold flex items-center"><i class="fas fa-network-wired text-indigo-500 mr-2"></i>SAP Integration</span>
+                        <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 rounded-md">Connected</span>
+                    </div>
+                </div>
+
                 <!-- Card Links -->
-                <div class="flex gap-4 pt-3 border-t border-slate-100 dark:border-white/5">
-                    <a href="{{ route('monitoring.flow') }}" class="text-forest dark:text-emerald-400 hover:text-green-800 dark:hover:text-emerald-300 hover:underline text-sm font-semibold transition">
-                        Lihat Diagram <i class="fas fa-arrow-right ml-1 text-xs"></i>
+                <div class="pt-3 border-t border-slate-100 dark:border-white/5 mt-auto">
+                    <a href="{{ route('monitoring.flow') }}" class="text-forest dark:text-emerald-400 hover:text-green-800 dark:hover:text-emerald-300 hover:underline text-sm font-semibold transition flex items-center justify-center gap-1.5">
+                        <span>Lihat Aliran Integrasi</span>
+                        <i class="fas fa-arrow-right text-xs"></i>
                     </a>
                 </div>
             </div>
         </div>
 
-        <!-- Bootstrap Inspired Card 4 (Admin Dark Theme) -->
+        <!-- Admin Card -->
         @if(Auth::user()->role === 'admin')
-        <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-800/20 transition-all duration-300 animate-stagger delay-500">
-            <!-- Image Cap Replacement -->
-            <div class="h-32 bg-slate-900 flex items-center justify-center text-slate-600 border-b border-slate-700 group">
-                <i class="fas fa-file-upload text-6xl drop-shadow-sm group-hover:scale-110 transition-transform duration-300"></i>
-            </div>
-            <!-- Card Body -->
-            <div class="p-5 flex flex-col flex-grow">
-                <h3 class="text-lg font-bold font-serif text-white mb-1">Impor Data</h3>
-                <p class="text-sm text-slate-400 mb-4 flex-grow line-clamp-3">Unggah file untuk memperbarui basis data ke periode bulan terbaru.</p>
-                <!-- Card Buttons -->
-                <div class="flex gap-2">
-                    <a href="{{ route('import.index') }}" class="flex-1 bg-white hover:bg-slate-200 text-slate-900 font-bold py-2.5 px-4 rounded-lg text-center transition text-sm shadow-sm active:scale-95">
-                        Impor
+        <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-800/20 transition-all duration-300 animate-stagger delay-500 lg:col-span-3">
+            <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3.5">
+                    <div class="w-12 h-12 rounded-xl bg-slate-900 text-slate-300 flex items-center justify-center text-xl flex-shrink-0 shadow">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white">Panel Administrasi Sistem</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Unggah data telemetry mentah atau kelola izin akses akun pengguna.</p>
+                    </div>
+                </div>
+                <div class="flex gap-2.5 w-full md:w-auto">
+                    <a href="{{ route('import.index') }}" class="flex-1 md:flex-initial bg-white hover:bg-slate-200 text-slate-900 font-bold py-2 px-4 rounded-lg text-center transition text-xs shadow-sm active:scale-95">
+                        <i class="fas fa-upload mr-1.5"></i>Impor Data
                     </a>
-                    <a href="{{ route('users.index') }}" class="flex-1 bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 font-semibold py-2.5 px-4 rounded-lg text-center transition text-sm shadow-sm active:scale-95">
-                        Pengguna
+                    <a href="{{ route('users.index') }}" class="flex-1 md:flex-initial bg-slate-700 hover:bg-slate-600 text-white border border-slate-600 font-semibold py-2 px-4 rounded-lg text-center transition text-xs shadow-sm active:scale-95">
+                        <i class="fas fa-users-cog mr-1.5"></i>Kelola Pengguna
                     </a>
                 </div>
             </div>
