@@ -27,14 +27,20 @@ class MonitoringController extends Controller
 
     public function workingHour(Request $request)
     {
+        ini_set('memory_limit', '512M');
         $start_date = $request->get('start_date');
         $end_date = $request->get('end_date');
 
-        if (! $start_date) {
-            $start_date = now()->startOfMonth()->format('Y-m-d');
-        }
-        if (! $end_date) {
-            $end_date = now()->endOfMonth()->format('Y-m-d');
+        if (! $start_date || ! $end_date) {
+            $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
+            if ($latestData) {
+                $latestDate = \Carbon\Carbon::parse($latestData->tanggal);
+                $start_date = $latestDate->copy()->startOfMonth()->format('Y-m-d');
+                $end_date = $latestDate->copy()->endOfMonth()->format('Y-m-d');
+            } else {
+                $start_date = now()->startOfMonth()->format('Y-m-d');
+                $end_date = now()->endOfMonth()->format('Y-m-d');
+            }
         }
 
         $id_aset = $request->get('id_aset');
@@ -142,8 +148,15 @@ class MonitoringController extends Controller
         $end_date = $request->get('end_date');
 
         if (! $start_date || ! $end_date) {
-            $start_date = now()->startOfMonth()->format('Y-m-d');
-            $end_date = now()->endOfMonth()->format('Y-m-d');
+            $latestData = DataAlat::where('id_aset', $idAset)->orderBy('tanggal', 'desc')->first();
+            if ($latestData) {
+                $latestDate = \Carbon\Carbon::parse($latestData->tanggal);
+                $start_date = $latestDate->copy()->startOfMonth()->format('Y-m-d');
+                $end_date = $latestDate->copy()->endOfMonth()->format('Y-m-d');
+            } else {
+                $start_date = now()->startOfMonth()->format('Y-m-d');
+                $end_date = now()->endOfMonth()->format('Y-m-d');
+            }
         }
 
         $alat = DataAlat::where('id_aset', $idAset)->first();
@@ -160,6 +173,7 @@ class MonitoringController extends Controller
 
     public function fuel(Request $request)
     {
+        ini_set('memory_limit', '512M');
         $bulan = $request->get('bulan');
         $tahun = $request->get('tahun');
 
@@ -313,25 +327,42 @@ class MonitoringController extends Controller
 
     public function export(Request $request)
     {
+        ini_set('memory_limit', '512M');
         $filters = $request->only([
             'start_date', 'end_date', 'bulan', 'tahun', 'group_aset', 'area', 'id_aset',
             'group_desc', 'group_internal_order', 'internal_order',
         ]);
 
         if (empty($filters['bulan']) && empty($filters['tahun']) && empty($filters['start_date'])) {
-            $filters['bulan'] = now()->format('F');
-            $filters['tahun'] = now()->year;
+            $type = $request->get('type', 'working_hour');
+            if ($type === 'fuel' || $type === 'efficiency') {
+                $filters['bulan'] = 'ALL';
+                $filters['tahun'] = 'ALL';
+            } else {
+                $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
+                if ($latestData) {
+                    $latestDate = \Carbon\Carbon::parse($latestData->tanggal);
+                    $filters['start_date'] = $latestDate->copy()->startOfMonth()->format('Y-m-d');
+                    $filters['end_date'] = $latestDate->copy()->endOfMonth()->format('Y-m-d');
+                } else {
+                    $filters['start_date'] = now()->startOfMonth()->format('Y-m-d');
+                    $filters['end_date'] = now()->endOfMonth()->format('Y-m-d');
+                }
+            }
         }
 
         // Build a nice filename
         $nameParts = ['laporan_monitoring_alat'];
+        if ($request->get('type') === 'efficiency') {
+            $nameParts = ['laporan_efisiensi_alat'];
+        }
         if (! empty($filters['group_aset']) && $filters['group_aset'] !== 'ALL') {
             $nameParts[] = $filters['group_aset'];
         }
         if (! empty($filters['area']) && $filters['area'] !== 'ALL') {
             $nameParts[] = $filters['area'];
         }
-        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
+        if ($request->get('type') !== 'efficiency' && ! empty($filters['start_date']) && ! empty($filters['end_date'])) {
             $nameParts[] = $filters['start_date'].'_to_'.$filters['end_date'];
         } else {
             $nameParts[] = strtolower($filters['bulan'] ?? 'all');
@@ -342,6 +373,9 @@ class MonitoringController extends Controller
 
         if ($request->get('type') === 'fuel') {
             return Excel::download(new \App\Exports\FuelExport($filters), $fileName);
+        }
+        if ($request->get('type') === 'efficiency') {
+            return Excel::download(new \App\Exports\EfficiencyExport($filters), $fileName);
         }
 
         return Excel::download(new DataAlatExport($filters), $fileName);
@@ -360,8 +394,20 @@ class MonitoringController extends Controller
         $type = $request->get('type', 'working_hour');
 
         if (empty($filters['bulan']) && empty($filters['tahun']) && empty($filters['start_date'])) {
-            $filters['bulan'] = now()->format('F');
-            $filters['tahun'] = now()->year;
+            if ($type === 'fuel' || $type === 'efficiency') {
+                $filters['bulan'] = 'ALL';
+                $filters['tahun'] = 'ALL';
+            } else {
+                $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
+                if ($latestData) {
+                    $latestDate = \Carbon\Carbon::parse($latestData->tanggal);
+                    $filters['start_date'] = $latestDate->copy()->startOfMonth()->format('Y-m-d');
+                    $filters['end_date'] = $latestDate->copy()->endOfMonth()->format('Y-m-d');
+                } else {
+                    $filters['start_date'] = now()->startOfMonth()->format('Y-m-d');
+                    $filters['end_date'] = now()->endOfMonth()->format('Y-m-d');
+                }
+            }
         }
 
         if ($type === 'fuel') {
@@ -369,6 +415,98 @@ class MonitoringController extends Controller
             $data = $export->query()->get();
             $title = 'Laporan Konsumsi Solar';
             $view = 'exports.fuel_pdf';
+        } elseif ($type === 'efficiency') {
+            $bulan = $filters['bulan'] ?? 'May';
+            $tahun = $filters['tahun'] ?? 2026;
+
+            $telemetrySub = DB::table('data_alat');
+            if (! empty($bulan) && $bulan !== 'ALL') {
+                $telemetrySub->where('bulan', $bulan);
+            }
+            if (! empty($tahun) && $tahun !== 'ALL') {
+                $telemetrySub->where('tahun', $tahun);
+            }
+            $telemetrySub = $telemetrySub->select(
+                'id_aset',
+                DB::raw('SUM(waktu_kerja) as total_kerja'),
+                DB::raw('SUM(waktu_operasi) as total_operasi'),
+                DB::raw('SUM(waktu_idle) as total_idle')
+            )
+            ->groupBy('id_aset');
+
+            $fuelSub = DB::table('fuel_transactions');
+            if (! empty($bulan) && $bulan !== 'ALL') {
+                $fuelSub->where(function ($q) use ($bulan) {
+                    $q->where('bulan', $bulan)->orWhere('bulan', substr($bulan, 0, 3));
+                });
+            }
+            if (! empty($tahun) && $tahun !== 'ALL') {
+                $fuelSub->where('tahun', $tahun);
+            }
+            $fuelSub = $fuelSub->select(
+                'unit_code',
+                DB::raw('SUM(total_quantity) as total_solar')
+            )
+            ->groupBy('unit_code');
+
+            $query = MasterAset::query()
+                ->select(
+                    'master_asets.unit_code as id_aset',
+                    'master_asets.group_aset',
+                    'master_asets.area',
+                    'master_asets.pt',
+                    'master_asets.internal_order',
+                    'master_asets.group_internal_order',
+                    'master_asets.group_desc',
+                    'telemetry.total_kerja',
+                    'telemetry.total_operasi',
+                    'telemetry.total_idle',
+                    'fuel.total_solar'
+                )
+                ->leftJoinSub($telemetrySub, 'telemetry', 'master_asets.unit_code', '=', 'telemetry.id_aset')
+                ->leftJoinSub($fuelSub, 'fuel', 'master_asets.unit_code', '=', 'fuel.unit_code');
+
+            $query->where(function ($q) {
+                $q->whereNotNull('telemetry.total_kerja')
+                  ->orWhereNotNull('fuel.total_solar');
+            });
+
+            if (! empty($filters['id_aset']) && $filters['id_aset'] !== 'ALL') {
+                $query->where('master_asets.unit_code', $filters['id_aset']);
+            }
+            if (! empty($filters['group_aset']) && $filters['group_aset'] !== 'ALL') {
+                $query->where('master_asets.group_aset', $filters['group_aset']);
+            }
+            if (! empty($filters['area']) && $filters['area'] !== 'ALL') {
+                $query->where('master_asets.area', $filters['area']);
+            }
+            if (! empty($filters['group_internal_order']) && $filters['group_internal_order'] !== 'ALL') {
+                $query->where('master_asets.group_internal_order', $filters['group_internal_order']);
+            }
+            if (! empty($filters['internal_order']) && $filters['internal_order'] !== 'ALL') {
+                $query->where('master_asets.internal_order', $filters['internal_order']);
+            }
+            if (! empty($filters['group_desc']) && $filters['group_desc'] !== 'ALL') {
+                $query->where('master_asets.group_desc', $filters['group_desc']);
+            }
+            if (! empty($filters['pt']) && $filters['pt'] !== 'ALL') {
+                $query->where('master_asets.pt', $filters['pt']);
+            }
+
+            $data = $query->get()->map(function ($row) {
+                $row->total_kerja = (float) ($row->total_kerja ?? 0);
+                $row->total_operasi = (float) ($row->total_operasi ?? 0);
+                $row->total_idle = (float) ($row->total_idle ?? 0);
+                $row->total_solar = (float) ($row->total_solar ?? 0);
+                $row->avg_idle = $row->total_operasi > 0 ? ($row->total_idle / $row->total_operasi) * 100 : 0;
+                $row->efficiency = $row->total_kerja > 0 ? ($row->total_solar / $row->total_kerja) : null;
+                return $row;
+            })->sortByDesc(function ($item) {
+                return $item->efficiency ?? -1;
+            })->values();
+
+            $title = 'Laporan Efisiensi Bahan Bakar (L/Jam)';
+            $view = 'exports.efficiency_pdf';
         } else {
             $export = new \App\Exports\DataAlatExport($filters);
             $data = $export->query()->get();
@@ -376,18 +514,33 @@ class MonitoringController extends Controller
             $view = 'exports.working_hour_pdf';
         }
 
+        $redirectUrl = route('monitoring.working_hour');
+        if ($type === 'fuel') {
+            $redirectUrl = route('monitoring.fuel');
+        } elseif ($type === 'efficiency') {
+            $redirectUrl = route('monitoring.efficiency');
+        }
+
+        if ($data->count() > 1500) {
+            return redirect($redirectUrl)
+                ->with('error', 'Ukuran data terlalu besar untuk diekspor ke PDF (' . number_format($data->count()) . ' baris). Batas maksimum ekspor PDF adalah 1.500 baris. Silakan gunakan ekspor Excel (tidak dibatasi) atau gunakan filter tanggal/bulan lebih spesifik.');
+        }
+
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView($view, compact('data', 'filters', 'title'))
             ->setPaper('a4', 'landscape');
 
         // Build a nice filename
         $nameParts = ['laporan_monitoring_alat'];
+        if ($type === 'efficiency') {
+            $nameParts = ['laporan_efisiensi_alat'];
+        }
         if (! empty($filters['group_aset']) && $filters['group_aset'] !== 'ALL') {
             $nameParts[] = $filters['group_aset'];
         }
         if (! empty($filters['area']) && $filters['area'] !== 'ALL') {
             $nameParts[] = $filters['area'];
         }
-        if (! empty($filters['start_date']) && ! empty($filters['end_date'])) {
+        if ($type !== 'efficiency' && ! empty($filters['start_date']) && ! empty($filters['end_date'])) {
             $nameParts[] = $filters['start_date'].'_to_'.$filters['end_date'];
         } else {
             $nameParts[] = strtolower($filters['bulan'] ?? 'all');
@@ -397,6 +550,134 @@ class MonitoringController extends Controller
         $fileName = implode('_', $nameParts).'.pdf';
 
         return $pdf->download($fileName);
+    }
+
+    public function efficiency(Request $request)
+    {
+        ini_set('memory_limit', '512M');
+        $latestData = DataAlat::orderBy('tanggal', 'desc')->first();
+        $defaultBulan = $latestData ? $latestData->bulan : now()->format('F');
+        $defaultTahun = $latestData ? $latestData->tahun : now()->year;
+
+        $bulan = $request->get('bulan', $defaultBulan);
+        $tahun = $request->get('tahun', $defaultTahun);
+
+        $id_aset = $request->get('id_aset');
+        $group_aset = $request->get('group_aset');
+        $area = $request->get('area');
+        $group_internal_order = $request->get('group_internal_order');
+        $internal_order = $request->get('internal_order');
+        $group_desc = $request->get('group_desc');
+        $pt = $request->get('pt');
+
+        $telemetrySub = DB::table('data_alat');
+        if (! empty($bulan) && $bulan !== 'ALL') {
+            $telemetrySub->where('bulan', $bulan);
+        }
+        if (! empty($tahun) && $tahun !== 'ALL') {
+            $telemetrySub->where('tahun', $tahun);
+        }
+        $telemetrySub = $telemetrySub->select(
+            'id_aset',
+            DB::raw('SUM(waktu_kerja) as total_kerja'),
+            DB::raw('SUM(waktu_operasi) as total_operasi'),
+            DB::raw('SUM(waktu_idle) as total_idle')
+        )
+        ->groupBy('id_aset');
+
+        $fuelSub = DB::table('fuel_transactions');
+        if (! empty($bulan) && $bulan !== 'ALL') {
+            $fuelSub->where(function ($q) use ($bulan) {
+                $q->where('bulan', $bulan)->orWhere('bulan', substr($bulan, 0, 3));
+            });
+        }
+        if (! empty($tahun) && $tahun !== 'ALL') {
+            $fuelSub->where('tahun', $tahun);
+        }
+        $fuelSub = $fuelSub->select(
+            'unit_code',
+            DB::raw('SUM(total_quantity) as total_solar')
+        )
+        ->groupBy('unit_code');
+
+        $query = MasterAset::query()
+            ->select(
+                'master_asets.unit_code as id_aset',
+                'master_asets.group_aset',
+                'master_asets.area',
+                'master_asets.pt',
+                'master_asets.internal_order',
+                'master_asets.group_internal_order',
+                'master_asets.group_desc',
+                'telemetry.total_kerja',
+                'telemetry.total_operasi',
+                'telemetry.total_idle',
+                'fuel.total_solar'
+            )
+            ->leftJoinSub($telemetrySub, 'telemetry', 'master_asets.unit_code', '=', 'telemetry.id_aset')
+            ->leftJoinSub($fuelSub, 'fuel', 'master_asets.unit_code', '=', 'fuel.unit_code');
+
+        $query->where(function ($q) {
+            $q->whereNotNull('telemetry.total_kerja')
+              ->orWhereNotNull('fuel.total_solar');
+        });
+
+        if (! empty($id_aset) && $id_aset !== 'ALL') {
+            $query->where('master_asets.unit_code', $id_aset);
+        }
+        if (! empty($group_aset) && $group_aset !== 'ALL') {
+            $query->where('master_asets.group_aset', $group_aset);
+        }
+        if (! empty($area) && $area !== 'ALL') {
+            $query->where('master_asets.area', $area);
+        }
+        if (! empty($group_internal_order) && $group_internal_order !== 'ALL') {
+            $query->where('master_asets.group_internal_order', $group_internal_order);
+        }
+        if (! empty($internal_order) && $internal_order !== 'ALL') {
+            $query->where('master_asets.internal_order', $internal_order);
+        }
+        if (! empty($group_desc) && $group_desc !== 'ALL') {
+            $query->where('master_asets.group_desc', $group_desc);
+        }
+        if (! empty($pt) && $pt !== 'ALL') {
+            $query->where('master_asets.pt', $pt);
+        }
+
+        $reports = $query->get()->map(function ($row) {
+            $row->total_kerja = (float) ($row->total_kerja ?? 0);
+            $row->total_operasi = (float) ($row->total_operasi ?? 0);
+            $row->total_idle = (float) ($row->total_idle ?? 0);
+            $row->total_solar = (float) ($row->total_solar ?? 0);
+            $row->avg_idle = $row->total_operasi > 0 ? ($row->total_idle / $row->total_operasi) * 100 : 0;
+            $row->efficiency = $row->total_kerja > 0 ? ($row->total_solar / $row->total_kerja) : null;
+            return $row;
+        })->sortByDesc(function ($item) {
+            return $item->efficiency ?? -1;
+        })->values();
+
+        $stats = (object) [
+            'total_aset' => $reports->count(),
+            'total_solar' => $reports->sum('total_solar'),
+            'total_kerja' => $reports->sum('total_kerja'),
+            'avg_efficiency' => $reports->sum('total_kerja') > 0 ? ($reports->sum('total_solar') / $reports->sum('total_kerja')) : 0,
+        ];
+
+        $chartData = $reports->filter(function ($item) {
+            return !is_null($item->efficiency) && $item->total_kerja > 0;
+        })->map(function ($item) {
+            return (object) [
+                'id_aset' => $item->id_aset,
+                'efficiency' => round($item->efficiency, 2),
+            ];
+        })->values();
+
+        $filters = $this->getFilters();
+
+        return view('monitoring.efficiency', array_merge(compact(
+            'reports', 'stats', 'chartData', 'bulan', 'tahun',
+            'id_aset', 'group_aset', 'area', 'group_internal_order', 'internal_order', 'group_desc', 'pt'
+        ), $filters));
     }
 
     public function getFilterOptions(Request $request)

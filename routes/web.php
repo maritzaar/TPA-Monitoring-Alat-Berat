@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::get('monitoring/working-hour/detail/{idAset}', [MonitoringController::class, 'workingHourDetail'])->name('monitoring.working_hour_detail');
     Route::get('monitoring/fuel', [MonitoringController::class, 'fuel'])->name('monitoring.fuel');
     Route::get('monitoring/fuel/detail/{idAset}', [MonitoringController::class, 'fuelDetail'])->name('monitoring.fuel_detail');
+    Route::get('monitoring/efficiency', [MonitoringController::class, 'efficiency'])->name('monitoring.efficiency');
     Route::get('api/monitoring/filter-options', [MonitoringController::class, 'getFilterOptions'])->name('api.monitoring.filter_options');
     Route::get('monitoring/export', [MonitoringController::class, 'export'])->name('monitoring.export');
     Route::get('monitoring/export-pdf', [MonitoringController::class, 'exportPdf'])->name('monitoring.export_pdf');

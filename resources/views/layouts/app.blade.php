@@ -82,7 +82,7 @@
 
             <!-- Pemantauan (Mobile Accordion) -->
             @php
-                $monitoringRoutes = ['monitoring.working_hour', 'monitoring.fuel', 'monitoring.working_hour_detail', 'monitoring.fuel_detail', 'monitoring.flow'];
+                $monitoringRoutes = ['monitoring.working_hour', 'monitoring.fuel', 'monitoring.working_hour_detail', 'monitoring.fuel_detail', 'monitoring.flow', 'monitoring.efficiency'];
                 $monitoringActive = in_array(Route::currentRouteName(), $monitoringRoutes);
             @endphp
             <div>
@@ -110,6 +110,12 @@
                               {{ request()->routeIs('monitoring.fuel*') ? 'bg-forest text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5' }}">
                         <i class="fas fa-gas-pump w-4 text-center"></i>
                         <span>Konsumsi Solar</span>
+                    </a>
+                    <a href="{{ route('monitoring.efficiency') }}"
+                       class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition
+                              {{ request()->routeIs('monitoring.efficiency*') ? 'bg-forest text-white shadow-sm' : 'text-slate-400 hover:text-white hover:bg-white/5' }}">
+                        <i class="fas fa-tachometer-alt w-4 text-center"></i>
+                        <span>Efisiensi BBM</span>
                     </a>
                     <a href="{{ route('monitoring.flow') }}"
                        class="flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold transition
@@ -218,6 +224,14 @@
                                           : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
                                 <i class="fas fa-gas-pump w-4 text-center"></i>
                                 <span>Konsumsi Solar</span>
+                            </a>
+                            <a href="{{ route('monitoring.efficiency') }}"
+                               class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors font-medium
+                                      {{ request()->routeIs('monitoring.efficiency*')
+                                          ? 'bg-forest text-white shadow-sm'
+                                          : 'text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-forest dark:hover:text-forest' }}">
+                                <i class="fas fa-tachometer-alt w-4 text-center"></i>
+                                <span>Efisiensi BBM</span>
                             </a>
                             <a href="{{ route('monitoring.flow') }}"
                                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors font-medium

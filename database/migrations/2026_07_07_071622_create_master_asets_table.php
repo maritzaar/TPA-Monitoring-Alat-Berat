@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('internal_order', 50)->nullable();
             $table->string('group_internal_order', 50)->nullable();
             $table->string('pt', 50)->nullable();
+            $table->string('group_desc', 100)->nullable();
             $table->string('company_code', 50)->nullable();
             $table->timestamps();
         });

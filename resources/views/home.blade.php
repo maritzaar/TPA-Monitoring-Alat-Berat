@@ -90,7 +90,7 @@
         Akses Cepat
     </h2>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         
         <!-- Jam Kerja Summary Card -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-200">
@@ -180,6 +180,50 @@
             </div>
         </div>
         
+        <!-- Efisiensi BBM Summary Card -->
+        <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-400">
+            <!-- Header Banner -->
+            <div class="h-24 bg-gradient-to-br from-tpaGreen to-tpaOrange text-white flex items-center justify-between px-6 border-b border-slate-100 dark:border-white/5 relative overflow-hidden">
+                <div class="z-10">
+                    <span class="text-[10px] font-bold uppercase tracking-wider bg-white/20 px-2 py-0.5 rounded-full">Analitik</span>
+                    <h3 class="text-base font-bold mt-1">Efisiensi Bahan Bakar</h3>
+                </div>
+                <i class="fas fa-tachometer-alt text-3xl opacity-80 z-10"></i>
+            </div>
+            <!-- Card Body -->
+            <div class="p-5 flex flex-col flex-grow">
+                <!-- Metrics -->
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Total Solar</span>
+                        <span class="text-base font-black text-slate-800 dark:text-slate-100">{{ number_format($totalFuel, 0, ',', '.') }} <span class="text-xs font-semibold text-slate-500">L</span></span>
+                    </div>
+                    <div class="bg-slate-50 dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-white/5">
+                        <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Efisiensi</span>
+                        <span class="text-base font-black text-tpaGreen dark:text-emerald-400">{{ number_format($totalKerja > 0 ? $totalFuel / $totalKerja : 0, 2, ',', '.') }} <span class="text-xs font-semibold text-slate-500">L/Jam</span></span>
+                    </div>
+                </div>
+
+                <!-- Descriptive summary -->
+                <div class="space-y-2 mb-5">
+                    <div class="flex items-center justify-between text-xs border-b border-slate-100 dark:border-white/5 pb-1.5">
+                        <span class="text-slate-500 dark:text-slate-400">Total Jam Kerja</span>
+                        <span class="font-bold text-slate-700 dark:text-slate-200">{{ number_format($totalKerja, 0, ',', '.') }} Jam</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs pb-0.5">
+                        <span class="text-slate-500 dark:text-slate-400">Rasio Produktivitas</span>
+                        <span class="px-2 py-0.5 text-[9px] font-bold bg-emerald-50 dark:bg-emerald-950/50 text-tpaGreen dark:text-emerald-400 rounded-md">Analisis Terintegrasi</span>
+                    </div>
+                </div>
+
+                <!-- Card Button -->
+                <a href="{{ route('monitoring.efficiency') }}" class="mt-auto w-full bg-tpaGreen hover:bg-emerald-700 text-white font-semibold py-2.5 px-4 rounded-lg text-center transition shadow-sm text-sm active:scale-95 flex items-center justify-center gap-1.5">
+                    <span>Analisis Efisiensi</span>
+                    <i class="fas fa-arrow-right text-xs"></i>
+                </a>
+            </div>
+        </div>
+        
         <!-- Alur Sistem Card (Links style) -->
         <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg transition-all duration-300 animate-stagger delay-400">
             <!-- Header Banner -->
@@ -220,7 +264,7 @@
 
         <!-- Admin Card -->
         @if(Auth::user()->role === 'admin')
-        <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-800/20 transition-all duration-300 animate-stagger delay-500 lg:col-span-3">
+        <div class="bg-slate-800 rounded-xl border border-slate-700 shadow-sm overflow-hidden flex flex-col hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-800/20 transition-all duration-300 animate-stagger delay-500 lg:col-span-4">
             <div class="p-5 flex flex-col md:flex-row items-center justify-between gap-4">
                 <div class="flex items-center space-x-3.5">
                     <div class="w-12 h-12 rounded-xl bg-slate-900 text-slate-300 flex items-center justify-center text-xl flex-shrink-0 shadow">
