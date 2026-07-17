@@ -6,8 +6,8 @@
 <div class="w-full space-y-6">
     
     <!-- Header Block -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm">
-        <h2 class="text-xl sm:text-2xl font-bold text-slate-800 flex items-center">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 p-4 sm:p-6 shadow-sm transition-colors duration-200">
+        <h2 class="text-xl sm:text-2xl font-bold text-slate-800 dark:text-slate-200 flex items-center">
             <i class="fas fa-users text-forest mr-2"></i>
             Manajemen Pengguna
         </h2>
@@ -17,28 +17,28 @@
     </div>
 
     <!-- User Table -->
-    <div class="bg-white rounded-xl border border-slate-200 p-4 sm:p-6 shadow-sm">
+    <div class="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-white/5 p-4 sm:p-6 shadow-sm transition-colors duration-200">
         <div class="overflow-x-auto -mx-4 sm:mx-0 table-scroll">
-            <table class="min-w-full divide-y divide-slate-200 border border-slate-100 rounded-lg overflow-hidden">
-                <thead class="bg-slate-50">
+            <table class="min-w-full divide-y divide-slate-200 dark:divide-white/10 border border-slate-100 dark:border-white/5 rounded-lg overflow-hidden">
+                <thead class="bg-slate-50 dark:bg-white/5">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Nama Lengkap</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Nama Pengguna (Username)</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Tanggal Terdaftar</th>
-                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Peran</th>
-                        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider whitespace-nowrap">Aksi</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">Nama Lengkap</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">Nama Pengguna (Username)</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">Tanggal Terdaftar</th>
+                        <th class="px-4 py-3 text-left text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">Peran</th>
+                        <th class="px-4 py-3 text-center text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-slate-100 text-sm">
+                <tbody class="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-white/5 text-sm transition-colors duration-200">
                     @forelse($users as $user)
-                    <tr class="hover:bg-slate-50/50 transition">
-                        <td class="px-4 py-3 font-semibold text-slate-800 whitespace-nowrap">{{ $user->name }}</td>
-                        <td class="px-4 py-3 text-slate-600 whitespace-nowrap">{{ $user->email }}</td>
-                        <td class="px-4 py-3 text-slate-550 whitespace-nowrap">{{ $user->created_at->format('d/m/Y') }}</td>
+                    <tr class="hover:bg-slate-50/50 dark:hover:bg-white/5 transition">
+                        <td class="px-4 py-3 font-semibold text-slate-800 dark:text-slate-200 whitespace-nowrap">{{ $user->name }}</td>
+                        <td class="px-4 py-3 text-slate-600 dark:text-slate-400 whitespace-nowrap">{{ $user->email }}</td>
+                        <td class="px-4 py-3 text-slate-550 dark:text-slate-400 whitespace-nowrap">{{ $user->created_at->format('d/m/Y') }}</td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <span class="px-2.5 py-1 text-xs rounded-full font-semibold border
-                                @if($user->role === 'admin') bg-green-50 text-green-700 border-green-200
-                                @else bg-slate-100 text-slate-600 border-slate-200 @endif">
+                                @if($user->role === 'admin') bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-400 dark:border-green-800/30
+                                @else bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 @endif">
                                 {{ $user->role === 'admin' ? 'Admin' : 'Pengguna' }}
                             </span>
                         </td>
@@ -48,7 +48,7 @@
                                   onsubmit="return confirm('Apakah Anda yakin ingin mengubah peran pengguna ini?')">
                                 @csrf
                                 <button type="submit" class="text-xs font-bold px-3 py-2 rounded-lg border transition inline-flex items-center
-                                    @if($user->role === 'admin') bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200
+                                    @if($user->role === 'admin') bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700 dark:hover:bg-slate-700
                                     @else bg-forest text-white border-transparent hover:bg-green-700 shadow-sm @endif">
                                     @if($user->role === 'admin')
                                         <i class="fas fa-user-minus mr-1.5 text-slate-400"></i> Ubah Peran
@@ -59,13 +59,13 @@
                             </form>
 
                             <button type="button" onclick="openEditUserModal({{ $user->id }}, '{{ addslashes($user->name) }}', '{{ addslashes($user->email) }}')"
-                                    class="text-xs font-bold px-3 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition inline-flex items-center shadow-sm">
+                                    class="text-xs font-bold px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition inline-flex items-center shadow-sm">
                                 <i class="fas fa-edit mr-1.5 text-blue-500"></i> Ubah
                             </button>
 
                             <button type="button" onclick="openResetPasswordModal({{ $user->id }}, '{{ addslashes($user->name) }}')"
-                                    class="text-xs font-bold px-3 py-2 rounded-lg border border-slate-200 bg-slate-100 text-slate-700 hover:bg-slate-200 transition inline-flex items-center shadow-sm">
-                                <i class="fas fa-key mr-1.5 text-slate-500"></i> Reset Kata Sandi
+                                    class="text-xs font-bold px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition inline-flex items-center shadow-sm">
+                                <i class="fas fa-key mr-1.5 text-slate-500 dark:text-slate-400"></i> Reset Kata Sandi
                             </button>
 
                             <form action="{{ route('users.destroy', $user->id) }}" method="POST" class="inline"

@@ -12,8 +12,8 @@ class UserController extends Controller
 {
     public function index()
     {
-        // Get all users except current admin
-        $users = User::where('id', '!=', Auth::id())->orderBy('name')->get();
+        // Get all users, including the current admin
+        $users = User::orderBy('name')->get();
 
         return view('users.index', compact('users'));
     }
