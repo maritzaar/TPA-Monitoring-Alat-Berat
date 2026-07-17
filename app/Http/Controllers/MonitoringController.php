@@ -142,34 +142,7 @@ class MonitoringController extends Controller
         ), $filters));
     }
 
-    public function workingHourDetail(Request $request, $idAset)
-    {
-        $start_date = $request->get('start_date');
-        $end_date = $request->get('end_date');
 
-        if (! $start_date || ! $end_date) {
-            $latestData = DataAlat::where('id_aset', $idAset)->orderBy('tanggal', 'desc')->first();
-            if ($latestData) {
-                $latestDate = \Carbon\Carbon::parse($latestData->tanggal);
-                $start_date = $latestDate->copy()->startOfMonth()->format('Y-m-d');
-                $end_date = $latestDate->copy()->endOfMonth()->format('Y-m-d');
-            } else {
-                $start_date = now()->startOfMonth()->format('Y-m-d');
-                $end_date = now()->endOfMonth()->format('Y-m-d');
-            }
-        }
-
-        $alat = DataAlat::where('id_aset', $idAset)->first();
-
-        $query_end_date = \Carbon\Carbon::parse($end_date)->endOfDay()->format('Y-m-d H:i:s');
-
-        $data = DataAlat::where('id_aset', $idAset)
-            ->whereBetween('tanggal', [$start_date, $query_end_date])
-            ->orderBy('tanggal', 'asc')
-            ->get();
-
-        return view('monitoring.working_hour_detail', compact('alat', 'data', 'start_date', 'end_date', 'idAset'));
-    }
 
     public function fuel(Request $request)
     {
@@ -238,7 +211,15 @@ class MonitoringController extends Controller
             'master_asets.group_desc as group_desc',
             \Illuminate\Support\Facades\DB::raw('SUBSTR(fuel_transactions.internal_order, 5, 3) as group_internal_order')
         )
-            ->get();
+            ->get()
+            ->sortBy(function($item) {
+                try {
+                    return \Carbon\Carbon::parse("1 " . $item->bulan . " " . $item->tahun)->format('Y-m');
+                } catch (\Exception $e) {
+                    return $item->tahun . '-' . $item->bulan;
+                }
+            })
+            ->values();
 
         // Calculate aggregated fuel per asset (ordered descending by fuel usage)
         $chartData = $reports->groupBy('id_aset')->map(function ($group) {
@@ -296,34 +277,7 @@ class MonitoringController extends Controller
         ), $filters));
     }
 
-    public function fuelDetail(Request $request, $idAset)
-    {
-        $bulan = $request->get('bulan');
-        $tahun = $request->get('tahun');
 
-        if (! $bulan || ! $tahun) {
-            $latest = FuelTransaction::orderBy('created_at', 'desc')->first();
-            $bulan = $latest ? $latest->bulan : now()->format('F');
-            $tahun = $latest ? $latest->tahun : now()->year;
-        }
-
-        $alat = FuelTransaction::where('unit_code', $idAset)->first();
-
-        $data = FuelTransaction::where('unit_code', $idAset)
-            ->where(function ($q) use ($bulan) {
-                if ($bulan !== 'ALL') {
-                    $q->where('bulan', $bulan)->orWhere('bulan', substr($bulan, 0, 3));
-                }
-            });
-
-        if ($tahun !== 'ALL') {
-            $data = $data->where('tahun', $tahun);
-        }
-
-        $data = $data->orderBy('created_at', 'asc')->get();
-
-        return view('monitoring.fuel_detail', compact('alat', 'data', 'bulan', 'tahun', 'idAset'));
-    }
 
     public function export(Request $request)
     {

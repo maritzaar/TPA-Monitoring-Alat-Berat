@@ -236,7 +236,6 @@
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Op (Jam)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Idle (Jam)</th>
                         <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">% Idle</th>
-                        <th class="px-3 py-3 text-right text-[10px] font-bold text-slate-500 uppercase tracking-wider">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-slate-900 divide-y divide-slate-100 dark:divide-white/5">
@@ -260,9 +259,6 @@
                                 @else bg-rose-50 text-rose-800 @endif">
                                 {{ number_format($row->avg_idle ?? 0, 1) }}%
                             </span>
-                        </td>
-                        <td class="px-3 py-2.5 text-right">
-                            <a href="{{ route('monitoring.working_hour_detail', $row->id_aset) }}" class="text-blue-600 hover:text-blue-800"><i class="fas fa-eye"></i> Detail</a>
                         </td>
                     </tr>
                     @empty

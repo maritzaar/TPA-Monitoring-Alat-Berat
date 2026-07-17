@@ -176,7 +176,7 @@
             @endauth
             <a href="{{ route('home') }}" class="flex items-center hover:opacity-80 transition-opacity">
                 <h1 class="text-xs sm:text-sm md:text-base font-bold tracking-wider flex items-center select-none whitespace-nowrap text-white">
-                    <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-8 w-auto mr-2 flex-shrink-0">
+                    <img src="{{ asset('images/logo.png') }}" alt="TPA Logo" class="h-11 w-auto mr-2 flex-shrink-0">
                     <span>TELADAN PRIMA AGRO</span>
                 </h1>
             </a>
