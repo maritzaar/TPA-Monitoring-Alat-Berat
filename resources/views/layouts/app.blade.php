@@ -288,11 +288,57 @@
         <!-- Right: theme toggle + user info -->
         <div class="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
             <!-- Theme Toggle -->
-            <button id="themeToggleBtn" class="text-slate-300 hover:text-white transition focus:outline-none p-2 rounded-full hover:bg-slate-800">
+            <button id="themeToggleBtn" class="text-slate-300 hover:text-white transition focus:outline-none p-2 rounded-full hover:bg-slate-800 mr-1 sm:mr-2">
                 <i id="themeToggleIcon" class="fas fa-moon text-lg"></i>
             </button>
             
             @auth
+            <!-- Notification Bell -->
+            <div class="relative inline-block text-left mr-1 sm:mr-3" id="notificationDropdownContainer">
+                <button type="button" id="notificationDropdownButton" class="relative text-slate-300 hover:text-white transition focus:outline-none p-2 rounded-full hover:bg-slate-800 flex-shrink-0">
+                    <i class="fas fa-bell text-lg"></i>
+                    @if(auth()->user()->unreadNotifications->count() > 0)
+                        <span class="absolute top-1 right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-rose-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-[#0F172A]">
+                            {{ auth()->user()->unreadNotifications->count() }}
+                        </span>
+                    @endif
+                </button>
+                
+                <!-- Notification Dropdown -->
+                <div id="notificationDropdownMenu" class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-white/5 divide-y divide-slate-100 dark:divide-white/5 z-50 text-sm no-print">
+                    <div class="p-3 flex justify-between items-center border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-800/50 rounded-t-xl">
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1"><i class="fas fa-bell mr-1"></i> Notifikasi</p>
+                        @if(auth()->user()->unreadNotifications->count() > 0)
+                        <form action="{{ route('notifications.markAllAsRead') }}" method="POST">
+                            @csrf
+                            <button type="submit" class="text-[10px] text-blue-600 hover:text-blue-800 dark:text-blue-400 font-bold uppercase tracking-wider px-1 transition">Tandai Semua Dibaca</button>
+                        </form>
+                        @endif
+                    </div>
+                    <div class="max-h-[300px] overflow-y-auto">
+                        @forelse(auth()->user()->unreadNotifications->take(5) as $notification)
+                            <div class="p-3 border-b border-slate-50 dark:border-white/5 hover:bg-slate-50 dark:hover:bg-white/5 transition flex flex-col gap-1.5 group">
+                                <p class="text-xs text-slate-700 dark:text-slate-300 leading-relaxed">{{ $notification->data['message'] ?? 'Notifikasi baru' }}</p>
+                                <div class="flex justify-between items-center mt-1">
+                                    <span class="text-[10px] text-slate-400"><i class="far fa-clock mr-1"></i>{{ $notification->created_at->diffForHumans() }}</span>
+                                    <form action="{{ route('notifications.markAsRead', $notification->id) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="text-[10px] text-emerald-600 hover:text-emerald-700 dark:text-emerald-400 font-bold opacity-0 group-hover:opacity-100 transition-opacity"><i class="fas fa-check mr-1"></i>Tandai Dibaca</button>
+                                    </form>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="p-6 text-center text-slate-400 dark:text-slate-500 flex flex-col items-center">
+                                <i class="fas fa-bell-slash text-2xl mb-2 opacity-50"></i>
+                                <p class="text-xs">Belum ada notifikasi baru.</p>
+                            </div>
+                        @endforelse
+                    </div>
+                    <div class="p-2 text-center bg-slate-50 dark:bg-slate-800/50 rounded-b-xl border-t border-slate-100 dark:border-white/5">
+                        <a href="{{ route('notifications.index') }}" class="text-xs text-forest hover:text-blue-700 dark:text-emerald-500 dark:hover:text-emerald-400 font-bold w-full block py-1.5 transition">Lihat Semua Notifikasi <i class="fas fa-arrow-right ml-1"></i></a>
+                    </div>
+                </div>
+            </div>
             <div class="relative inline-block text-left" id="profileDropdownContainer">
                 <div class="flex items-center space-x-2 sm:space-x-3">
                     <!-- User name -->
@@ -434,7 +480,24 @@
                 adminMenu.classList.add('hidden');
                 toggleRotation(adminChevron, false);
             }
+            if (profileMenu && !e.target.closest('#profileDropdownContainer')) {
+                profileMenu.classList.add('hidden');
+            }
+            const notifMenu = document.getElementById('notificationDropdownMenu');
+            if (notifMenu && !e.target.closest('#notificationDropdownContainer')) {
+                notifMenu.classList.add('hidden');
+            }
         });
+
+        // Notification Dropdown Toggle
+        const notifBtn = document.getElementById('notificationDropdownButton');
+        const notifMenu = document.getElementById('notificationDropdownMenu');
+        if (notifBtn && notifMenu) {
+            notifBtn.addEventListener('click', e => {
+                e.stopPropagation();
+                notifMenu.classList.toggle('hidden');
+            });
+        }
 
         // --- Mobile Navigation ---
         const mobileToggleBtn = document.getElementById('mobileMenuToggle');
