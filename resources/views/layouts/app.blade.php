@@ -207,7 +207,7 @@
                     </button>
                     <!-- Dropdown menu -->
                     <div id="monitoringDropdownMenu"
-                         class="hidden absolute left-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-white/5 divide-y divide-slate-100 dark:divide-white/5 z-50 text-sm no-print">
+                         class="hidden absolute left-0 mt-2 w-52 bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-xl shadow-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-100/50 dark:divide-white/5 z-50 text-sm no-print">
                         <div class="p-1.5 space-y-1">
                             <a href="{{ route('monitoring.working_hour') }}"
                                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors font-medium
@@ -259,7 +259,7 @@
                     </button>
                     <!-- Dropdown menu -->
                     <div id="adminDropdownMenu"
-                         class="hidden absolute left-0 mt-2 w-52 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-white/5 divide-y divide-slate-100 dark:divide-white/5 z-50 text-sm no-print">
+                         class="hidden absolute left-0 mt-2 w-52 bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-xl shadow-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-100/50 dark:divide-white/5 z-50 text-sm no-print">
                         <div class="p-1.5 space-y-1">
                             <a href="{{ route('import.index') }}"
                                class="flex items-center space-x-2.5 px-3 py-2 rounded-lg transition-colors font-medium
@@ -305,7 +305,7 @@
                 </button>
                 
                 <!-- Notification Dropdown -->
-                <div id="notificationDropdownMenu" class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-white/5 divide-y divide-slate-100 dark:divide-white/5 z-50 text-sm no-print">
+                <div id="notificationDropdownMenu" class="hidden absolute right-0 mt-2 w-72 sm:w-80 bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-xl shadow-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-100/50 dark:divide-white/5 z-50 text-sm no-print">
                     <div class="p-3 flex justify-between items-center border-b border-slate-100 dark:border-white/5 bg-slate-50 dark:bg-slate-800/50 rounded-t-xl">
                         <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider px-1"><i class="fas fa-bell mr-1"></i> Notifikasi</p>
                         @if(auth()->user()->unreadNotifications->count() > 0)
@@ -355,7 +355,7 @@
 
                 <!-- Dropdown -->
                 <div id="profileDropdownMenu"
-                     class="hidden absolute right-0 mt-2 w-56 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-200 dark:border-white/5 divide-y divide-slate-100 dark:divide-white/5 z-50 text-sm no-print">
+                     class="hidden absolute right-0 mt-2 w-56 bg-white/70 dark:bg-[#0B1120]/60 backdrop-blur-2xl rounded-xl shadow-2xl border border-slate-200/50 dark:border-white/10 divide-y divide-slate-100/50 dark:divide-white/5 z-50 text-sm no-print">
                     <div class="p-3">
                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1.5 px-2">Profil Saya</p>
                         <a href="{{ route('profile.edit') }}"

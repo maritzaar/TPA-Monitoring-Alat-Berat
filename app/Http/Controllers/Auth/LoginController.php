@@ -24,8 +24,12 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            $user = Auth::user();
+            // Send welcome notification
+            $user->notify(new \App\Notifications\WelcomeNotification());
+
             return redirect()->intended(route('monitoring.index'))
-                ->with('success', 'Welcome back, '.Auth::user()->name.'!');
+                ->with('success', 'Welcome back, '.$user->name.'!');
         }
 
         return back()->withErrors([
