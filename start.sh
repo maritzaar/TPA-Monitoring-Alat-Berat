@@ -4,6 +4,9 @@
 echo "Running database migrations..."
 php artisan migrate --force
 
+echo "Seeding default user..."
+php artisan db:seed --force
+
 # Menghapus cache config lama dan buat yang baru
 php artisan config:cache
 php artisan route:cache
